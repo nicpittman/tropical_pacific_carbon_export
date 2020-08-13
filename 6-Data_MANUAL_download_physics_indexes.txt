@@ -1,0 +1,36 @@
+Hopefully most of the small files will be available in the repository.
+
+If not you will now need to manually download physics and index data from:
+
+save into: datasets/indexes/
+
+Mooring Physics:
+https://www.pmel.noaa.gov/tao/drupal/disdel/
+These were obtained by selecting every variable for single location timeseries. I may be able to include this data in this package.
+
+Indexes
+SOI: https://www.esrl.noaa.gov/psd/gcos_wgsp/Timeseries/SOI/
+MEI: https://www.esrl.noaa.gov/psd/enso/mei/
+PDO: http://research.jisao.washington.edu/pdo/PDO.latest
+
+
+
+
+pCo2/Flux Products:
+If you haven't already got these working. Here is some more information.
+
+/yasanaka was obtained from Yasanaka. Ask her I cannot provide this.
+/co2_gridded_landschuzer
+
+Main: https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
+New Version - Unused (with bgc argo data): https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:0191304
+
+Xarray cannot open some of these files due to:
+
+MissingDimensionsError: 'date' has more than 1-dimension and the same name as one of its dimensions ('time', 'date'). xarray disallows such variables because they conflict with the coordinates used to label dimensions.
+
+Use NCO to convert this variable name so they can be opened. Ie. 
+ncrename -v date,t MPI-SOM_FFN_SOCCOMv2018.nc 
+
+
+
