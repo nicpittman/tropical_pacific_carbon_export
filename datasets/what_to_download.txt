@@ -1,0 +1,32 @@
+For figures to run, the following must be downloaded manually:
+
+datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc - This will need to be downloaded manually
+	https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
+
+datasets/sst/sst.mnmean.nc 
+	https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
+	
+datasets/tao/tao_physics/* 
+	https://www.pmel.noaa.gov/tao/drupal/disdel/
+	Moorings 110W,125W, 140W,155W,170E,165E
+
+
+For landschutzer product:
+
+https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
+https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/
+
+Download like:
+curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output spco2_MPI_SOM-FFN_v2018.nc
+
+
+This product is free to be used. Please cite this data set as:
+Landschützer, Peter; Gruber, Nicolas; Bakker, Dorothee C. E. (2017). An observation-based global monthly gridded sea surface pCO2 product from 1982 onward and its monthly climatology (NCEI Accession 0160558). Version 4.4. NOAA National Centers for Environmental Information. Dataset. https://doi.org/10.7289/V5Z899N6. [2019-03-27]
+
+Please cite the method as:
+Landschützer, P., Gruber, N., Bakker, D. C. E.: Decadal variations and trends of the global ocean carbon sink, Global Biogeochemical Cycles, 30, doi:10.1002/2015GB005359, 2016
+
+
+Use NCO to convert this variable name so they can be opened. Ie. 
+ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc 
+
