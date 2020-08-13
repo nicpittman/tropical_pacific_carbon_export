@@ -7,6 +7,8 @@ Just keep them in one place and clean up the file structure a bit.
 
 Expects that the entire pipeline up until now has been completed. 
 Hopefully this all works because will be hard to debug!!
+Things might be out of order so need to check this.
+
 @author: npittman
 """
 import numpy as np

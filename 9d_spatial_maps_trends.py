@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  1 10:40:28 2020
-
 @author: Nic Pittman
-
 
 This code will reproduce Figure 4 in Pittman et al., 2021. 
 
@@ -22,17 +20,18 @@ Produces mean, trend and pval (Stipples) for the following:
     new production 
     difference is calculated here
     SST
-    TPCA chlorophyll (regridded) - merged here and takes some memory
+    TPCA chlorophyll (regridded) 
     carbon (as processed into grams)
     
 Requires: 
-        datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
+        datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
+        processed/seamask.nc
         processed/flux/fratios.nc
-
-    processed/flux/avg_npp_rg_cafe.nc'
-    processed/flux/tpca.nc
-    datasets/sst/sst.mnmean.nc
-    processed/flux/pco2grams.nc
+    
+        processed/flux/avg_npp_rg_cafe.nc'
+        processed/flux/tpca.nc
+        datasets/sst/sst.mnmean.nc
+        processed/flux/pco2grams.nc
 """
 
 import numpy as np
@@ -73,8 +72,10 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     if title.endswith('pCO2t'):
         endday=np.datetime64('2016-12-01') 
         print(title)
+    elif title.endswith('chlorophyll'):
+        endday=np.datetime64('2018-06-01')
     else:
-        endday=np.datetime64('2017-12-01') 
+        endday=np.datetime64('2019-12-01') 
         
     ax1=fig.add_subplot(sb1,sb2,axn)
     m=plot_basemap()
@@ -101,10 +102,10 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         
         lev=28.5#29.2 #rather than 28.5
         early_sst=hovmol.sel(time=slice('1997-01-01','2001-01-01')).mean(dim='time')#.where(co2.seamask==1)
-        m.contour(lo1,la1,early_sst,levels=[lev],linestyles='dotted',c='k')
+        m.contour(lo1,la1,early_sst,levels=[lev],linestyles='dotted',colors='k')
        
         late_sst=hovmol.sel(time=slice('2013-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
-        m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',c='k')
+        m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k')
 
 
     cb=plt.colorbar(f,ax=ax1,fraction=fr)

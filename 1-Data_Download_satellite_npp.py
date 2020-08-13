@@ -245,7 +245,8 @@ sensor,ppname,mod_vgpm='mod','vgpm',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.m.chl.m.sst/hdf/vgpm.m.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.m.chl.m.sst/hdf/vgpm.m.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.m.chl.m.sst/hdf/vgpm.m.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.m.chl.m.sst/hdf/vgpm.m.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.m.chl.m.sst/hdf/vgpm.m.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.m.chl.m.sst/hdf/vgpm.m.2020.tar']
         
 sensor,ppname,mod_eppley='mod','eppley',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2002.tar',
@@ -265,7 +266,8 @@ sensor,ppname,mod_eppley='mod','eppley',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.m.chl.m.sst/hdf/eppley.m.2020.tar']
         
 sensor,ppname,mod_cbpm='mod','cbpm',[        
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2002.tar',
@@ -285,7 +287,8 @@ sensor,ppname,mod_cbpm='mod','cbpm',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.modis.r2018/hdf/cbpm.m.2020.tar']
         
 sensor,ppname,mod_cafe='mod','cafe',[        
         'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2002.tar',
@@ -305,7 +308,8 @@ sensor,ppname,mod_cafe='mod','cafe',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.modis.r2018/hdf/cafe.m.2020.tar']
 
 sensor,ppname,sw_cafe='sw','cafe',[        
         'http://orca.science.oregonstate.edu/data/1x2/8day/cafe.seawifs.r2018/hdf/cafe.s.1997.tar',
