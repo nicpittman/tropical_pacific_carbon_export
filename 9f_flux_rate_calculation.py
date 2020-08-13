@@ -62,8 +62,10 @@ def trends(ax,x,y,c='r'):
     return slope, intercept, r_value,p_value,std_err
     
 
+seamask=xr.open_dataset('processed/seamask.nc') #Because 2020 version doesn't have it.
+seamask= seamask.assign_coords(lon=(seamask.lon % 360)).roll(lon=(seamask.dims['lon']),roll_coords=False).sortby('lon')	
 
-landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc'
+landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc'
 landschutzer=xr.open_dataset(landsch_fp)
 landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
 land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
@@ -82,7 +84,7 @@ npp=(xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc').avg_npp/1000*365)
 #grid=xr.open_dataarray('processed/tropics_size_m2.nc')
 grid=xr.open_dataarray('processed/earth_m2.nc')
 grid['lon']=grid.lon+180
-grid=grid.where(landschutzer.seamask==1)
+grid=grid.where(seamask.seamask==1)
 #fig=plt.figure(figsize=(8,10))
 
 limits=[['West',165,180],

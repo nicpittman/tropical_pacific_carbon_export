@@ -195,7 +195,7 @@ for i, mooring_name in enumerate(moorings):
     print('p=' +str(pval))
     #plt.title(mooring_name+': Upper ocean temperatures')
     
-    finyear='2019'
+    finyear='2020'
     ax1.set_ylim([-0.03,0.26])
     ax1.set_xlim([np.datetime64(startyear),np.datetime64(finyear)])
     ax1.tick_params(axis='both', which='major', labelsize=fs)

@@ -818,6 +818,9 @@ def make_fratio_nc():
     plt.show()
     
     
+def save_landschutzer_2018_seamask():
+    seamask=xr.open_dataset('datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc').seamask
+    seamask.to_netcdf('processed/seamask.nc')
 # %% RUN FUNCS HERE.
 
 convert_tpca_to_month()
@@ -835,3 +838,4 @@ make_fratio_nc()
 calculate_exports_add_to_mooring()
 add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc')
 add_cafe_and_sst(fp='processed/combined_dataset/month_data.nc')
+save_landschutzer_2018_seamask() #Just to make sure that it stays in the folder as the 2020 version doesnt have this.

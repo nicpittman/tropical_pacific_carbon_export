@@ -182,7 +182,17 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     
 # %%Load data in
          
-landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc'
+#landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc'
+landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc'
+
+
+
+seamask=xr.open_dataset('processed/seamask.nc') #Because 2020 version doesn't have it.
+seamask= seamask.assign_coords(lon=(seamask.lon % 360)).roll(lon=(seamask.dims['lon']),roll_coords=False).sortby('lon')	
+
+#It would be preferable to use the 2020 version,
+# landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc'
+#However it doesn't include seamask so we are going to need both.... (Unless I save the seamask)
 landschutzer=xr.open_dataset(landsch_fp)
 landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
 land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
@@ -211,13 +221,11 @@ chl=xr.open_dataset('processed/flux/tpca.nc').tpca#'sw_month.nc')
 #tpca=tpca.merge(mod)
 #chl = tpca.to_array(dim='tpca').mean('tpca')
 
-
 #SST
 sst = xr.open_dataset('datasets/sst/sst.mnmean.nc')
 sst= sst.assign_coords(lon=(sst.lon % 360)).roll(lon=(sst.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
 sst=sst.sel(lon=slice(120,290),lat=slice(20,-20)).sst
-sst=sst.where(landschutzer.seamask==1)
-
+sst=sst.where(seamask.seamask==1)
 
 pCO2 = xr.open_dataarray('processed/flux/pco2grams.nc')
 integratedpCO2 = (pCO2*12*50)

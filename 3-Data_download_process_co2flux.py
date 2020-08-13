@@ -164,27 +164,30 @@ print('------------------- NOTICE --------------------')
 print('You will need to download the Landschutzer product manually. You can use curl for example.')
 print('source: https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html and can be downloaded like:')
 print('curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output spco2_MPI_SOM-FFN_v2018.nc')
+print('EDIT: This is updated to be: https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc')
 print('You will then need to use NCO to convert this variable name so they can be opened. Ie:')
 print('ncrename -v date,t MPI-SOM_FFN_SOCCOMv2018.nc')
 print('')
+print('EDIT, Yasanaka and JAMS products have been removed from here as they are not used in the rest of analysis')
+print('---')
 print('If this is your first time running, #process_jams() and process_yasanaka() should be working but these can be commented out if rerunning this analysis')
 print('Yasanaka Data was obtained from private communication. Please email her for this dataset- Paper DOI: https://doi.org/10.1016/j.dsr2.2019.104680')
 print('---------------------------------------------')
 
 #Uncomment this to preprocess the JAMS and Yasanaka data.
-process_jams()
-process_yasanaka()
+#process_jams()
+#process_yasanaka()
 out_path='processed/flux/'    
-new_flux=xr.open_mfdataset(out_path+'jma_flux.nc')
+#new_flux=xr.open_mfdataset(out_path+'jma_flux.nc')
 
 #Include the Landschutzer products:
 #Need to use NCO to convert if getting the MissingDimensionsError
-chunkz={'time':10}
-landschutzer=xr.open_mfdataset('datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc',chunks=chunkz)
+#chunkz={'time':10}
+landschutzer=xr.open_mfdataset('datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc')#,chunks=chunkz)
 
 landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False)		#EPIC 1 line fix for the dateline problem.
 
-yasanaka=xr.open_mfdataset('datasets/co2/yasanaka_co2/Yasunaka_pCO2_flux.nc')
+#yasanaka=xr.open_mfdataset('datasets/co2/yasanaka_co2/Yasunaka_pCO2_flux.nc')
 
 #Cutout 
 
@@ -203,35 +206,35 @@ lons=[[lns[0]-buff,lns[0]+buff],
 
 mooring_sites=['165E','170W','155W','140W','125W','110W']
 
-dat=new_flux
+#dat=new_flux
 
 moorings=[]
-dat=xr.open_mfdataset(out_path+'jma_flux.nc')
+#dat=xr.open_mfdataset(out_path+'jma_flux.nc')
 
 land_moorings=[]
 yasanaka_moorings=[]
 
 for ii,ll in enumerate(lons):
-    datslice=dat.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon'])
-    datslice=datslice.assign_coords(Mooring=mooring_sites[ii])
-    moorings.append(datslice)
+    #datslice=dat.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon'])
+    #datslice=datslice.assign_coords(Mooring=mooring_sites[ii])
+    #moorings.append(datslice)
     
-    yasanaka_datslice=yasanaka.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).assign_coords(Mooring=mooring_sites[ii])
-    yasanaka_moorings.append(yasanaka_datslice)
+    #yasanaka_datslice=yasanaka.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).assign_coords(Mooring=mooring_sites[ii])
+    #yasanaka_moorings.append(yasanaka_datslice)
     land_datslice=landschutzer.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).assign_coords(Mooring=mooring_sites[ii])
     
     land_moorings.append(xr.merge([land_datslice.spco2_raw,
-                        land_datslice.aco2,
+                        land_datslice.dco2,
                         land_datslice.fgco2_raw,
                         land_datslice.fgco2_smoothed,
                         land_datslice.sol,
                         land_datslice.kw]))
     
-yasanaka_mooring_flux=xr.concat(yasanaka_moorings,dim='Mooring')    
-yasanaka_mooring_flux.to_netcdf(out_path+'yasanaka_mooring_co2_flux.nc')
+#yasanaka_mooring_flux=xr.concat(yasanaka_moorings,dim='Mooring')    
+#yasanaka_mooring_flux.to_netcdf(out_path+'yasanaka_mooring_co2_flux.nc')
 
-mooring_fluxes=xr.concat(moorings,dim='Mooring')
-mooring_fluxes.to_netcdf(out_path+'JMA_mooring_co2_flux.nc') #Renamed this filepath to JMA_*
+#mooring_fluxes=xr.concat(moorings,dim='Mooring')
+#mooring_fluxes.to_netcdf(out_path+'JMA_mooring_co2_flux.nc') #Renamed this filepath to JMA_*
 
 
 land_mooring_flux=xr.concat(land_moorings,dim='Mooring')
