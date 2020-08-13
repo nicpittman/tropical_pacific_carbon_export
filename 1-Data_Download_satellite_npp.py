@@ -159,7 +159,8 @@ sensor,ppname,viirs_cbpm='viirs','cbpm',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.viirs.r2018/hdf/cbpm.v.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.viirs.r2018/hdf/cbpm.v.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.viirs.r2018/hdf/cbpm.v.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.viirs.r2018/hdf/cbpm.v.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.viirs.r2018/hdf/cbpm.v.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.viirs.r2018/hdf/cbpm.v.2020.tar']
 
 sensor,ppname,viirs_eppley='viirs','eppley',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2012.tar',
@@ -169,7 +170,8 @@ sensor,ppname,viirs_eppley='viirs','eppley',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/eppley.r2018.v.chl.v.sst/hdf/eppley.v.2020.tar']
 
 sensor,ppname,viirs_vgpm='viirs','vgpm',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2012.tar',
@@ -179,7 +181,8 @@ sensor,ppname,viirs_vgpm='viirs','vgpm',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2016.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2017.tar',
         'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2018.tar',
-        'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2019.tar']
+        'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2019.tar',
+        'http://orca.science.oregonstate.edu/data/1x2/8day/vgpm.r2018.v.chl.v.sst/hdf/vgpm.v.2020.tar']
 
 sensor,ppname,sw_cbpm='sw','cbpm',[
         'http://orca.science.oregonstate.edu/data/1x2/8day/cbpm2.s.r2014.gsm.v8/hdf/cbpm.s.1997.tar',
