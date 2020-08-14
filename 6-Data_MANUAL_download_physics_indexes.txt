@@ -1,30 +1,43 @@
-Hopefully most of the small files will be available in the repository.
+Most of the files required have either been downloaded using scripts 1-5 here, or included in the repository.
 
-If not you will now need to manually download physics and index data from:
+Particularly, the indexes are included here (datasets/indexes/)
+However this is how to download and process those yourself if you want.
 
-save into: datasets/indexes/
 
-Mooring Physics:
-https://www.pmel.noaa.gov/tao/drupal/disdel/
-These were obtained by selecting every variable for single location timeseries. I may be able to include this data in this package.
 
 Indexes
 SOI: https://www.esrl.noaa.gov/psd/gcos_wgsp/Timeseries/SOI/
 MEI: https://www.esrl.noaa.gov/psd/enso/mei/
 PDO: http://research.jisao.washington.edu/pdo/PDO.latest
 
+SOI:
+curl https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/soi.long.data --output soi.csv
+then open in notepad and replace '  ' (two spaces) with a comma, so it is a csv. A slightly modified version is provided here.
+
+MEIv2:
+curl https://psl.noaa.gov/enso/mei/data/meiv2.data --output meiv2.csv
+Open in notepad and replace '     ' (four spaces) with a comma so it is a csv.
+
+PDO:
+curl http://research.jisao.washington.edu/pdo/PDO.latest --output pdo.csv
+Reprocess as above. A copy is provided here though.
+
+
+
+Mooring Physics:
+https://www.pmel.noaa.gov/tao/drupal/disdel/
+These were obtained by selecting every variable for single location timeseries. These files are included here by default in datasets/tao/physics. These can be downloaded yourself if you want.
 
 
 
 pCo2/Flux Products:
 If you haven't already got these working. Here is some more information.
 
-/yasanaka was obtained from Yasanaka. Ask her I cannot provide this.
-/co2_gridded_landschuzer
+/yasanaka was obtained from Yasanaka. Ask her I cannot provide this. However, all references to this in the scripts have been commented out, so its not actually required.
 
+/co2_gridded_landschuzer (as previously explained)
 curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output spco2_MPI_SOM-FFN_v2018.nc
 curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output spco2_MPI-SOM_FFN_v2020.nc
-
 
 Main: https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
 New Version - Unused (with bgc argo data): https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:0191304
