@@ -45,16 +45,27 @@ def moles_to_carbon(moles):
     grams=moles*molarmassC
     return grams
 
-
-def nearest_ind(items, pivot):
+def nearest_ind(items, pivot,label=None):
     try:
-        npp=items.NPP
+        find=items.NPP
     except:
-        npp=items.chl
-    items=items.Date
-    time_diff = np.abs([(pd.to_datetime(date) - pivot).days for date in items])
+        try:
+            find=items.chl
+        except:
+            find=pd.DataFrame(eval('items.'+str(label)).values)
+
+    item_date=items.Date
+   # print(item_date)
+   # print(type(item_date))
+    try:
+        time_diff = (np.abs([(pd.to_datetime(date) - pivot).days for date in item_date.values])).flatten()
+    except:
+        #Weird label and cut the start of the array:
+        time_diff = (np.abs([(pd.to_datetime(date) - pivot).days for date in item_date.values[1:]])).flatten()
+
+
     if time_diff.min()<=5:
-        return npp.iloc[time_diff.argmin(0)]
+        return find.iloc[time_diff.argmin(0)]
     else:
         return np.nan
 
@@ -141,7 +152,7 @@ def process(mooring_name):
     co2flux_JMA=xr.open_mfdataset('processed/flux/JMA_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
     
     co2flux_landshutz=xr.open_dataset('processed/flux/landsch_mooring_co2_flux.nc').sel(Mooring=mooring_name)
-    co2flux_yasanaka=xr.open_dataset('processed/flux/yasanaka_mooring_co2_flux.nc').sel(Mooring=mooring_name)
+    #co2flux_yasanaka=xr.open_dataset('processed/flux/yasanaka_mooring_co2_flux.nc').sel(Mooring=mooring_name)
     #Dates are set as the 15th of the month, but with the backfill d1 method we need to change that to the first day of each month.
     co2flux_landshutz['time']=co2flux_landshutz.time-np.timedelta64(14,'D') 
     
