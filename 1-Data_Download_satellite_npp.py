@@ -130,20 +130,21 @@ def unzip_extract_convert(sensor='viirs',ppname='vgpm'):
         
         #Older version of xarray needed h4toh5 but this seems to work now in updated version.
         #subprocess.run(["./h4toh5",fp+'_opened/'+f,fp+'_converted/'+fname])
-        dat=xr.open_dataset(fp+'_opened/'+fname)
+        dat=xr.open_dataset(fp+'_opened/'+fname,engine='pynio')
         dat=dat.rename({'fakeDim0':'lat','fakeDim1':'lon'})
         #dat['lat']=np.arange(-90,90,180/len(dat.lat))*-1
         #dat['lon']=np.arange(-180,180,360/len(dat.lon))
         dat['lat']=np.linspace(-90,90,len(dat.lat))*-1
         dat['lon']=np.linspace(-180,180,len(dat.lon))
         #print(dat.attrs)
-        dat['time']=np.datetime64(dat.attrs['Start Time String'][6:10]+'-'+dat.attrs['Start Time String'][0:2]+'-'+dat.attrs['Start Time String'][3:5])
+        dat['time']=np.datetime64(dat.attrs['Start_Time_String'][6:10]+'-'+dat.attrs['Start_Time_String'][0:2]+'-'+dat.attrs['Start_Time_String'][3:5])
         dat=dat.assign_coords(lon=(dat.lon % 360)).roll(lon=(dat.dims['lon'] // 2), roll_coords=True)	
         dat=dat.sel(lat=slice(20,-20))
-        final_dat=dat.sel(lon=slice(120,290))
+        dat=dat.sel(lon=slice(120,290))
+        dat=dat.assign_coords({'time':dat.time})
         #print(final_dat)
         # outp=sensor+'_'+ppname+'_'+dat.attrs['Start Time String'][6:10]+'-'+dat.attrs['Start Time String'][0:2]+'-'+dat.attrs['Start Time String'][3:5]
-        final_dat.to_netcdf('datasets/npp_satellite/'+ppname+'_'+sensor+'_nc/'+sensor+'_'+f[0:-3]+'nc')
+        dat.to_netcdf('datasets/npp_satellite/'+ppname+'_'+sensor+'_nc/'+sensor+'_'+f[0:-3]+'nc')
         
     print('Deleting unneccessary Data...')
     shutil.rmtree(r'datasets/npp_satellite/'+ppname+'_'+sensor+'_extracted')
@@ -340,7 +341,7 @@ for s in datasets:
     
     #PROVE IT OPENS!   
     print('Plotting mean map....')
-    data=xr.open_mfdataset('datasets/npp_satellite/'+ppname+'_'+sensor+'_nc/*nc',concat_dim='time')
+    data=xr.open_mfdataset('datasets/npp_satellite/'+ppname+'_'+sensor+'_nc/*nc',concat_dim='time',combine='nested')
     data.mean(dim='time').npp.plot(cmap='jet',vmin=0,vmax=1000)
     plt.show()
 
