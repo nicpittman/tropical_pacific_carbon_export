@@ -85,22 +85,22 @@ datasets/tao/tao_physics/* - Downloaded from, see source file in folder.
 The files in this repo include:
 
     Included:
-    
+    All files are created in the cleanup script.
     #These files here are monthly and 1 degree averaged from oregon state.
-    datasets/npp_satellite/avg_npp_rg_cbpm.nc 			- Created in cleanup
-    datasets/npp_satellite/avg_npp_rg_cafe.nc			- Created in cleanup
-    datasets/npp_satellite/avg_npp_rg_vgpm.nc			- Created in cleanup
-    datasets/npp_satellite/avg_npp_rg_eppley.nc 		- Created in cleanup
+    processed/flux/avg_npp_rg_cbpm.nc 					
+    processed/flux/avg_npp_rg_cafe.nc					
+    processed/flux/avg_npp_rg_vgpm.nc					
+    processed/flux/avg_npp_rg_eppley.nc 				
     
     #These files are produced from multiple sources
-    processed/combined_dataset/month_data.nc			- Created in cleanup
-    processed/combined_dataset/month_data_exports.nc 	- Created in cleanup
+    processed/combined_dataset/month_data.nc			
+    processed/combined_dataset/month_data_exports.nc 	
     
-    processed/flux/fratios.nc 							- Created in cleanup
-    datasets/co2/pco2grams_eq1.nc 						- Created in cleanup
-    datasets/tpca/tpca.nc 								- Created in cleanup
-    processed/earth_m2.nc								- Created in cleanup
-    processed/flux/landsch_mooring_co2_flux.nc 			- Created in cleanup
-    processed/flux/npp.nc								- Created in cleanup
-    processed/indexes/el_nino_events.csv
+    processed/flux/fratios.nc 							
+    processed/flux/pco2grams_eq1.nc 					
+    processed/flux/tpca.nc 								
+    processed/earth_m2.nc							
+    processed/flux/landsch_mooring_co2_flux.nc 		
+    processed/flux/npp.nc								
+    processed/indexes/el_nino_events.csv				
     processed/indexes/la_nina_events.csv

@@ -1,0 +1,14 @@
+into datasets/indexes
+
+SOI:
+curl https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/soi.long.data --output soi.csv
+then open in notepad and replace '  ' (two spaces) with a comma, so it is a csv. A slightly modified version is provided here.
+
+
+MEI:
+curl https://psl.noaa.gov/enso/mei/data/meiv2.data --output meiv2.csv
+Open in notepad and replace '     ' (four spaces) with a comma so it is a csv.
+
+Same for PDO:
+curl http://research.jisao.washington.edu/pdo/PDO.latest --output pdo.csv
+Reprocess as above. A copy is provided here though.
