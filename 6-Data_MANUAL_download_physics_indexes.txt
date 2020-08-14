@@ -3,6 +3,18 @@ Most of the files required have either been downloaded using scripts 1-5 here, o
 Particularly, the indexes are included here (datasets/indexes/)
 However this is how to download and process those yourself if you want.
 
+Devries and Webber SIMPLE TRIM: 
+Download https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/exports
+
+The only files left (well, they are actually required in Script 2) to download is the TPCA and chlor_a chlorophyll available from 
+https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905
+These should be placed in datasets/tpca/seawifs and datasets/tpca/modis
+If on Gadi, can be accessed like:  cp  /g/data/ua8/ocean_color/TPCA_reprocessing/SeaWiFS/*nc tpca/
+
+Chl is downloaded from: https://oceandata.sci.gsfc.nasa.gov/SeaWiFS/Mapped/Daily/9km/chlor_a/
+Many different ways to download this, 
+
+NASA chlora is also needed. Maybe not necessary to run these sections (Bottom of part 2), because the mooring timeseries are provided in datasets/npp_mooring_timeseries  (See the shell script at the bottome for how to download NASA data)
 
 
 Indexes
@@ -23,11 +35,9 @@ curl http://research.jisao.washington.edu/pdo/PDO.latest --output pdo.csv
 Reprocess as above. A copy is provided here though.
 
 
-
 Mooring Physics:
 https://www.pmel.noaa.gov/tao/drupal/disdel/
 These were obtained by selecting every variable for single location timeseries. These files are included here by default in datasets/tao/physics. These can be downloaded yourself if you want.
-
 
 
 pCo2/Flux Products:
@@ -48,6 +58,22 @@ MissingDimensionsError: 'date' has more than 1-dimension and the same name as on
 
 Use NCO to convert this variable name so they can be opened. Ie. 
 ncrename -v date,t MPI-SOM_FFN_SOCCOMv2018.nc 
+
+
+
+-----
+- Save as download_modis.sh - Can also use SeaWiFS/
+myURL=https://oceandata.sci.gsfc.nasa.gov/MODIS-Aqua/Mapped/Daily/9km/chlor_a
+
+for year in $(curl $myURL?format=txt |cut -d "," -f 1);
+do
+  echo $year
+  for ncfile in $(curl $myURL/$year?format=txt |cut -d "," -f 1);
+    do
+      curl -L -O https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/$ncfile;
+    esac
+  done;
+done;
 
 
 
