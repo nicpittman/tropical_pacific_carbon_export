@@ -342,8 +342,8 @@ for s in datasets:
     #PROVE IT OPENS!   
     print('Plotting mean map....')
     data=xr.open_mfdataset('datasets/npp_satellite/'+ppname+'_'+sensor+'_nc/*nc',concat_dim='time',combine='nested')
-    data.mean(dim='time').npp.plot(cmap='jet',vmin=0,vmax=1000)
-    plt.show()
+    #data.mean(dim='time').npp.plot(cmap='jet',vmin=0,vmax=1000)
+    #plt.show()
 
 
 #OTHER PRODUCTS COULD INCLUDE

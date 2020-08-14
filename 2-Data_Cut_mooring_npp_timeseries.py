@@ -51,7 +51,7 @@ out_path='processed/npp_mooring_timeseries/'
 
 for i,x in enumerate(npp_models):
     try:
-        dat=xr.open_mfdataset(x,concat_dim='time')
+        dat=xr.open_mfdataset(x,concat_dim='time',combine='nested')
         for ii,ll in enumerate(lons):
             datslice=dat.sel(lat=slice(lats[0],lats[1]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).npp.to_series()
 
@@ -73,8 +73,8 @@ for i,x in enumerate(npp_models):
     
 #Depending where data stored probably want to comment the breakpoint out.
 print('CHECK HERE - There is a breakpoint installed here but you may need to reproduce this if the tpca and chlor_a files are not in processed/npp_mooring_timeseries/')
-import sys
-sys.exit()
+#import sys
+#sys.exit()
 
 #This does the samea as above, but for chlorophyll datasets.
 #A hack method but this should copy-paste to where the data lives. + top 35 lines.
@@ -87,9 +87,11 @@ mod_tpca='/g/data/ua8/ocean_color/TPCA_reprocessing/MODIS-Aqua/*nc'
 
 #sw_tpca='datasets/tpca/modis/*nc' #Actually the second one but I only have seawifs stored on gadi. #'datasets/tpca/seawifs/*nc'
 #mod_tpca='datasets/tpca/modis/*nc'nload all of the chlorophyll data locally.
-paths=['/g/data/ua8/ocean_color/tropics/']
+paths=['/g/data/ua8/ocean_color/tropics/','/day/9km/chlor_a/*nc']
 
 chl_models=['seawifs','modis','meris','viirs']
+
+#This uses the GADI versions. You will need to change the above paths to the local storage of these files. I would recommend datasets/chlorophyll or something.
 
 for i,x in enumerate(chl_models):
 
@@ -114,5 +116,5 @@ for i,x in enumerate(chl_models):
                 chlslice=chlor_dat.sel(lat=slice(lats[0],lats[1]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).chl_tpca.to_series()
                 chlslice.to_csv(out_path+'modis_chl_tpca_'+mooring_site+'.csv') 
                 
-            #Will save this 5 times but whatever haha.
+            #Will save this 5 times but whatever....
         

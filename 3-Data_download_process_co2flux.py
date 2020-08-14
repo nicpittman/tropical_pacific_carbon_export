@@ -57,7 +57,7 @@ def process_jams():
     
     #Process it into a single file
     yearlist=np.arange(1990,2019)
-    dat=xr.open_mfdataset('datasets/co2/JMA_co2/*nc',decode_times=False,concat_dim='Year')
+    dat=xr.open_mfdataset('datasets/co2/JMA_co2/*nc',decode_times=False,concat_dim='Year',combine='nested')
     dat['Year']=yearlist
     dat=dat.rename({'time':'Month'})
     datasets=[]
