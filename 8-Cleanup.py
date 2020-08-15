@@ -103,10 +103,10 @@ def combine_csvs_to_nc():
         dat['Date']=dat.Date.astype(np.datetime64)
         dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
         
-        alld = dat.to_xarray().drop('Unnamed: 0')
-        davg = dat.resample('D').mean().to_xarray().drop('Unnamed: 0') #Day average
-        wavg = dat.resample('W').mean().to_xarray().drop('Unnamed: 0') #Week average
-        mavg = dat.resample('M').mean().to_xarray().drop('Unnamed: 0') #Month average
+        alld = dat.to_xarray()#.drop('Unnamed: 0')
+        davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
+        wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
+        mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
     
         aavg_a.append(alld)
         davg_a.append(davg)
@@ -831,7 +831,7 @@ calc_euc()
 find_enso_events()
 npp_csvs_to_nc()
 open_and_save_insitu_carbon()
-combine_csvs_to_nc()
+#combine_csvs_to_nc() #This one should already have been run. 
 cut_sst_moorings()
 make_earth_grid_m2()
 create_npp_avgs() #Regrid the NPP models.

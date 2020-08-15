@@ -326,7 +326,7 @@ def process(mooring_name):
             try:
                 holder['co2flux4_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').fgco2_raw.values
                 holder['co2flux4_land_gmyr']=moles_to_carbon(holder.co2flux4_landshutz)
-                holder['pco2atm_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').aco2.values
+                holder['pco2atm_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').atm_co2.values
                 holder['pco2sw_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').spco2_raw.values
                 holder['sol_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').sol.values
                 holder['kw_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').kw.values
@@ -410,7 +410,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 from multiprocessing import Process
 moorings=['110W','125W','140W','155W','170W','165E']
-num_cores=6#6#multiprocessing.cpu_count()-1 #-1 so we don't lock up. Up to 6 cores I guess, one for each mooring.
+num_cores=6#multiprocessing.cpu_count()-1 #-1 so we don't lock up. Up to 6 cores I guess, one for each mooring.
 res=Parallel(n_jobs=num_cores)(delayed(process)(mooring) for mooring in moorings)
 
 
@@ -433,10 +433,10 @@ for mooring in moorings:
     dat['Date']=dat.Date.astype(np.datetime64)
     dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
     
-    alld = dat.to_xarray().drop('Unnamed: 0')
-    davg = dat.resample('D').mean().to_xarray().drop('Unnamed: 0') #Day average
-    wavg = dat.resample('W').mean().to_xarray().drop('Unnamed: 0') #Week average
-    mavg = dat.resample('M').mean().to_xarray().drop('Unnamed: 0') #Month average
+    alld = dat.to_xarray()#.drop('Unnamed: 0')
+    davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
+    wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
+    mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
 
     aavg_a.append(alld)
     davg_a.append(davg)

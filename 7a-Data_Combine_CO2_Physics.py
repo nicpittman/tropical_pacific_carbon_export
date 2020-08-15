@@ -324,7 +324,7 @@ for mooring_name in moorings:
             try:
                 holder['co2flux4_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').fgco2_raw.values
                 holder['co2flux4_land_gmyr']=moles_to_carbon(holder.co2flux4_landshutz)
-                holder['pco2atm_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').aco2.values
+                holder['pco2atm_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').atm_co2.values
                 holder['pco2sw_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').spco2_raw.values
                 holder['sol_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').sol.values
                 holder['kw_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').kw.values
@@ -415,10 +415,10 @@ for mooring in moorings:
     dat['Date']=dat.Date.astype(np.datetime64)
     dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
     
-    alld = dat.to_xarray().drop('Unnamed: 0')
-    davg = dat.resample('D').mean().to_xarray().drop('Unnamed: 0') #Day average
-    wavg = dat.resample('W').mean().to_xarray().drop('Unnamed: 0') #Week average
-    mavg = dat.resample('M').mean().to_xarray().drop('Unnamed: 0') #Month average
+    alld = dat.to_xarray()#.drop('Unnamed: 0')
+    davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
+    wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
+    mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
 
     aavg_a.append(alld)
     davg_a.append(davg)
