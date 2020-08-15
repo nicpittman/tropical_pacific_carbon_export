@@ -161,7 +161,7 @@ for typ in tyyp:
         ax1.set_ylabel('Observations'+units,fontsize=10)
         ax1.grid(axis='y',which='major')
         ax1.grid(axis='x',which='both')
-        ax1.set_xlim(['1997-06-01','2018-01-01'])
+        ax1.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
         #ax1.set_ylim([-0.12,0.12])
         if typ=='both':
             ax1.set_ylim([-0.2,0.12])
@@ -244,7 +244,7 @@ for typ in tyyp:
             ax2.text(np.datetime64('2013-01-01'),-0.03,tex,fontsize=11)
         
               
-        ax2.set_xlim(['1997-06-01','2018-01-01'])
+        ax2.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
         
        
         ax3.axhline(0,c='gray')#,linestyle=':')
@@ -253,7 +253,7 @@ for typ in tyyp:
         ax3.xaxis.set_minor_locator(AutoMinorLocator(4))
         ax3.grid(axis='y',which='major')
         ax3.grid(axis='x',which='both')
-        ax3.set_xlim(['1997-06-01','2018-01-01'])
+        ax3.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
         if typ=='both':
             ax3.set_ylim([-0.06,0.06])
         
@@ -264,7 +264,7 @@ for typ in tyyp:
         
         ax4.grid()
         
-        ax4.set_xlim(['1997-06-01','2018-01-01'])
+        ax4.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
         ax4.set_ylim([-0.05,0.05])
         seasonaltrend.append(decomp.seasonal)
         

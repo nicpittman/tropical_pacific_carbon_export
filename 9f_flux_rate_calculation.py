@@ -69,7 +69,7 @@ landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc'
 landschutzer=xr.open_dataset(landsch_fp)
 landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
 land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
-land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
+#land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
 land_pac=moles_to_carbon(land_pac.fgco2_smoothed)
 
 #JMA=moles_to_carbon(xr.open_mfdataset('datasets/co2/JMA_co2/jma_flux.nc').flux.sel(lon=slice(120,290),lat=slice(-20,20)))
