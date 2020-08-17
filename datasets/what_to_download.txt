@@ -12,6 +12,9 @@ datasets/tao/tao_physics/*
 	Moorings 110W,125W, 140W,155W,170E,165E
 
 
+
+for SIMPLE TRIM  (to datasets/SIMPLE_TRIM_output.nc)
+curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --output SIMPLE_TRIM_output.nc
 For the sst:
 mkdir sst | cd sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst.mean.nc | mv sst.mean.nc sst/sst.mean.nc
 

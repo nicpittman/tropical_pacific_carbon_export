@@ -34,6 +34,9 @@ PDO:
 curl http://research.jisao.washington.edu/pdo/PDO.latest --output pdo.csv
 Reprocess as above. A copy is provided here though.
 
+EMI
+curl http://www.jamstec.go.jp/frsgc/research/d1/iod/DATA/emi.monthly.txt --output emi.csv
+And process dates. A file of this is included albeit not used.
 
 Mooring Physics:
 https://www.pmel.noaa.gov/tao/drupal/disdel/
