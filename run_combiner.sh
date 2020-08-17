@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l walltime=20:00:00
+#PBS -l walltime=10:00:00
 #PBS -l mem=8GB
 #PBS -l ncpus=6
 #PBS -N combine_moorings
@@ -10,6 +10,6 @@
 
 module purge
 module use /g/data3/hh5/public/modules/
-module load conda/analysis3-19.07
+module load conda/analysis3
 
-python3 /g/data/v45/np1383/carbon-budget/7b-gadi-Data_Combine_CO2_Physics_parallel.py 
+python3 /g/data/v45/np1383/cb2/tropical_pacific_carbon_export/7b-gadi-Data_Combine_CO2_Physics_parallel.py 

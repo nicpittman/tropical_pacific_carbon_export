@@ -195,7 +195,7 @@ for i, mooring_name in enumerate(moorings):
     print('p=' +str(pval))
     #plt.title(mooring_name+': Upper ocean temperatures')
     
-    finyear='2020'
+    finyear='2020-01-01'
     ax1.set_ylim([-0.03,0.26])
     ax1.set_xlim([np.datetime64(startyear),np.datetime64(finyear)])
     ax1.tick_params(axis='both', which='major', labelsize=fs)
@@ -254,14 +254,14 @@ for i, mooring_name in enumerate(moorings):
         cbar.ax.tick_params(labelsize=fs)
         cbar.set_label('Temperature (C)',fontsize=fs)
         cax.set_visible(False)
-        ax1.text('11-01-2009',0.22,'CP',fontsize=14)
-        ax1.text('09-01-2015',0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2015-09-01'),0.22,'CP',fontsize=14)
     elif i==0:
         ax1.legend(ncol=4,fontsize=fs,loc='upper center')
         ax2.tick_params(labelbottom=False)
     else:
-        ax1.text('11-01-2009',0.22,'CP',fontsize=14)
-        ax1.text('09-01-2015',0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2015-09-01'),0.22,'CP',fontsize=14)
         ax2.tick_params(labelbottom=False)
    
     #We want to create a table of NINO, NINA, neutral and all CO2 and NP averages for each mooring

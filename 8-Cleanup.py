@@ -103,10 +103,10 @@ def combine_csvs_to_nc():
         dat['Date']=dat.Date.astype(np.datetime64)
         dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
         
-        alld = dat.to_xarray().drop('Unnamed: 0')
-        davg = dat.resample('D').mean().to_xarray().drop('Unnamed: 0') #Day average
-        wavg = dat.resample('W').mean().to_xarray().drop('Unnamed: 0') #Week average
-        mavg = dat.resample('M').mean().to_xarray().drop('Unnamed: 0') #Month average
+        alld = dat.to_xarray()#.drop('Unnamed: 0')
+        davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
+        wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
+        mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
     
         aavg_a.append(alld)
         davg_a.append(davg)
@@ -129,7 +129,7 @@ def combine_csvs_to_nc():
     monthly.coords['Mooring']=mooring_int
     
     fp='processed/combined_dataset/'
-    all_data.to_netcdf(fp+'all_data.nc')
+    all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf')
     daily.to_netcdf(fp+'day_data.nc')
     weekly.to_netcdf(fp+'week_data.nc')
     monthly.to_netcdf(fp+'month_data.nc')
@@ -315,7 +315,7 @@ def add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc'):
     dat.close()
 
     os.remove(fp)
-    dat.to_netcdf(fp,mode='w')
+    dat.to_netcdf(fp,mode='w',engine='h5netcdf')
     
 
 
@@ -324,7 +324,7 @@ def create_npp_avgs(): #This function will regrid New production models to the L
     landschutzer=xr.open_dataset(landsch_fp)
     landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')
     land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
-    land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
+    land_pac.to_netcdf('processed/flux/landshutzer.nc',engine='h5netcdf',mode='w')
     land_pac=land_pac.fgco2_smoothed.to_dataset()
     
     
@@ -347,7 +347,7 @@ def create_npp_avgs(): #This function will regrid New production models to the L
         for i, model_fp in enumerate(npp_models):
             #if i>=6:
             #    break
-            model=xr.open_mfdataset(model_fp,concat_dim='time')
+            model=xr.open_mfdataset(model_fp,concat_dim='time',combine='nested')
             name=model_fp.split('/')[-2][:-3]
             model=model.rename({'npp':name})
             print(name+' '+str(model.nbytes/1e9)+' GB')
@@ -405,7 +405,7 @@ def create_npp_avgs(): #This function will regrid New production models to the L
         npp1=npp1d.resample(time='M').mean(dim='time') 
         npp1['time']=npp1.time.astype('datetime64[M]')#_rg #First day of month
         
-        npp1.to_netcdf('processed/flux/avg_npp_rg_'+title[ix]+'.nc')
+        npp1.to_netcdf('processed/flux/avg_npp_rg_'+title[ix]+'.nc',engine='h5netcdf')
     
     
         
@@ -415,12 +415,14 @@ def convert_tpca_to_month():
     sw=xr.open_mfdataset('datasets/tpca/seawifs/*nc')
     sw=sw.rename(chl_tpca='sw_tpca')
     sw=sw.resample(time='M').mean(dim='time') 
-    sw.to_netcdf('datasets/tpca/sw_month.nc')
-    
+    sw.to_netcdf('datasets/tpca/sw_month.nc',engine='h5netcdf',mode='w')
+    print('saved monthly SW TPCA')
+
     mod=xr.open_mfdataset('datasets/tpca/modis/*nc')
     mod=mod.rename(chl_tpca='mod_tpca')
     mod=mod.resample(time='M').mean(dim='time') 
-    mod.to_netcdf('datasets/tpca/mod_month.nc')
+    mod.to_netcdf('datasets/tpca/mod_month.nc',engine='h5netcdf',mode='w')
+    print('saved monthly modis TPCA')
 
 def regrid_tpca_OLD_BILINEAR_METHOD(): #Probably don't use this version.
     sw=xr.open_dataset('datasets/tpca/sw_month.nc')
@@ -430,7 +432,7 @@ def regrid_tpca_OLD_BILINEAR_METHOD(): #Probably don't use this version.
     tpca=tpca.merge(mod)
     tpca = tpca.to_array(dim='tpca').mean('tpca')
     
-    landschutzer=xr.open_dataset('processed/fluxmaps/landshutzer.nc')
+    landschutzer=xr.open_dataset('processed/flux/landshutzer.nc')
     land_pac=landschutzer.fgco2_smoothed
     land_pac=land_pac.sel(lat=slice(-10,10))
     
@@ -449,7 +451,7 @@ def regrid_tpca():
     #tpca.to_netcdf('datasets/tpca/tpca.nc')
     #tpca=tpca.resample(time='M').mean(dim='time') 
     
-    landschutzer=xr.open_dataset('processed/fluxmaps/landshutzer.nc')
+    landschutzer=xr.open_dataset('processed/flux/landshutzer.nc')
     land_pac=landschutzer.fgco2_smoothed.to_dataset(name='co2')
     land_pac=land_pac.sel(lat=slice(-10,10))
 
@@ -476,12 +478,11 @@ def regrid_tpca():
     land_pac.coords['lat_b']=landlats
     land_pac['lat_b']=landlats#(['lonb','latb'],x[1])
     land_pac['lon_b']=landlons##(['lonb','latb'],x[0])
-    
+    print('Regridding TPCA')
     regridder = xe.Regridder(mod, land_pac, 'conservative')
     chl=regridder(mod)
-    chl.to_netcdf('datasets/tpca/tpca.nc')
-
-        
+    chl.to_netcdf('datasets/tpca/tpca.nc',engine='h5netcdf',mode='w')
+ 
 
 def cut_sst_moorings():
     dat = xr.open_dataset('datasets/sst/sst.mnmean.nc')
@@ -500,7 +501,7 @@ def cut_sst_moorings():
         
     d=xr.concat(data,dim=ln_names)
     d=d.rename({'concat_dim':'Mooring'})
-    d.to_netcdf('processed/indexes/sst.nc')
+    d.to_netcdf('processed/indexes/sst.nc',engine='h5netcdf',mode='w')
     return True
 
 def make_earth_grid_m2():
@@ -510,13 +511,13 @@ def make_earth_grid_m2():
     lat_size=110567 #in m
     grid_nc['m2']=grid_nc#*lat_size
     grid_nc=grid_nc['m2']
-    grid_nc.to_netcdf('processed/earth_m2.nc')
+    grid_nc.to_netcdf('processed/earth_m2.nc',engine='h5netcdf',mode='w')
     return True
     
 	
 def carbon_uatm_to_grams():
     
-	co2=xr.open_dataset('processed/fluxmaps/landshutzer.nc')
+	co2=xr.open_dataset('processed/flux/landshutzer.nc')
 	co2['time']=co2.time.astype('datetime64[M]')
 	ratios=xr.open_mfdataset('processed/flux/fratios.nc').laws2011b
 	#ratio=f_ratios.laws2011a #laws2000,laws2011a,laws2011b,henson2011
@@ -588,10 +589,8 @@ def carbon_uatm_to_grams():
 	    #print(i,co)
 	    volumes=np.append(volumes,co)
 	answer=xr.DataArray(volumes.reshape((pco2monthvals.shape[0],pco2monthvals.shape[1],pco2monthvals.shape[2])),coords=deltapCO2bio.coords)
-	answer.to_netcdf('processed/flux/pco2grams.nc')
+	answer.to_netcdf('processed/flux/pco2grams.nc',engine='h5netcdf',mode='w')
 	return True
-
-
 
 
 
@@ -645,7 +644,7 @@ def calculate_exports_add_to_mooring():
     dat= dat.assign(laws2011b=laws2011b)
     dat= dat.assign(laws2011b_vgpm=laws2011b1)
     
-    dat.to_netcdf('processed/combined_dataset/month_data_exports.nc')
+    dat.to_netcdf('processed/combined_dataset/month_data_exports.nc',engine='h5netcdf',mode='w')
     
     pe_dunne.plot()
     plt.suptitle('Dunne 2005')
@@ -683,12 +682,12 @@ def calc_euc():
     landschutzer=xr.open_dataset(landsch_fp)
     landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
     land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
-    land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
+    #land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
     land_pac=land_pac.fgco2_smoothed
     
     
-    chl_mod=xr.open_mfdataset('datasets/tpca/modis/*.nc')
-    chl_sw=xr.open_mfdataset('datasets/tpca/seawifs/*.nc')
+    chl_mod=xr.open_mfdataset('datasets/tpca/modis/*.nc',combine='nested')
+    chl_sw=xr.open_mfdataset('datasets/tpca/seawifs/*.nc',combine='nested')
     #d=xr.concat([chl_sw,chl_mod],dim='model')
     #d['model']=['sw','mod']
     #tpca_chl = d.mean(dim='model')
@@ -734,7 +733,7 @@ def make_fratio_nc():
         This function will return the regridded eqpac TRIM ef ratio.
     
         '''
-        trim=xr.open_dataset('datasets/export/SIMPLE_TRIM_output.nc')
+        trim=xr.open_dataset('datasets/SIMPLE_TRIM_output.nc')
         
         #ratio of sinking particle flux at the base of the euphotic zone to the NPP at each grid point)
         # This loops through to see the difference between each
@@ -770,7 +769,7 @@ def make_fratio_nc():
         
         eqpac_trim.stdev.plot.contourf(levels=np.arange(0,0.425,0.025))
          
-        landschutzer=xr.open_dataset('processed/fluxmaps/landshutzer.nc')
+        landschutzer=xr.open_dataset('processed/flux/landshutzer.nc')
         land_pac=landschutzer.fgco2_smoothed
         land_pac=land_pac.sel(lat=slice(-20,20))
         
@@ -782,7 +781,7 @@ def make_fratio_nc():
     landschutzer=xr.open_dataset(landsch_fp)
     landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
     land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
-    land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
+    #land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
     land_pac=moles_to_carbon(land_pac.fgco2_smoothed)/365
     
     npp=xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc')
@@ -812,7 +811,7 @@ def make_fratio_nc():
     
     ratios=xr.merge([laws2011a,laws2011b,laws2000,henson2011,pe_dunne,trim_av,trim_std])
     ratios=ratios.where((ratios>0)&(ratios<100))
-    ratios.to_netcdf('processed/flux/fratios.nc')
+    ratios.to_netcdf('processed/flux/fratios.nc',)
     
     grid=xr.open_dataarray('processed/earth_size.nc')
     
@@ -825,19 +824,34 @@ def save_landschutzer_2018_seamask():
     seamask.to_netcdf('processed/seamask.nc')
 # %% RUN FUNCS HERE.
 
-convert_tpca_to_month()
-regrid_tpca()
-calc_euc()
-find_enso_events()
-npp_csvs_to_nc()
-open_and_save_insitu_carbon()
-combine_csvs_to_nc()
-cut_sst_moorings()
-make_earth_grid_m2()
+print('Regridding the NPP models')
 create_npp_avgs() #Regrid the NPP models.
+#print("Running TPCA to month calc")
+#convert_tpca_to_month()
+print('Regridding TPCA - xesmf')
+regrid_tpca()
+print('Calculating euphotic depth from chl - lee 2007')
+calc_euc()
+print('Calculate when ENSOs occured +- 0.5 MEI')
+find_enso_events()
+print('Convert our primary productivity moorings to netcdf')
+npp_csvs_to_nc()
+#open_and_save_insitu_carbon() #This one is redundent due to few datapoints
+#combine_csvs_to_nc() #This one should already have been run. 
+print('Working out the SST for each mooring')
+cut_sst_moorings()
+print('Calculate earth size per pixel')
+make_earth_grid_m2()
+#print('Regridding the NPP models')
+#create_npp_avgs() #Regrid the NPP models.
+print('Convert uatm carbon to grams of carbon')
 carbon_uatm_to_grams()
+print('Calculate f-ratio maps')
 make_fratio_nc()
+print('Combining export data to processed/combined_datasets/month_exports.nc')
 calculate_exports_add_to_mooring()
+print('Adding Cafe and SST')
 add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc')
 add_cafe_and_sst(fp='processed/combined_dataset/month_data.nc')
+print('Save landschutzer 2018 seamask')
 save_landschutzer_2018_seamask() #Just to make sure that it stays in the folder as the 2020 version doesnt have this.
