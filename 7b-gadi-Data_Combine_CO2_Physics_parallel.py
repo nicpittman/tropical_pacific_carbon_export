@@ -458,7 +458,7 @@ weekly.coords['Mooring']=mooring_int
 monthly.coords['Mooring']=mooring_int
 
 fp='processed/combined_dataset/'
-all_data.to_netcdf(fp+'all_data.nc')
+all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf') #May or may not need engine, just that there is a type issue otherwise.
 daily.to_netcdf(fp+'day_data.nc')
 weekly.to_netcdf(fp+'week_data.nc')
 monthly.to_netcdf(fp+'month_data.nc')
