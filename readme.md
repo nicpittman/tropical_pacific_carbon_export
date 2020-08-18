@@ -12,31 +12,22 @@ This repository is set up so that all figures can be produced immediately after 
 
 ### To reproduce figures:
 
-This is assuming you have a unix based work environment.
+This is assuming you have a unix based environment.
 
 Firstly, you will need to ensure you have all of the dependencies outlined in *requirements.txt*
 
-You can create a conda environment to run like so:
+You can create a conda environment to run like (or use requirements.txt):
 
 ```
-# https://gist.github.com/luiscape/19d2d73a8c7b59411a2fb73a697f5ed4
-#  Original solution via StackOverflow:
-#    http://stackoverflow.com/questions/35802939/install-only-available-packages-using-conda-install-yes-file-requirements-t
+Preferred:
+conda create --name pacific_carbon --file requirements.txt
 
-#  Install via `conda` directly.
-#  This may fail to install all
-#  dependencies. If one fails,
-#  all dependencies will fail to install.
+otherwise something like:
 
-conda install --yes --file requirements.txt
+conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray dask nco netcdf4
 
-#  To go around issue above, one can
-#  iterate over all lines in the
-#  requirements.txt file.
-while read requirement; do conda install --yes $requirement; done < requirements.txt
+
 ```
-
-
 
 Most of the processed data is provided in order for the plotting functions (9[a-f]) to work. However, two sets of data will need to be downloaded manually. SST and the landschutzer CO2 flux product (and NCO to convert to a usable format). You can perform this as so:
 
