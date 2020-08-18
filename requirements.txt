@@ -72,6 +72,7 @@ pandocfilters==1.4.2
 parso==0.5.2
 partd==1.1.0
 pathtools==0.1.2
+patsy==0.5.1
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow @ file:///home/conda/feedstock_root/build_artifacts/pillow_1594213010297/work
@@ -122,6 +123,7 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 spyder==4.0.1
 spyder-kernels==1.8.1
+statsmodels @ file:///home/conda/feedstock_root/build_artifacts/statsmodels_1591963256838/work
 tblib==1.6.0
 testpath==0.4.4
 toolz==0.10.0
