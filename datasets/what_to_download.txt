@@ -16,7 +16,7 @@ datasets/tao/tao_physics/*
 for SIMPLE TRIM  (to datasets/SIMPLE_TRIM_output.nc)
 curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --output SIMPLE_TRIM_output.nc
 For the sst:
-mkdir sst | cd sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst.mnmean.nc | mv sst.mnmean.nc sst/sst.mnmean.nc
+mkdir sst | cd sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst.mean.nc | mv sst.mean.nc sst/sst.mean.nc
 
 For landschutzer product (2018 version is used in cleanup only, not actually essential to download it, as seamask, the derived product is included in the git repo already.
 Landschutzer:

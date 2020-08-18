@@ -217,27 +217,27 @@ def npp_csvs_to_nc():
     for i, mooring_name in enumerate(moorings):
         
         #Primary Productivity Models and Time Series
-        mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','mod_vgpm'],index_col=0).to_xarray()
-        mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','mod_cbpm'],index_col=0).to_xarray()
-        mod_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_mod_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','mod_eppley'],index_col=0).to_xarray()
-        mod_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_mod_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','mod_cafe'],index_col=0).to_xarray()
+        mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','mod_vgpm'],index_col=0).to_xarray()
+        mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','mod_cbpm'],index_col=0).to_xarray()
+        mod_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','mod_eppley'],index_col=0).to_xarray()
+        mod_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','mod_cafe'],index_col=0).to_xarray()
         
-        sw_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgbm_sw_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','sw_vgbm'],index_col=0).to_xarray()
-        sw_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_sw_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','sw_cbpm'],index_col=0).to_xarray()
-        sw_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_sw_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','sw_eppley'],index_col=0).to_xarray()
-        sw_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_sw_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','sw_cafe'],index_col=0).to_xarray()
+        sw_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgbm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','sw_vgbm'],index_col=0).to_xarray()
+        sw_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','sw_cbpm'],index_col=0).to_xarray()
+        sw_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','sw_eppley'],index_col=0).to_xarray()
+        sw_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','sw_cafe'],index_col=0).to_xarray()
         
-        viirs_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_viirs_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','viirs_vgpm'],index_col=0).to_xarray()
-        viirs_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_viirs_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','viirs_cbpm'],index_col=0).to_xarray()
-        viirs_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_viirs_nc_'+mooring_name+'.csv',skip_rows=1,names=['Date','viirs_eppley'],index_col=0).to_xarray()
+        viirs_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_viirs_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','viirs_vgpm'],index_col=0).to_xarray()
+        viirs_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_viirs_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','viirs_cbpm'],index_col=0).to_xarray()
+        viirs_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_viirs_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','viirs_eppley'],index_col=0).to_xarray()
           
         #Chl Models
-        modis_tpca=pd.read_csv('processed/npp_mooring_timeseries/modis_chl_tpca_'+mooring_name+'.csv',skip_rows=1,names=['Date','mod_tpca'],index_col=0).to_xarray()
-        seawifs_tpca=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chl_tpca_'+mooring_name+'.csv',skip_rows=1,names=['Date','sw_tpca'],index_col=0).to_xarray()
-        viirs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/viirs_chlor_a_'+mooring_name+'.csv',skip_rows=1,names=['Date','viirs_chlora'],index_col=0).to_xarray()
-        modis_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/modis_chlor_a_'+mooring_name+'.csv',skip_rows=1,names=['Date','modis_chlora'],index_col=0).to_xarray()
-        seawifs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chlor_a_'+mooring_name+'.csv',skip_rows=1,names=['Date','seawifs_chlora'],index_col=0).to_xarray()
-        meris_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/meris_chlor_a_'+mooring_name+'.csv',skip_rows=1,names=['Date','meris_chlora'],index_col=0).to_xarray()
+        modis_tpca=pd.read_csv('processed/npp_mooring_timeseries/modis_chl_tpca_'+mooring_name+'.csv',skiprows=1,names=['Date','mod_tpca'],index_col=0).to_xarray()
+        seawifs_tpca=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chl_tpca_'+mooring_name+'.csv',skiprows=1,names=['Date','sw_tpca'],index_col=0).to_xarray()
+        viirs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/viirs_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','viirs_chlora'],index_col=0).to_xarray()
+        modis_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/modis_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','modis_chlora'],index_col=0).to_xarray()
+        seawifs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','seawifs_chlora'],index_col=0).to_xarray()
+        meris_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/meris_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','meris_chlora'],index_col=0).to_xarray()
     
         combined_flux=xr.merge([mod_vgpm,mod_cbpm,mod_eppley,mod_cafe,
                            sw_vgpm,sw_cbpm,sw_eppley,sw_cafe,
