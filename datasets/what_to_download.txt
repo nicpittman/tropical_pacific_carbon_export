@@ -11,33 +11,26 @@ datasets/tao/tao_physics/*
 	https://www.pmel.noaa.gov/tao/drupal/disdel/
 	Moorings 110W,125W, 140W,155W,170E,165E
 
+For SST:
+mkdir sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst/sst.mean.nc
 
-
-for SIMPLE TRIM  (to datasets/SIMPLE_TRIM_output.nc)
-curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --output SIMPLE_TRIM_output.nc
-For the sst:
-mkdir sst | cd sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst.mean.nc | mv sst.mean.nc sst/sst.mean.nc
-
-For landschutzer product (2018 version is used in cleanup only, not actually essential to download it, as seamask, the derived product is included in the git repo already.
+For landschutzer 2020 product (2018 version is used in pipeline cleanup only, not actually essential to download it, as seamask, the derived product is included in the git repo already.)
 Landschutzer:
-
 https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
-https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/
 
-cd co2
-mkdir landschutzer_co2
-cd landschutzer_co2
+Download using curl:
+mkdir landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
 
-Download like:
-
-curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output spco2_MPI-SOM_FFN_v2020.nc
-
-Use NCO to convert this variable name so they can be opened. Ie.  #However to run this, need NCO so either download or module load nco
+Use NCO to convert the time variable name (t to date) so they can be opened by xarray.  #Need NCO so either download or module load nco
 ncrename -v date,t spco2_MPI-SOM_FFN_v2020.nc 
 
-# And if you want the 2018 version.
-curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output spco2_MPI_SOM-FFN_v2018.nc
+And if you want the 2018 version.
+curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
 ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc 
+
+
+
+Landschutzer reference:
 
 This product is free to be used. Please cite this data set as:
 Landschützer, Peter; Gruber, Nicolas; Bakker, Dorothee C. E. (2017). An observation-based global monthly gridded sea surface pCO2 product from 1982 onward and its monthly climatology (NCEI Accession 0160558). Version 4.4. NOAA National Centers for Environmental Information. Dataset. https://doi.org/10.7289/V5Z899N6. [2019-03-27]
