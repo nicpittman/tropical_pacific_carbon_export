@@ -73,9 +73,9 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         endday=np.datetime64('2016-12-01') 
         print(title)
     elif title.endswith('chlorophyll'):
-        endday=np.datetime64('2018-06-01')
+        endday=np.datetime64('2017-12-01')
     else:
-        endday=np.datetime64('2019-12-01') 
+        endday=np.datetime64('2020-01-01') 
         
     ax1=fig.add_subplot(sb1,sb2,axn)
     m=plot_basemap()
@@ -244,7 +244,7 @@ plot_basemap_row(fig,axn=1,
                  title='New Production',
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
                  levs=np.arange(0,0.26,0.025),
-                 levs_trend=np.arange(-1.5,1.6,0.1),
+                 levs_trend=np.arange(-2.5,2.6,0.1),
                  trend_conversion=1000,
                  cmap='viridis')
 
@@ -254,7 +254,7 @@ plot_basemap_row(fig,axn=3,
                  title='Air-Sea CO2 flux',
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
                  levs=np.arange(-0.15,0.16,0.01),
-                 levs_trend=np.arange(-5,5.1,0.1),
+                 levs_trend=np.arange(-2.5,2.6,0.1),
                  trend_conversion=1000,
                  cmap='RdBu_r')
 
@@ -266,7 +266,7 @@ plot_basemap_row(fig,axn=5,
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',                 
                  levs=np.arange(-0.12,0.15,0.01),
                  
-                 levs_trend=np.arange(-5,5.1,0.1),
+                 levs_trend=np.arange(-2.5,2.6,0.1),
                  trend_conversion=1000,
                  cmap='RdBu_r')
 

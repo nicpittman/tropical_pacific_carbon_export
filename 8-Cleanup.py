@@ -30,9 +30,10 @@ def find_enso_events(threshold=0.5):
     None.
 
     '''
-    enso=pd.read_csv('datasets/indexes/meiv2.csv',index_col='Year')
+    #enso=pd.read_csv('datasets/indexes/meiv2.csv',index_col='Year')
+    enso=pd.read_csv('datasets/indexes/meiv2.csv',index_col=0,header=None)
     enso_flat=enso.stack()
-    enso_dates=pd.date_range('1979','2020',freq='M')- pd.offsets.MonthBegin(1) #Probably want to check this is correct if updating.
+    enso_dates=pd.date_range('1979','2020-07-01',freq='M')- pd.offsets.MonthBegin(1) #Probably want to check this is correct if updating.
     enso_timeseries=pd.DataFrame({'Date':enso_dates,'mei':enso_flat})
     
     #Check if we are in or out of an event so far
@@ -75,7 +76,6 @@ def find_enso_events(threshold=0.5):
                                       'mei':enso_timeseries.mei[i-1]},ignore_index=True)
                 la_event=False
     
-                
     print(elnino)
     print(lanina)
     elnino.to_csv('processed/indexes/el_nino_events.csv')
@@ -134,75 +134,6 @@ def combine_csvs_to_nc():
     weekly.to_netcdf(fp+'week_data.nc')
     monthly.to_netcdf(fp+'month_data.nc')
     
-
-def open_and_save_insitu_carbon():
-    '''
-    Get shipboard in situ carbon data and convert and save to 
-    This is still a work in progress so might need some love when more data comes.
-    From:
-    datasets/insitu/NOAA_CARBON.csv'
-    to:
-    processed/flux/shipboard_npp.csv
-    
-    Data provided by Peter Strutton.
-    
-    Returns
-    -------
-    None.
-
-    '''
-    carbon_measurements=pd.DataFrame()
-    
-    carbon_fp='datasets/insitu/NOAA_CARBON.csv'
-    lons=[165,-170,-155,-140,-125,-110]
-    lat=0
-    buff=0.5 #Buffer
-    dat=pd.read_csv(carbon_fp,index_col=1)
-    dat=dat[dat.DATE_TIME.astype('datetime64')>np.datetime64('1997-06-01')]
-    
-    equatorial_dat=dat[(dat.DEC_LAT<=lat+buff)&(dat.DEC_LAT>=lat-buff)] #Cut out the equator
-    unique_ids=equatorial_dat.CTRB_ID.unique() #Pull out unique profiles
-    for iden in unique_ids:
-        profile=equatorial_dat[equatorial_dat.CTRB_ID==iden]
-        #if ~np.isnan(np.mean(profile.PRESSURE)):
-        trapezoidal_integration1=np.trapz(profile.CARBON_GFF,profile.PRESSURE)
-        #else:
-        trapezoidal_integration2=np.trapz(profile.CARBON_GFF,profile.DEPTH)
-        if np.isnan(trapezoidal_integration2):
-            continue
-        lon=profile.head(1).DEC_LONG.values[0]
-        time=profile.head(1).DATE_TIME.values[0]
-        #Reset the time index
-        new_t=time.split('/')
-        if len(new_t[1])==1:
-            new_t[1]='0'+new_t[1]
-        if len(new_t[0])==1:
-            new_t[0]='0'+new_t[0]
-        new_t[2]=new_t[2].split(' ')[0]
-        if new_t[2][0]=='0':
-            new_t[2]='20'+new_t[2]
-        else:
-            new_t[2]='19'+new_t[2]
-        time1=np.datetime64(new_t[2]+'-'+new_t[1]+'-'+new_t[0])
-        
-        mooringloc=int(abs(np.round(lon)))
-        
-        print(str(time)+' : ' +str(lon)+' : '+str(trapezoidal_integration1)+' mg m-2 day')
-        print()
-        print()
-        carbon_measurements=carbon_measurements.append({'lat':profile.head(1).DEC_LAT.values[0],
-                                                        'lon':profile.head(1).DEC_LONG.values[0],
-                                                        'time':time1,
-                                                        'pp':trapezoidal_integration1,
-                                                        'pp1':trapezoidal_integration2,
-                                                        
-                                                        'id':profile.head(1).CTRB_ID.values[0],
-                                                        'mooring':int(mooringloc)
-                                                       },ignore_index=True)
-        #carbon_measurements['mooring']=carbon_measurements['mooring'].astype(int)
-    print(carbon_measurements)
-    carbon_measurements.to_csv('processed/flux/shipboard_npp.csv')
-
 def npp_csvs_to_nc():
     '''
     Cleanup function to combine the csvs for each mooring (A heap of files) into a single 4d xarray netcdf.    
@@ -826,8 +757,8 @@ def save_landschutzer_2018_seamask():
 
 print('Regridding the NPP models')
 create_npp_avgs() #Regrid the NPP models.
-#print("Running TPCA to month calc")
-#convert_tpca_to_month()
+print("Running TPCA to month calc")
+convert_tpca_to_month()
 print('Regridding TPCA - xesmf')
 regrid_tpca()
 print('Calculating euphotic depth from chl - lee 2007')
@@ -836,14 +767,11 @@ print('Calculate when ENSOs occured +- 0.5 MEI')
 find_enso_events()
 print('Convert our primary productivity moorings to netcdf')
 npp_csvs_to_nc()
-#open_and_save_insitu_carbon() #This one is redundent due to few datapoints
 #combine_csvs_to_nc() #This one should already have been run. 
 print('Working out the SST for each mooring')
 cut_sst_moorings()
 print('Calculate earth size per pixel')
 make_earth_grid_m2()
-#print('Regridding the NPP models')
-#create_npp_avgs() #Regrid the NPP models.
 print('Convert uatm carbon to grams of carbon')
 carbon_uatm_to_grams()
 print('Calculate f-ratio maps')

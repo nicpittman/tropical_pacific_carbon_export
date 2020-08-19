@@ -31,7 +31,7 @@ from carbon_math import *
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import matplotlib.patches as patches
 from matplotlib.ticker import MultipleLocator,AutoMinorLocator
-
+from scipy.stats import linregress
 
 
 #Not recommended but helps to get the info that we need out
@@ -173,7 +173,7 @@ for i, mooring_name in enumerate(moorings):
                 levels=[20],colors='k',linewidths=2)
     
     
-    temps_selected1=temps_selected.sel(time=slice('2000-01-01','2018-01-01'))
+    temps_selected1=temps_selected.sel(time=slice('2000-01-01','2020-01-01'))
     thermocli=ax2.contour(temps_selected1.time.values.astype(np.datetime64),
                 temps_selected1.depth.values,temps_selected1.squeeze().T,
                 levels=[20],colors='k',linewidths=0)
@@ -183,15 +183,14 @@ for i, mooring_name in enumerate(moorings):
     vvx=[]
     for ii, seg in enumerate(thermocli.allsegs[0]):
         #plt.plot(seg[:,0], seg[:,1], '.-', label=ii)
-        vvx.extend(list(seg[:,0]))
         vvy.extend(list(seg[:,1]))
     df=pd.DataFrame({'DT':vvx,'Depth':vvy})
     df1=df.sort_values('DT')
-    from scipy.stats import linregress
+
     shoaling=linregress(df.DT,df.Depth).slope*365
     shoaling_std=linregress(df.DT,df.Depth).stderr*365
     pval=linregress(df.DT,df.Depth).pvalue
-    print('SHOALING AT: '+str(shoaling) + ' : '+str(shoaling_std))
+    print('SHOALING AT: '+str(shoaling) + ' ± '+str(shoaling_std) + ' m')
     print('p=' +str(pval))
     #plt.title(mooring_name+': Upper ocean temperatures')
     
@@ -243,7 +242,7 @@ for i, mooring_name in enumerate(moorings):
     #Put relevant labels on
     if i==5:
         ax2.set_ylabel('Depth (m)',fontsize=fs)
-        ax1.set_ylabel('gC m$^{-2}$ Day$^{-1}$',fontsize=fs,labelpad=30)    #Started at 16
+        ax1.set_ylabel('NP and CO$_{2}$ flux\ngC m$^{-2}$ day$^{-1}$',fontsize=fs,labelpad=1)    #Started at 16
         cax=fig.add_subplot(gs[smallnext:smallnext+2])
         # cbar=plt.colorbar(x,cax,orientation='horizontal',aspect=50,pad=0.1)
         # cbar.ax.tick_params(labelsize=fs)

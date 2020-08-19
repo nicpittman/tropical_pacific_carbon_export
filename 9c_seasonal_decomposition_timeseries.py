@@ -130,7 +130,7 @@ for typ in tyyp:
         
         LandSch_co2flux_data['Date']=LandSch_co2flux_data.Date.astype('datetime64[M]')
     
-        land_flux=((moles_to_carbon(LandSch_co2flux_data.sel(Date=slice(sday,'2017-12-15'))).fgco2_smoothed.values)/365)
+        land_flux=((moles_to_carbon(LandSch_co2flux_data.sel(Date=slice(sday,'2020-01-01'))).fgco2_smoothed.values)/365)
         
         #JMA= moles_to_carbon(JMAco2flux_data.flux/365)
         
@@ -148,7 +148,7 @@ for typ in tyyp:
         #elif t=='percent':
         #    datset=pd.DataFrame({'nppavg':((land_flux-npa)/npa)*100}) #})#
         
-        datset=datset.set_index(LandSch_co2flux_data.sel(Date=slice(sday,'2017-12-15')).Date.values)
+        datset=datset.set_index(LandSch_co2flux_data.sel(Date=slice(sday,'2020-01-01')).Date.values)
         decomp=seasonal_decompose(datset, model='addative', extrapolate_trend='freq')
         decomp=STL(datset,seasonal=13).fit()
         dates=decomp.resid.index.values.astype('datetime64')
@@ -161,7 +161,7 @@ for typ in tyyp:
         ax1.set_ylabel('Observations'+units,fontsize=10)
         ax1.grid(axis='y',which='major')
         ax1.grid(axis='x',which='both')
-        ax1.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
+        ax1.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
         #ax1.set_ylim([-0.12,0.12])
         if typ=='both':
             ax1.set_ylim([-0.2,0.12])
@@ -244,7 +244,7 @@ for typ in tyyp:
             ax2.text(np.datetime64('2013-01-01'),-0.03,tex,fontsize=11)
         
               
-        ax2.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
+        ax2.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
         
        
         ax3.axhline(0,c='gray')#,linestyle=':')
@@ -253,7 +253,7 @@ for typ in tyyp:
         ax3.xaxis.set_minor_locator(AutoMinorLocator(4))
         ax3.grid(axis='y',which='major')
         ax3.grid(axis='x',which='both')
-        ax3.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
+        ax3.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
         if typ=='both':
             ax3.set_ylim([-0.06,0.06])
         
@@ -264,7 +264,7 @@ for typ in tyyp:
         
         ax4.grid()
         
-        ax4.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2018-01-01')])
+        ax4.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
         ax4.set_ylim([-0.05,0.05])
         seasonaltrend.append(decomp.seasonal)
         
