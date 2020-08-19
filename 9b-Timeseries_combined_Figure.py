@@ -69,11 +69,16 @@ for i, mooring_name in enumerate(moorings):
     except:
         dat=xr.open_mfdataset(fp).sel(Mooring=195)
    
+    ratio=dat.laws2011a#b#f_ratio#11a#f_ratio#laws2011a#.dunne_zeu1#thE_ratio#f_ratio
+    ratio_name='laws2011a'#'Laws 2011b'#'11a'#'Laws2000'#'Laws2011a'#'f_ratio'#'Dunne'#'thE-ratio'
+
     #Original all NPPS
     #avg_npp=npp[['viirs_eppley','viirs_cbpm','viirs_vgpm','sw_eppley','sw_cbpm','sw_vgpm','mod_cafe','mod_eppley','mod_cbpm','mod_vgpm']].to_dataframe().drop(columns='Mooring').mean(axis=1)
     #Now only CBPM and CAFE
     #avg_npp=npp[['viirs_cbpm','sw_cbpm','mod_cbpm']].to_dataframe().drop(columns='Mooring').mean(axis=1)
-    avg_npp=npp[['sw_cafe','mod_cafe']].to_dataframe().drop(columns='Mooring').mean(axis=1)
+    avg_npp=npp[['sw_cafe','mod_cafe']]
+    avg_npp=avg_npp.sel(Date=slice(ratio.Date.min(),ratio.Date.max()))
+    avg_npp=avg_npp.to_dataframe().drop(columns='Mooring').mean(axis=1)
     
     temps=xr.open_mfdataset('datasets/tao/tao_physics/'+mooring_name+'/t0n'+mooring_name.lower()+'_dy.cdf')
 
@@ -81,10 +86,6 @@ for i, mooring_name in enumerate(moorings):
     dat['Date'].astype('datetime64[M]')
     co2flux=carbon_flux(dat.sss2,dat.sst2,dat.windspeed,None,None,dat.delta_pCO2)[0]
    
-    
-    ratio=dat.laws2011a#b#f_ratio#11a#f_ratio#laws2011a#.dunne_zeu1#thE_ratio#f_ratio
-    ratio_name='laws2011a'#'Laws 2011b'#'11a'#'Laws2000'#'Laws2011a'#'f_ratio'#'Dunne'#'thE-ratio'
-    #ratio_name='0.05'
     
     #Need a .T to transform in ax2.contourf
     #MAX 60 day gap fill. All depth filling is fine though.
@@ -183,6 +184,7 @@ for i, mooring_name in enumerate(moorings):
     vvx=[]
     for ii, seg in enumerate(thermocli.allsegs[0]):
         #plt.plot(seg[:,0], seg[:,1], '.-', label=ii)
+        vvx.extend(list(seg[:,0]))
         vvy.extend(list(seg[:,1]))
     df=pd.DataFrame({'DT':vvx,'Depth':vvy})
     df1=df.sort_values('DT')

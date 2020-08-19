@@ -10,7 +10,7 @@ Takes a little while to run.
 
 This code is a pretty average (poorly named variables and reuse of dat, and different names for the moorings).
 All of the values are calculated on the fly and printed. Not saved anywhere. 
-Quite inefficient
+Quite inefficient, but provided as is.
 Recommended to turn warnings off to save the data and put in text. 
 Could have turned this into a function. Have refractored where possible but this script is provided as is.
 

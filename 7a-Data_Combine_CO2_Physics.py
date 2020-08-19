@@ -96,32 +96,33 @@ for mooring_name in moorings:
     emifp='datasets/indexes/emi.csv'
     soi=pd.read_csv(soifp)
     pdo=pd.read_csv(pdofp,header=1)
-    mei=pd.read_csv(meifp)# If using original (not v2) need to use this. ,header=1)
+    mei=pd.read_csv(meifp,index_col=0,header=None)# If using original (not v2) need to use this. ,header=1)
     emi=pd.read_csv(emifp)
     #Primary Productivity Models and Time Series
-    mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    mod_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_mod_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    mod_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_mod_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    sw_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgbm_sw_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    sw_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_sw_nc_'+mooring_name+'.csv',names=['Date','NPP'])
+    mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    mod_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    mod_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    sw_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgbm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    sw_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     try:
-        sw_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_sw_nc_'+mooring_name+'.csv',names=['Date','NPP'])
+        sw_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     except:
         sw_eppley=np.nan
-    viirs_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_viirs_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    viirs_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_viirs_nc_'+mooring_name+'.csv',names=['Date','NPP'])
-    viirs_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_viirs_nc_'+mooring_name+'.csv',names=['Date','NPP'])
+    viirs_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_viirs_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    viirs_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_viirs_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    viirs_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_viirs_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
    
     #Chl Models
-    modis_tpca=pd.read_csv('processed/npp_mooring_timeseries/modis_chl_tpca_'+mooring_name+'.csv',names=['Date','chl'])
-    seawifs_tpca=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chl_tpca_'+mooring_name+'.csv',names=['Date','chl'])
-    viirs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/viirs_chlor_a_'+mooring_name+'.csv',names=['Date','chl'])
-    modis_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/modis_chlor_a_'+mooring_name+'.csv',names=['Date','chl'])
-    seawifs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chlor_a_'+mooring_name+'.csv',names=['Date','chl'])
-    meris_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/meris_chlor_a_'+mooring_name+'.csv',names=['Date','chl'])
-    
+    modis_tpca=pd.read_csv('processed/npp_mooring_timeseries/modis_chl_tpca_'+mooring_name+'.csv',skiprows=1,names=['Date','chl'])
+    seawifs_tpca=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chl_tpca_'+mooring_name+'.csv',skiprows=1,names=['Date','chl'])
+    viirs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/viirs_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','chl'])
+    modis_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/modis_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','chl'])
+    seawifs_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/seawifs_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','chl'])
+    meris_chlor_a=pd.read_csv('processed/npp_mooring_timeseries/meris_chlor_a_'+mooring_name+'.csv',skiprows=1,names=['Date','chl'])
+        
     #Physical Variables
+    
     start_day=mooring.iloc[0].Date-np.timedelta64(3,'M') #Well start minus three months stops needless processing for some of the moorings
     windspeed=xr.open_mfdataset('datasets/tao/tao_physics/'+mooring_name+'/met0n'+mooring_name.lower()+'_dy.cdf').WS_401.sel(time=slice(start_day,'2021'))
     winddir=xr.open_mfdataset('datasets/tao/tao_physics/'+mooring_name+'/met0n'+mooring_name.lower()+'_dy.cdf').WD_410.sel(time=slice(start_day,'2021'))

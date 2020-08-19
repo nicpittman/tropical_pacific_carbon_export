@@ -99,7 +99,7 @@ for typ in tyyp:
         print(mooring_name)
         #JMAco2flux_data=xr.open_mfdataset('processed/flux/JMA_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
         LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
-        npp=xr.open_mfdataset('processed/flux/npp.nc').sel(Mooring=mooring_name).sel(Date=slice(sday,'2017-12-15'))
+        npp=xr.open_mfdataset('processed/flux/npp.nc').sel(Mooring=mooring_name).sel(Date=slice(sday,'2019-12-01'))
         
         ty='month' #Actually month though need to fix this.
         fp='processed/combined_dataset/'+ty+'_data_exports.nc'
@@ -109,7 +109,7 @@ for typ in tyyp:
             dat=xr.open_mfdataset(fp).sel(Mooring=195)
         dat['Date']=dat.Date.astype('datetime64[M]')
         #dat=dat.sel(Date=slice('1997-09-01','2017-12-15'))
-        dat=dat.sel(Date=slice(sday,'2017-12-15'))
+        dat=dat.sel(Date=slice(sday,'2020-01-01'))
     
         div_factor=dat.laws2011a#dat.laws2011b#f_ratio#laws2011b_vgpm
     
@@ -122,7 +122,7 @@ for typ in tyyp:
         cafe=pd.Series([npp.mod_cafe.values,npp.sw_cafe.values]).mean()/1000*div_factor
         
         #avg_npp=npp[['viirs_eppley','viirs_cbpm','viirs_vgpm','sw_eppley','sw_cbpm','sw_vgpm','mod_cafe','mod_eppley','mod_cbpm','mod_vgpm']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
-        avg_npp=npp[['viirs_cbpm','sw_cbpm','mod_cbpm']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
+        #avg_npp=npp[['viirs_cbpm','sw_cbpm','mod_cbpm']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
         avg_npp=npp[['sw_cafe','mod_cafe']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
         
         
@@ -259,7 +259,11 @@ for typ in tyyp:
         
         
         ax4.axhline(0,c='gray')
-        ax4.scatter(dates,decomp.resid,c=dat.mei,cmap='bwr')
+        if np.isnan(np.nanmean(dat.mei.values)) == False: #Make sure no MEI bug doesn't destroy our plots
+            ax4.scatter(dates,decomp.resid,c=dat.mei,cmap='bwr')
+        else:
+            ax4.scatter(dates,decomp.resid,c='k',alpha=0.6)
+            
         ax4.set_ylabel('Residuals',labelpad=lp,fontsize=10)
         
         ax4.grid()

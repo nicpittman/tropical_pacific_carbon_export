@@ -17,8 +17,11 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import xesmf as xe
 import cbsyst as cb
+import os
 from carbon_math import *
 
+
+    
 def find_enso_events(threshold=0.5):
     '''
     A function to pull ENSO data from our datasets/indexes/meiv2.csv
@@ -45,7 +48,7 @@ def find_enso_events(threshold=0.5):
     lanina=pd.DataFrame()
     
     for i,today in enumerate(enso_timeseries.Date):
-        val=enso_timeseries.mei[i]
+        val=enso_timeseries.mei.iloc[i]
         if val>=threshold:
             if el_event==False:  #And we havent yet entered an event
                 el_startdate=today
@@ -56,12 +59,12 @@ def find_enso_events(threshold=0.5):
         else:
             if el_event==True:
                 elnino=elnino.append({'start':el_startdate.to_datetime64(),
-                                      'end':enso_timeseries.Date[i-1],
-                                      'mei':enso_timeseries.mei[i-1]},ignore_index=True)
+                                      'end':enso_timeseries.Date.iloc[i-1],
+                                      'mei':enso_timeseries.mei.iloc[i-1]},ignore_index=True)
                 el_event=False
     
     for i,today in enumerate(enso_timeseries.Date):
-        val=enso_timeseries.mei[i]
+        val=enso_timeseries.mei.iloc[i]
         if val<=-threshold:
             if la_event==False:  #And we havent yet entered an event
                 la_startdate=today
@@ -72,8 +75,8 @@ def find_enso_events(threshold=0.5):
         else:
             if la_event==True:
                 lanina=lanina.append({'start':la_startdate.to_datetime64(),
-                                      'end':enso_timeseries.Date[i-1],
-                                      'mei':enso_timeseries.mei[i-1]},ignore_index=True)
+                                      'end':enso_timeseries.Date.iloc[i-1],
+                                      'mei':enso_timeseries.mei.iloc[i-1]},ignore_index=True)
                 la_event=False
     
     print(elnino)
@@ -192,9 +195,7 @@ def npp_csvs_to_nc():
     
 def add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc'):
     #Bit of a hacky way to modify our data netcdf with the sw and cafe product.
-    import xarray as xr
-    import os
-    import pandas as pd
+
     
     dat=xr.open_mfdataset(fp)
     npp=xr.open_mfdataset('processed/flux/npp.nc')
@@ -446,7 +447,7 @@ def make_earth_grid_m2():
     return True
     
 	
-def carbon_uatm_to_grams():
+def carbon_uatm_to_grams(plotter=0):
     
 	co2=xr.open_dataset('processed/flux/landshutzer.nc')
 	co2['time']=co2.time.astype('datetime64[M]')
@@ -488,15 +489,19 @@ def carbon_uatm_to_grams():
 
 	#Equation 3
 	deltapCO2bio=pco2Tmean_max-pco2Tmean_min
-	deltapCO2bio.mean(dim='time').plot(),plt.title('deltapco2bio'),plt.show()
+	
+        #if plotter==1:
+        #    deltapCO2bio.mean(dim='time').plot(),plt.title('deltapco2bio'),plt.show()
 	#Equation 4
 	deltapCO2temp=pco2Tobs_max-pco2Tobs_min
-	deltapCO2temp.mean(dim='time').plot(),plt.title('deltapco2temp'),plt.show()
+        
+        #if plotter==1:
+        #    deltapCO2temp.mean(dim='time').plot(),plt.title('deltapco2temp'),plt.show()
 	#Equation 5
 	diff=(deltapCO2temp-deltapCO2bio)
 	ratio=(deltapCO2temp/deltapCO2bio)
 
-	iida=xr.open_dataset('datasets/co2/JMA_co2/jma_flux.nc')
+	iida=xr.open_dataset('processed/flux/jma_flux.nc')
 	iida=iida.sel(lon=slice(120,290),lat=slice(-20,20))
 	iida=iida.sel(time=slice(co2.time.min().values,co2.time.max().values))
 	dic=iida.dic.values
@@ -577,38 +582,39 @@ def calculate_exports_add_to_mooring():
     
     dat.to_netcdf('processed/combined_dataset/month_data_exports.nc',engine='h5netcdf',mode='w')
     
-    pe_dunne.plot()
-    plt.suptitle('Dunne 2005')
-    plt.show()
+    #pe_dunne.plot()
+    #plt.suptitle('Dunne 2005')
+    #plt.show()
     
-    pe_dunne2.plot()
-    plt.suptitle('Dunne2 2005')
-    plt.show()
-    pe_dunne3.plot()
-    plt.suptitle('Dunne3_chl 2005')
-    plt.show()
-    f_ratio.plot(cmap='viridis',vmin=0)
-    plt.suptitle('Laws 2000')
-    plt.show()
-    laws2011a.plot()
-    plt.suptitle('laws2011a')
-    plt.show()
-    laws2011b.plot()
-    plt.suptitle('laws2011b')
-    plt.show()
-    plt.contourf(laws2011b1.Date.astype(np.datetime64).values,laws2011b1.Mooring,laws2011b1,levels=np.arange(0.05,0.25,0.025))
-    plt.colorbar()
-    plt.suptitle('laws2011b_vgpm')
-    plt.show()
+    #pe_dunne2.plot()
+    #plt.suptitle('Dunne2 2005')
+    #plt.show()
+    #pe_dunne3.plot()
+    #plt.suptitle('Dunne3_chl 2005')
+    #plt.show()
+    #f_ratio.plot(cmap='viridis',vmin=0)
+    #plt.suptitle('Laws 2000')
+    #plt.show()
+    #laws2011a.plot()
+    #plt.suptitle('laws2011a')
+    #plt.show()
+    #laws2011b.plot()
+    #plt.suptitle('laws2011b')
+    #plt.show()
+    #plt.contourf(laws2011b1.Date.astype(np.datetime64).values,laws2011b1.Mooring,laws2011b1,levels=np.arange(0.05,0.25,0.025))
+    #plt.colorbar()
+    #plt.suptitle('laws2011b_vgpm')
+    #plt.show()
     
-    th_e_ratio.plot()
-    plt.suptitle('Henson 2011')
-    plt.show()
+    #th_e_ratio.plot()
+    #plt.suptitle('Henson 2011')
+    #plt.show()
 
 
 
 # %% Prepare Chl data to calc Euz
 def calc_euc():
+    #this was calculated but hasn't really been used. This file is included in processed/flux/zeu.nc but isn't used in any cases.
     landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc'
     landschutzer=xr.open_dataset(landsch_fp)
     landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
@@ -742,12 +748,12 @@ def make_fratio_nc():
     
     ratios=xr.merge([laws2011a,laws2011b,laws2000,henson2011,pe_dunne,trim_av,trim_std])
     ratios=ratios.where((ratios>0)&(ratios<100))
-    ratios.to_netcdf('processed/flux/fratios.nc',)
+    ratios.to_netcdf('processed/flux/fratios.nc',mode='w',engine='h5netcdf')
     
-    grid=xr.open_dataarray('processed/earth_size.nc')
+    #grid=xr.open_dataarray('processed/earth_size.nc')
     
-    ((npp.avg_npp*laws2011a).mean(dim='time')*grid.m2).plot()
-    plt.show()
+    #((npp.avg_npp*laws2011a).mean(dim='time')*grid.m2).plot()
+    #plt.show()
     
     
 def save_landschutzer_2018_seamask():
@@ -761,8 +767,6 @@ print("Running TPCA to month calc")
 convert_tpca_to_month()
 print('Regridding TPCA - xesmf')
 regrid_tpca()
-print('Calculating euphotic depth from chl - lee 2007')
-calc_euc()
 print('Calculate when ENSOs occured +- 0.5 MEI')
 find_enso_events()
 print('Convert our primary productivity moorings to netcdf')
@@ -773,7 +777,7 @@ cut_sst_moorings()
 print('Calculate earth size per pixel')
 make_earth_grid_m2()
 print('Convert uatm carbon to grams of carbon')
-carbon_uatm_to_grams()
+#carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
 make_fratio_nc()
 print('Combining export data to processed/combined_datasets/month_exports.nc')
@@ -783,3 +787,6 @@ add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc')
 add_cafe_and_sst(fp='processed/combined_dataset/month_data.nc')
 print('Save landschutzer 2018 seamask')
 save_landschutzer_2018_seamask() #Just to make sure that it stays in the folder as the 2020 version doesnt have this.
+
+#print('Calculating euphotic depth from chl - lee 2007')
+#calc_euc() # This one isn't actually used in any of the analysis. Uses too much memory anyway. File is processed and stored in processed/flux/zeu.nc if desired.
