@@ -3,7 +3,7 @@ ESMPy=7.1.0
 xesmf==0.3
 xarray=0.15
 pandas
-matplotlib
+matplotlib=3.2
 spyder
 basemap
 numpy
@@ -17,3 +17,5 @@ nco
 netcdf4 
 h5netcdf
 statsmodels 
+bs4
+joblib

@@ -4,7 +4,12 @@ Particularly, the indexes are included here (datasets/indexes/)
 However this is how to download and process those yourself if you want.
 
 Devries and Webber SIMPLE TRIM: 
-Download https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/exports
+Download https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/
+
+You can try this:
+cd datasets | curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --output SIMPLE_TRIM_output.nc
+however I sometimes have expired certifate problems. Might need to download manually.
+
 
 The only files left (well, they are actually required in Script 2) to download is the TPCA and chlor_a chlorophyll available from 
 https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905

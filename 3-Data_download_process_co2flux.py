@@ -176,7 +176,7 @@ print('Yasanaka Data was obtained from private communication. Please email her f
 print('---------------------------------------------')
 
 #Uncomment this to preprocess the JAMS and Yasanaka data.
-#process_jams()
+process_jams()
 #process_yasanaka()
 out_path='processed/flux/'    
 #new_flux=xr.open_mfdataset(out_path+'jma_flux.nc')

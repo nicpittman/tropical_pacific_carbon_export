@@ -156,11 +156,11 @@ for fl in flocs:
     #plt.axhline(0,c='k')
     #plt.show()
 
-    plt.plot_date(dat.Date,dat.delta_pCO2)
-    plt.plot_date(dat.Date,dat.pCO2_sw-dat.pCO2_air,c='r',ms=2)
-    plt.title( fl.split('/')[1][:-4]+' pCO2sw-pCO2atm')
-    plt.axhline(0,c='k')
-    plt.show()
+    #plt.plot_date(dat.Date,dat.delta_pCO2)
+    #plt.plot_date(dat.Date,dat.pCO2_sw-dat.pCO2_air,c='r',ms=2)
+    #plt.title( fl.split('/')[1][:-4]+' pCO2sw-pCO2atm')
+    #plt.axhline(0,c='k')
+    #plt.show()
     
     path='datasets/tao/tao_co2/'
     if not os.path.isdir(path):
