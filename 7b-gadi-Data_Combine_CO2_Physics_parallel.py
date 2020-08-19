@@ -99,7 +99,7 @@ def process(mooring_name):
     emifp='datasets/indexes/emi.csv'
     soi=pd.read_csv(soifp)
     pdo=pd.read_csv(pdofp,header=1)
-    mei=pd.read_csv(meifp)# If using original (not v2) need to use this. ,header=1)
+    mei=pd.read_csv(meifp,index_col=0,header=None)# If using original (not v2) need to use this. ,header=1)
     emi=pd.read_csv(emifp)
     #Primary Productivity Models and Time Series
     mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])

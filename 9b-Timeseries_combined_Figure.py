@@ -4,7 +4,7 @@
 Created on Thu Mar  5 11:52:00 2020
 @author: Nic Pittman
 
-This script reproduces Figure 2 from Pittman et al., 2019.
+This script reproduces Figure 2 from Pittman et al., 2021.
 
 It produces a timeseries of New production and Co2 flux for each of the 6 eqpac moorings.
 Includes SST, isotherm depth. 
