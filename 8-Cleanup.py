@@ -780,7 +780,7 @@ print('Convert uatm carbon to grams of carbon')
 #carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
 make_fratio_nc()
-print('Combining export data to processed/combined_datasets/month_exports.nc')
+print('Combining export data to processed/combined_dataset/month_data_exports.nc')
 calculate_exports_add_to_mooring()
 print('Adding Cafe and SST')
 add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc')
