@@ -12,7 +12,7 @@ This repository is set up so that all figures can be produced immediately after 
 
 ### To reproduce figures:
 
-This is assuming you have a unix environment. I have noticed the figures turn out differently if run in terminal compared to using Spyder (likely due to graphics software differences). Spyder is included in the dependencies and should reproduce the figures accurately if used.  Most of the numbers reported in the manuscript are printed to console during figure production, otherwise, some are saved into *processed/results/\*.csv*.
+This is assuming you have a unix environment. I have noticed the figures turn out differently if run in terminal compared to using Spyder (likely due to graphics software differences giving the error: MESA-LOADER: failed to load driver swrast (search paths /usr/lib64/dri) - This may be fixable? I don't know. Spyder is included in the dependencies and should reproduce the figures accurately if used.  Most of the numbers reported in the manuscript are printed to console during figure production, otherwise, some are saved into *processed/results/\*.csv*.
 
 Firstly, you will need to ensure you have all of the dependencies outlined in *requirements.txt*
 
@@ -21,7 +21,7 @@ You can create a conda environment to run like (or use requirements.txt):
 ```
 Preferred:
 conda create --name pacific_carbon --file requirements.txt
-
+(if this doesnt work, add conda forge like:  conda config --append channels conda-forge)
 otherwise something like:
 
 conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray dask nco netcdf4 statsmodels h5netcdf
@@ -50,7 +50,9 @@ https://www.pmel.noaa.gov/tao/drupal/disdel/
 All variables at Moorings 110W,125W, 140W,155W,170E,165E
 ```
 
-The data files in this repository include for reproduction of figures:
+
+
+The following data files are included here for the reproduction of figures:
 
     # All files are created during the cleanup script.
     # These files here are monthly and 1 degree averaged from oregon state.
@@ -72,19 +74,21 @@ The data files in this repository include for reproduction of figures:
     processed/indexes/el_nino_events.csv				
     processed/indexes/la_nina_events.csv
 
-After you have installed the dependencies, downloaded SST and Landschutzer CO2, you should be able to run:
+After you have installed the dependencies, downloaded SST and Landschutzer CO2, in Terminal, you should be able to run:
 
 ```
 python 9a ... 
+python 9b ...
+python 9c ...
+python 9e ...
+python 9f ...
 ```
 
-Note, Figure 4/D uses basemap, a depreciated package. A rough version of this figure is provided using cartopy but is not publication quality, so I recommend using the basemap version. 
-
-
+Note, Figure 4/D uses basemap, a depreciated package. A rough version of this figure is provided using cartopy but is not publication quality, so I recommend using the basemap version if possible. 
 
 ### To reprocess entire pipeline:
 
-The entire the pipeline is provided for reproducible research, however is provided as is. I have tried to make the flow as streamlined as possible but it is likely that there will be unique problems on different systems. Note, Script 1 takes a long time to download 30gb of NPP data. Scripts 3-6 can be run (in order) at the same time as script 1. Script 7a and b (parallelised version), combines everything and takes a long time to process (6 hours per mooring, or ~6 hours x 6 cores total for 7b)- so warning here.
+The entire the pipeline is provided for reproducible research, however is provided as is. I have tried to make the flow as streamlined as possible but it is likely that there will be unique problems on different systems. Note, Script 1 takes a long time to download 30gb of NPP data. Scripts 3-6 can be run (in order) at the same time as script 1. Script 7a and b (parallelised version), combines everything and takes a long time to process (6 hours per mooring, or ~6 hours x 6 cores total for 7b)- so warning here. 
 
 Two dataset types are produced. Firstly, 6 Moorings at 110W, 125W, 140W, 155W, 170W, 165E provide in-situ temperature, windspeed, thermocline depth, pCO2 in water and atmosphere among other variables. These have been compiled with different NPP products and algorithms, SST and different CO2 flux products. This data used in the paper uses a 1 degree, 1 month resolution, however products for all, daily and weekly are also produced throughout this process. 
 
@@ -115,11 +119,11 @@ Scripts are organised to be run in numerical order.
    - TPCA: https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905 (Script provided in 6 to download this, but only necessary for Script 2 to run.)
    - SIMPLE-TRIM export production model from  https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/exports
 
-7. a - Processes all of this data into the mooring timeseries. This is inefficient (will take days to run), and I would implement this differently if I was to rewrite this. Because it is so inefficient, a parallelised version has been produced to be run on the Australian supercomputer GADI but still 6 cores and 6 hours. Oops for pandas inefficiencies. Easier to plug and play the data provided here (see below). 
+7. a - Processes all of this data into the mooring timeseries. This is inefficient (will take days to run), and I would implement this differently if I was to rewrite this, however to keep data resolution as high as possible, this method is effective. Because it is so inefficient, a parallelised version has been produced to be run on the Australian supercomputer GADI but still 6 cores and 6 hours. Oops for pandas inefficiencies. Easier to plug and play the data provided here (see below). 
 
-   1. Run_combiner.sh will submit 7b to the supercomputer.
+   1. run_combiner.sh will submit 7b to the supercomputer. This may need modification to work on your system.
 
-8. Is a cleanup script with miscellaneous cleanup functions that i have added on add hoc during development. For example, CAFE was released late in the development process, and a function will plug this (and SST) into the Mooring timeseries.  Also finds ENSO events and another function converts the mooring csvs into an easy to use netcdf file. There are a number of files under 8_ as well. These all need to get run. They are a bit messy and this is the most likely to have problems.
+8. Is a cleanup script with miscellaneous cleanup functions that i have added on add hoc during development. For example, CAFE was released late in the development process, and a function will plug this (and SST) into the Mooring timeseries.  Also finds ENSO events and another function converts the mooring csvs into an easy to use netcdf file. These have been debugged but may still contain system specific problems. 
 
 9. Are plotting scripts as discussed above.
 
@@ -137,8 +141,8 @@ Scripts are organised to be run in numerical order.
 
 Other scripts:
 
-- Carbon_match is a series of functions that make it easy to convert between mol and gC
-- 10-windspeed is a quick correlation assessment of the windspeed vs new production and air-sea flux.
+- Carbon_math is a series of functions that make it easy to convert between mol and gC
+- 10-windspeed is a quick correlation assessment of the windspeed vs new production and air-sea flux, with r2 used in the paper.
 
 
 
