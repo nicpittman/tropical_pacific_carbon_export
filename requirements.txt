@@ -6,7 +6,6 @@ attrs==19.3.0
 autopep8==1.5.2
 Babel==2.8.0
 backcall==0.2.0
-backports.functools-lru-cache==1.6.1
 basemap==1.2.1
 bleach==3.1.5
 bokeh==2.1.1
@@ -29,7 +28,7 @@ diff-match-patch==20200713
 distributed==2.23.0
 docutils==0.16
 entrypoints==0.3
-ESMPy==7.1.0.dev0
+ESMPy==7.1.0
 flake8==3.7.9
 fsspec==0.8.0
 future==0.18.2
@@ -42,14 +41,13 @@ importlib-metadata==1.7.0
 intervaltree==3.0.2
 ipykernel==5.3.4
 ipython==7.17.0
-ipython-genutils==0.2.0
 isort==5.4.2
 jedi==0.14.1
 jeepney==0.4.3
 Jinja2==2.11.2
 jsonschema==3.2.0
-jupyter-client==6.1.6
-jupyter-core==4.6.3
+jupyter-client==6
+jupyter-core==4
 keyring==21.3.0
 kiwisolver==1.1.0
 lazy-object-proxy==1.5.1
@@ -59,7 +57,6 @@ MarkupSafe==1.1.1
 matplotlib==3.0.0
 mccabe==0.6.1
 mistune==0.8.4
-msgpack==1.0.0
 nbconvert==5.6.1
 nbformat==5.0.7
 netCDF4==1.5.1.2
@@ -112,8 +109,6 @@ rope==0.17.0
 Rtree==0.9.4
 scipy==1.5.2
 SecretStorage==3.1.2
-setuptools==49.6.0.post20200814
-Shapely==1.6.4.post2
 six==1.12.0
 snowballstemmer==2.0.0
 sortedcontainers==2.2.2
