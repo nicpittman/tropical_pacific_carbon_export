@@ -12,7 +12,7 @@ This repository is set up so that all figures can be produced immediately after 
 
 ### To reproduce figures:
 
-This is assuming you have a unix based environment.
+This is assuming you have a unix environment. I have noticed the figures turn out differently if run in terminal compared to using Spyder (likely due to graphics software differences). Spyder is included in the dependencies and should reproduce the figures accurately if used.  Most of the numbers reported in the manuscript are printed to console during figure production, otherwise, some are saved into *processed/results/\*.csv*.
 
 Firstly, you will need to ensure you have all of the dependencies outlined in *requirements.txt*
 
@@ -24,7 +24,7 @@ conda create --name pacific_carbon --file requirements.txt
 
 otherwise something like:
 
-conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray dask nco netcdf4
+conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray dask nco netcdf4 statsmodels h5netcdf
 
 
 ```
@@ -78,7 +78,7 @@ After you have installed the dependencies, downloaded SST and Landschutzer CO2, 
 python 9a ... 
 ```
 
-Note, Figure 4/D uses basemap, a depreciated package. A rough version of this figure is provided using cartopy but is not publication quality.
+Note, Figure 4/D uses basemap, a depreciated package. A rough version of this figure is provided using cartopy but is not publication quality, so I recommend using the basemap version. 
 
 
 
@@ -103,7 +103,7 @@ Scripts are organised to be run in numerical order.
 
 3. Downloads CO2 flux for several products. (Can run scripts 3-5 simultaneous to script 1)
 
-4. Downloads mooring CO2 data (Including japanese JMA product)
+4. Downloads mooring CO2 data (Including Japanese JMA product, downloaded automatically)
 
 5. Downloads mooring physics data and combines with the mooring CO2 data.
 
