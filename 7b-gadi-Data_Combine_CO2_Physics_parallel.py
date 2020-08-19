@@ -262,8 +262,10 @@ def process(mooring_name):
                 holder['soi']=vsoi
             except:
                 holder['soi']=np.nan
-            try:   
-                vmei=mei[mei.Year==int(year)][month].values[0]              #MEI #Migh need YEAR (Caps) for original mei
+            try:
+                vmei=mei[mei.index==int(year)].iloc[0].iloc[int(month-1)]
+
+               #vmei=mei[mei.Year==int(year)][month].values[0]              #MEI #Migh need YEAR (Caps) for original mei
                 holder['mei']=vmei
             except:
                 holder['mei']=np.nan
@@ -410,7 +412,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 from multiprocessing import Process
 moorings=['110W','125W','140W','155W','170W','165E']
-num_cores=6#multiprocessing.cpu_count()-1 #-1 so we don't lock up. Up to 6 cores I guess, one for each mooring.
+num_cores=2#multiprocessing.cpu_count()-1 #-1 so we don't lock up. Up to 6 cores I guess, one for each mooring.
 res=Parallel(n_jobs=num_cores)(delayed(process)(mooring) for mooring in moorings)
 
 

@@ -18,3 +18,4 @@ netcdf4
 h5netcdf
 statsmodels 
 bs4
+joblib

@@ -103,6 +103,8 @@ for mooring_name in moorings:
     mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     mod_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     mod_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    sw_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+
     sw_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgbm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     sw_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     try:
@@ -261,8 +263,9 @@ for mooring_name in moorings:
                 holder['soi']=vsoi
             except:
                 holder['soi']=np.nan
-            try:   
-                vmei=mei[mei.Year==int(year)][month].values[0]              #MEI #Migh need YEAR (Caps) for original mei
+            try: 
+                vmei=mei[mei.index==int(year)].iloc[0].iloc[int(month-1)]
+#                vmei=mei[mei.Year==int(year)][month].values[0]              #MEI #Migh need YEAR (Caps) for original mei
                 holder['mei']=vmei
             except:
                 holder['mei']=np.nan
@@ -283,6 +286,7 @@ for mooring_name in moorings:
             holder['sw_vgpm']=nearest_ind(sw_vgpm,d0)                                #SeaWiFS VGPM
             holder['sw_cbpm']=nearest_ind(sw_cbpm,d0)                                #SeaWiFS CPBM
             holder['sw_eppley']=nearest_ind(sw_eppley,d0)                            #SeaWiFS Eppley         
+            holder['sw_cafe']=nearest_ind(sw_cafe,d0)                                #Seawifs CAFE
             holder['viirs_vgpm']=nearest_ind(viirs_vgpm,d0)                          #SeaWiFS VGPM
             holder['viirs_cbpm']=nearest_ind(viirs_cbpm,d0)                          #SeaWiFS CPBM
             holder['viirs_eppley']=nearest_ind(viirs_eppley,d0)                      #SeaWiFS Eppley
