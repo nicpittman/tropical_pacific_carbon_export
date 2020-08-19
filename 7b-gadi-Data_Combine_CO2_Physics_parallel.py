@@ -106,6 +106,7 @@ def process(mooring_name):
     mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     mod_eppley=pd.read_csv('processed/npp_mooring_timeseries/eppley_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     mod_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
+    sw_cafe=pd.read_csv('processed/npp_mooring_timeseries/cafe_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     sw_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgbm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     sw_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_sw_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     try:
@@ -282,7 +283,9 @@ def process(mooring_name):
             holder['mod_vgpm']=nearest_ind(mod_vgpm,d0)                              #Modis VGPM      
             holder['mod_cbpm']=nearest_ind(mod_cbpm,d0)                              #Modis CPBM
             holder['mod_eppley']=nearest_ind(mod_eppley,d0)                          #Modis Eppley
-            holder['mod_cafe']=nearest_ind(mod_cafe, d0)                             #Modis Cafe           
+            holder['mod_cafe']=nearest_ind(mod_cafe, d0)                             #Modis Cafe  
+
+            holder['sw_cafe']=nearest_ind(sw_cafe,d0)                                #Seawifs CAFE       
             holder['sw_vgpm']=nearest_ind(sw_vgpm,d0)                                #SeaWiFS VGPM
             holder['sw_cbpm']=nearest_ind(sw_cbpm,d0)                                #SeaWiFS CPBM
             holder['sw_eppley']=nearest_ind(sw_eppley,d0)                            #SeaWiFS Eppley         

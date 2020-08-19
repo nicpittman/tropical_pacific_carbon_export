@@ -282,14 +282,14 @@ for mooring_name in moorings:
             holder['mod_vgpm']=nearest_ind(mod_vgpm,d0)                              #Modis VGPM      
             holder['mod_cbpm']=nearest_ind(mod_cbpm,d0)                              #Modis CPBM
             holder['mod_eppley']=nearest_ind(mod_eppley,d0)                          #Modis Eppley
-            holder['mod_cafe']=nearest_ind(mod_cafe, d0)                             #Modis Cafe           
+            holder['mod_cafe']=nearest_ind(mod_cafe, d0)                             #Modis Cafe Cafe           
             holder['sw_vgpm']=nearest_ind(sw_vgpm,d0)                                #SeaWiFS VGPM
             holder['sw_cbpm']=nearest_ind(sw_cbpm,d0)                                #SeaWiFS CPBM
             holder['sw_eppley']=nearest_ind(sw_eppley,d0)                            #SeaWiFS Eppley         
             holder['sw_cafe']=nearest_ind(sw_cafe,d0)                                #Seawifs CAFE
-            holder['viirs_vgpm']=nearest_ind(viirs_vgpm,d0)                          #SeaWiFS VGPM
-            holder['viirs_cbpm']=nearest_ind(viirs_cbpm,d0)                          #SeaWiFS CPBM
-            holder['viirs_eppley']=nearest_ind(viirs_eppley,d0)                      #SeaWiFS Eppley
+            holder['viirs_vgpm']=nearest_ind(viirs_vgpm,d0)                          #Viirs VGPM
+            holder['viirs_cbpm']=nearest_ind(viirs_cbpm,d0)                          #Viirs CPBM
+            holder['viirs_eppley']=nearest_ind(viirs_eppley,d0)                      #Viirs Eppley
             
             holder['modis_tpca']=nearest_ind(modis_tpca,d0)
             holder['seawifs_tpca']=nearest_ind(seawifs_tpca,d0)
