@@ -264,7 +264,7 @@ for mooring_name in moorings:
             except:
                 holder['soi']=np.nan
             try: 
-                vmei=mei[mei.index==int(year)].iloc[0].iloc[int(month-1)]
+                vmei=mei[mei.index==int(year)].iloc[0].iloc[int(month)-1]
 #                vmei=mei[mei.Year==int(year)][month].values[0]              #MEI #Migh need YEAR (Caps) for original mei
                 holder['mei']=vmei
             except:
