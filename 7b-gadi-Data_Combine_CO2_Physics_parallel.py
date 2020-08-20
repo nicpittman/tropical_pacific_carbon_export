@@ -415,7 +415,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 from multiprocessing import Process
 moorings=['110W','125W','140W','155W','170W','165E']
-num_cores=2#multiprocessing.cpu_count()-1 #-1 so we don't lock up. Up to 6 cores I guess, one for each mooring.
+num_cores=6#multiprocessing.cpu_count()-1 #-1 so we don't lock up. Up to 6 cores I guess, one for each mooring.
 res=Parallel(n_jobs=num_cores)(delayed(process)(mooring) for mooring in moorings)
 
 
