@@ -1,12 +1,12 @@
 python=3.7
 ESMPy=7.1.0
 xesmf==0.3
-xarray=0.15
+xarray=0.16
 pandas
 matplotlib=3.2
 spyder
 basemap
-numpy
+numpy=1.18.5
 scipy
 cartopy
 curl
