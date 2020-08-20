@@ -162,6 +162,7 @@ Scripts are organised to be run in numerical order.
 8. Is a cleanup script with miscellaneous cleanup functions that i have added on add hoc during development. For example, CAFE was released late in the development process, and a function will plug this (and SST) into the Mooring timeseries.  Another part finds ENSO events, and another function converts the mooring csvs into an easy to use netcdf file. These have been debugged but may still contain system specific problems. 
 
    1. You will need to change some filepaths, particularly the `convert_TPCA_to_month()`function. You will also need to create the directory datasets/tpca otherwise it may brexak (unless you have stored TPCA in datasets/tpca, which would make sense.) `mkdir datasets/tpca`
+   2. The carbon conversion( `carbon_uatm_to_grams()`) takes a long time, and I get killed on the supercomputer login nodes, for I assume memory. This can be made into its own script and submitted very easily if you have this problem. Again, not entirely necessary as the relevant files are provided.
 
 9. Are plotting scripts as discussed above.
 

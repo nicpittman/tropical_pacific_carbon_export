@@ -1,7 +1,6 @@
 Most of the files required have either been downloaded using scripts 1-5 here, or included in the repository.
 
-Particularly, the indexes are included here (datasets/indexes/)
-However this is how to download and process those yourself if you want.
+However this is how to download and process those yourself if you want. Some more detailed instructions are outlined in the readme.md
 
 Devries and Webber SIMPLE TRIM: 
 Download https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/
@@ -10,19 +9,15 @@ You can try this:
 cd datasets | curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --output SIMPLE_TRIM_output.nc
 however I sometimes have expired certifate problems. Might need to download manually.
 
-
 The only files left (well, they are actually required in Script 2) to download is the TPCA and chlor_a chlorophyll available from 
 https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905
 These should be placed in datasets/tpca/seawifs and datasets/tpca/modis
 If on Gadi, can be accessed like:  cp  /g/data/ua8/ocean_color/TPCA_reprocessing/SeaWiFS/*nc tpca/
 
 Chl is downloaded from: https://oceandata.sci.gsfc.nasa.gov/SeaWiFS/Mapped/Daily/9km/chlor_a/
-Many different ways to download this, 
+Many different ways to download this. NASA chlora is needed. Maybe not necessary to run these sections (Bottom of part 2), because the mooring timeseries are provided in datasets/npp_mooring_timeseries  (See the shell script at the bottom of this file for one method of downloading NASA data)
 
-NASA chlora is also needed. Maybe not necessary to run these sections (Bottom of part 2), because the mooring timeseries are provided in datasets/npp_mooring_timeseries  (See the shell script at the bottome for how to download NASA data)
-
-
-Indexes
+Indexes:
 SOI: https://www.esrl.noaa.gov/psd/gcos_wgsp/Timeseries/SOI/
 MEI: https://www.esrl.noaa.gov/psd/enso/mei/
 PDO: http://research.jisao.washington.edu/pdo/PDO.latest
@@ -50,15 +45,11 @@ These were obtained by selecting every variable for single location timeseries. 
 
 pCo2/Flux Products:
 If you haven't already got these working. Here is some more information.
-
 /yasanaka was obtained from Yasanaka. Ask her I cannot provide this. However, all references to this in the scripts have been commented out, so its not actually required.
 
-/co2_gridded_landschuzer (as previously explained)
+/co2_gridded_landschuzer (as previously explained; https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html)
 curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output spco2_MPI_SOM-FFN_v2018.nc
 curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output spco2_MPI-SOM_FFN_v2020.nc
-
-Main: https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
-New Version - Unused (with bgc argo data): https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:0191304
 
 Xarray cannot open some of these files due to:
 
@@ -71,6 +62,8 @@ ncrename -v date,t MPI-SOM_FFN_SOCCOMv2018.nc
 
 -----
 - Save as download_modis.sh - Can also use SeaWiFS/
+- Something has gone wrong here now, this is an old script, that needs a user account on their website now. 
+
 myURL=https://oceandata.sci.gsfc.nasa.gov/MODIS-Aqua/Mapped/Daily/9km/chlor_a
 
 for year in $(curl $myURL?format=txt |cut -d "," -f 1);
@@ -79,9 +72,10 @@ do
   for ncfile in $(curl $myURL/$year?format=txt |cut -d "," -f 1);
     do
       curl -L -O https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/$ncfile;
-    esac
+      echo $ncfile
   done;
 done;
+
 
 
 
