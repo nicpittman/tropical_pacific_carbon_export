@@ -167,7 +167,7 @@ for i,ty in enumerate(limits):
     annual_rate_of_changeCO=trenCO[0]*365
  
     #henson.plot(label='Henson',ax=ax)
-    laws2011a.plot(label='Laws2011a',ax=ax,c='r')
+    laws2011a.plot(label='Laws 2011a',ax=ax,c='r')
     #laws2011b.plot(label='Laws2011b',ax=ax,c='pink')
             
     mod=laws2011a.sel(time=slice('2000-01-01','2017-12-01'))
@@ -177,10 +177,10 @@ for i,ty in enumerate(limits):
    
     #(CO2+laws2011a).plot(label='combined',ax=ax,c='m')
     if i==3:
-        trim.plot(label='DeVries and Webber 2017',ax=ax,c='purple')
+        trim.plot(label='DeVries and Webber 2017',ax=ax,c='purple',linewidth=2)#,linestyle='--')
     #laws2011b.plot(label='Laws2011b',ax=ax,c='slategray',linewidth=2)
-        dunne.sel(time=slice('1997-01-01','2019-07-01')).plot(label='Dunne 2005',ax=ax,c='steelblue')
-        laws2000.plot(label='Laws2000',ax=ax,c='darkblue')
+        dunne.sel(time=slice('1997-01-01','2019-07-01')).plot(label='Dunne 2005',ax=ax,c='darkblue')
+        laws2000.plot(label='Laws2000',ax=ax,c='green',linestyle='--')
         #henson.plot(label='Henson',ax=ax,c='deeppink')
     
     
@@ -193,16 +193,16 @@ for i,ty in enumerate(limits):
         #ax.set_ylim([0,0.27*1e15])131
         
         ax.set_ylim([-0.005*1e15,0.175*1e15])
-        ax.set_title(chr(97+i)+') '+ty[0]+' Pacific carbon export',pad=16)
-        ax.set_ylabel('Carbon export / outgassing (PgC/yr$^{-1}$)')
+        ax.set_title(chr(97+i)+') '+ty[0]+' Pacific',pad=16)
+        ax.set_ylabel('New Production / CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.yaxis.set_major_formatter(FixedOrderFormatter(15))
 
        #y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
         #ax.yaxis.set_major_formatter(y_formatter)
     else:
-        ax.legend(loc='upper center',ncol=5)
-        ax.set_title(chr(97+i)+') Tropical Pacific carbon export')
-        ax.set_ylabel('Carbon export / outgassing (PgC/yr$^{-1}$)')
+        ax.legend(loc='lower center',ncol=5)
+        ax.set_title(chr(97+i)+') Entire Basin')
+        ax.set_ylabel('New Production / CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.set_ylim([0,1.25*1e15])
     import matplotlib.patches as patches
       
