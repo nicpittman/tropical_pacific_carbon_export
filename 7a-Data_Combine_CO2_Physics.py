@@ -315,16 +315,23 @@ for mooring_name in moorings:
             holder['avgnpp']=holder[['viirs_eppley','viirs_cbpm','viirs_vgpm','sw_eppley','sw_cbpm','sw_vgpm','mod_cafe','mod_eppley','mod_cbpm','mod_vgpm']].mean(axis=1)
     
             #Use pad and d1 so we get the months as is
+            #Something wrong with Date=d1 in some cases, so convert to a string and it can work.
             try:
                 holder['co2flux3_JMA']=co2flux_JMA.sel(Date=d1,method='pad').flux.values
                 holder['pH']=co2flux_JMA.sel(Date=d1,method='pad').pH.values
                 holder['dic']=co2flux_JMA.sel(Date=d1,method='pad').dic.values        
                 holder['co2flux3_JMA_gmyr']=moles_to_carbon(holder.co2flux3_JMA)
             except:
-                holder['co2flux3_JMA']=np.nan
-                holder['pH']=np.nan
-                holder['dic']=np.nan
-                holder['co2flux3_JMA_gmyr']=np.nan
+                try:
+                    holder['co2flux3_JMA']=co2flux_JMA.sel(Date=str(d1),method='pad').flux.values
+                    holder['pH']=co2flux_JMA.sel(Date=str(d1),method='pad').pH.values
+                    holder['dic']=co2flux_JMA.sel(Date=str(d1),method='pad').dic.values        
+                    holder['co2flux3_JMA_gmyr']=moles_to_carbon(holder.co2flux3_JMA)
+                except:
+                    holder['co2flux3_JMA']=np.nan
+                    holder['pH']=np.nan
+                    holder['dic']=np.nan
+                    holder['co2flux3_JMA_gmyr']=np.nan
             
             try:
                 holder['co2flux4_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').fgco2_raw.values
@@ -334,13 +341,22 @@ for mooring_name in moorings:
                 holder['sol_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').sol.values
                 holder['kw_landshutz']=co2flux_landshutz.sel(time=d1,method='pad').kw.values
             except:
-                holder['co2flux4_landshutz']=np.nan
-                holder['co2flux4_land_gmyr']=np.nan
-                holder['pco2atm_landshutz']=np.nan
-                holder['pco2sw_landshutz']=np.nan
-                holder['sol_landshutz']=np.nan
-                holder['kw_landshutz']=np.nan
-            
+                #Something weird was happening where it didn't like the datetime in some cases. Trying to fix that here.
+                try:
+                    holder['co2flux4_landshutz']=co2flux_landshutz.sel(time=str(d1),method='pad').fgco2_raw.values
+                    holder['co2flux4_land_gmyr']=moles_to_carbon(holder.co2flux4_landshutz)
+                    holder['pco2atm_landshutz']=co2flux_landshutz.sel(time=str(d1),method='pad').atm_co2.values
+                    holder['pco2sw_landshutz']=co2flux_landshutz.sel(time=str(d1),method='pad').spco2_raw.values
+                    holder['sol_landshutz']=co2flux_landshutz.sel(time=str(d1),method='pad').sol.values
+                    holder['kw_landshutz']=co2flux_landshutz.sel(time=str(d1),method='pad').kw.values
+                except:
+                    holder['co2flux4_landshutz']=np.nan
+                    holder['co2flux4_land_gmyr']=np.nan
+                    holder['pco2atm_landshutz']=np.nan
+                    holder['pco2sw_landshutz']=np.nan
+                    holder['sol_landshutz']=np.nan
+                    holder['kw_landshutz']=np.nan
+                
             
             try:
                 holder['co2flux5_yasanaka']=co2flux_yasanaka.sel(time=d1,method='pad').flux_masked.values
@@ -348,10 +364,16 @@ for mooring_name in moorings:
                 holder['co2flux5_yasanaka_unmasked']=co2flux_yasanaka.sel(time=d1,method='pad').co2flux.values
                 holder['pco2sw_yasanaka']=co2flux_yasanaka.sel(time=d1,method='pad').pco2.values
             except:
-                holder['co2flux5_yasanaka']=np.nan
-                holder['co2flux5_yasanaka_gmyr']=np.nan
-                holder['co2flux5_yasanaka_unmasked']=np.nan
-                holder['pco2sw_yasanaka']=np.nan
+                try:
+                    holder['co2flux5_yasanaka']=co2flux_yasanaka.sel(time=str(d1),method='pad').flux_masked.values
+                    holder['co2flux5_yasanaka_gmyr']=moles_to_carbon(holder.co2flux5_yasanaka)
+                    holder['co2flux5_yasanaka_unmasked']=co2flux_yasanaka.sel(time=str(d1),method='pad').co2flux.values
+                    holder['pco2sw_yasanaka']=co2flux_yasanaka.sel(time=str(d1),method='pad').pco2.values
+                except:
+                    holder['co2flux5_yasanaka']=np.nan
+                    holder['co2flux5_yasanaka_gmyr']=np.nan
+                    holder['co2flux5_yasanaka_unmasked']=np.nan
+                    holder['pco2sw_yasanaka']=np.nan
             
        
             #print(holder)

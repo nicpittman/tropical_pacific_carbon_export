@@ -3,7 +3,9 @@ ESMPy=7.1.0
 xesmf==0.3
 xarray=0.16
 pandas
+xarray=0.15.1
 matplotlib=3.2
+pandas
 spyder
 basemap
 numpy=1.18.5

@@ -29,11 +29,8 @@ def process_jams():
         
     #Download Co2 flux data
     #Want to download Japan
-    
-    #But also: https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc
-    #Download this one manually.
-    #(https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html)
-    
+    # Downloaded from https://www.data.jma.go.jp/gmd/kaiyou/english/co2_flux/co2_flux_data_en.html,    
+       
     path='datasets/co2/JMA_co2/'
     if not os.path.isdir(path):
         print('Creating directory: ',path)
