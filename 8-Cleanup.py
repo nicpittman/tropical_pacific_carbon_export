@@ -344,35 +344,20 @@ def create_npp_avgs(): #This function will regrid New production models to the L
     
 def convert_tpca_to_month():
     #Process TPCA into monthly so we can regrid it (too big before and this is the resolution we want)
-    sw=xr.open_mfdataset('datasets/tpca/seawifs/*nc')
+    sw=xr.open_mfdataset('/g/data/ua8/ocean_color/TPCA_reprocessing/SeaWiFS/*nc',combine='nested',concat_dim='time')# You will need to modify this file path#datasets/tpca/seawifs/*nc')
     sw=sw.rename(chl_tpca='sw_tpca')
     sw=sw.resample(time='M').mean(dim='time') 
     sw.to_netcdf('datasets/tpca/sw_month.nc',engine='h5netcdf',mode='w')
     print('saved monthly SW TPCA')
 
-    mod=xr.open_mfdataset('datasets/tpca/modis/*nc')
+    mod=xr.open_mfdataset('/g/data/ua8/ocean_color/TPCA_reprocessing/MODIS-Aqua/*nc',combine='nested',concat_dim='time')# Modify this file path #datasets/tpca/modis/*nc')
     mod=mod.rename(chl_tpca='mod_tpca')
     mod=mod.resample(time='M').mean(dim='time') 
     mod.to_netcdf('datasets/tpca/mod_month.nc',engine='h5netcdf',mode='w')
     print('saved monthly modis TPCA')
 
-def regrid_tpca_OLD_BILINEAR_METHOD(): #Probably don't use this version.
-    sw=xr.open_dataset('datasets/tpca/sw_month.nc')
-    mod=xr.open_dataset('datasets/tpca/mod_month.nc')
-    
-    tpca=sw
-    tpca=tpca.merge(mod)
-    tpca = tpca.to_array(dim='tpca').mean('tpca')
-    
-    landschutzer=xr.open_dataset('processed/flux/landshutzer.nc')
-    land_pac=landschutzer.fgco2_smoothed
-    land_pac=land_pac.sel(lat=slice(-10,10))
-    
-    regridder = xe.Regridder(tpca, land_pac, 'bilinear')
-    chl=regridder(tpca)
-    chl=chl.to_dataset(name='tpca')
-    chl.to_netcdf('processed/flux/tpca.nc')
 
+    
 def regrid_tpca():
     sw=xr.open_dataset('datasets/tpca/sw_month.nc')
     mod=xr.open_dataset('datasets/tpca/mod_month.nc')
@@ -762,7 +747,7 @@ def save_landschutzer_2018_seamask():
 # %% RUN FUNCS HERE.
 
 print('Regridding the NPP models')
-create_npp_avgs() #Regrid the NPP models.
+#create_npp_avgs() #Regrid the NPP models.
 print("Running TPCA to month calc")
 convert_tpca_to_month()
 print('Regridding TPCA - xesmf')
