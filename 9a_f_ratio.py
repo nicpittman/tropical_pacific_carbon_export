@@ -65,10 +65,10 @@ combine['cf']=cf.to_dataframe().avg_npp
 
 avg=np.nanmean(combine.iloc[:,-2:],axis=1)
 #ax.plot(combine.index,avg,c='k',label='average: '+str(np.round(avg.mean(),3)))
-ax.axhline(0.9,c='gray',linestyle=':')
+#ax.axhline(0.9,c='gray',linestyle=':')
 
 ax.legend(loc='upper right',ncol=2)
-ax.set_title('a) Primary Production estimates',loc='left') #Primary Production estimates at 0$^\circ$N 140$^\circ$W
+ax.set_title('a) Primary production estimates',loc='left') #Primary Production estimates at 0$^\circ$N 140$^\circ$W
 ax.set_ylabel('gC m$^{-2}$ day$^{-1}$')
 ax.set_xlabel('Year')
 
@@ -182,11 +182,13 @@ print('dunne: '+str((dunne*modd).mean().values))
 ax2.set_ylabel('gC m$^{-2}$ day$^{-1}$')
 ax2.set_xlabel('Year')
 ax2.legend(ncol=3)
-ax2.set_title('d) New Production estimates',loc='left')  #Comparison of Export Flux at 0$^\circ$N 140$^\circ$W
+ax2.set_title('d) New production estimates',loc='left')  #Comparison of Export Flux at 0$^\circ$N 140$^\circ$W
 
 
 
 
 plt.tight_layout()
+plt.savefig('figs/Figure1.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+plt.savefig('figs/Figure1.eps',dpi=300)
 plt.savefig('figs/Figure1.png',dpi=100)
 plt.show()

@@ -20,3 +20,4 @@ h5netcdf
 statsmodels 
 bs4
 joblib
+pillow

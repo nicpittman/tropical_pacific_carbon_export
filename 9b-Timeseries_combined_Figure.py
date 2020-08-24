@@ -288,7 +288,11 @@ for i, mooring_name in enumerate(moorings):
     
 plt.tight_layout()
 if startyear==str(1997):
-    plt.savefig('figs/Figure2_Co2fluxevents'+ratio_name+'.png',format='png',dpi=100)
+    #plt.savefig('figs/Figure2_Co2fluxevents'+ratio_name+'.png',format='png',dpi=100)
+    plt.savefig('figs/Figure2.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+    plt.savefig('figs/Figure2.eps',dpi=300)
+    plt.savefig('figs/Figure2.png',dpi=100)
+    
 else:
     plt.savefig('figs/fig2_Co2fluxevents_alltime.png',format='png',dpi=100)
 plt.show()

@@ -26,10 +26,10 @@ conda create --name pacific_carbon --file requirements.txt
 
 You might need conda-forge which you can add before, like: `` conda config --append channels conda-forge``
 
-Or if it breaks for a different reason, something like below can also work:
+Or if it breaks for a different reason, something like below can also work (Spyder not essential):
 
 ```
-conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray=0.15 dask nco netcdf4 statsmodels h5netcdf bs4c joblib
+conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray=0.15 dask nco netcdf4 statsmodels h5netcdf bs4c joblib pillow
 ```
 
 Otherwise, try removing the library versions, but this has worked on my system. Things might break if you use different versions. 
