@@ -16,7 +16,60 @@ This script has been designed for chlor_a products for viirs, modis, meris and s
 
 import xarray as xr
 import os
+import requests
+import numpy as np
+
+
+
+def Download_TPCA():
+    '''
+    Function to download TPCA MODIS and SeaWIFS from nci.org.
     
+    Possible to also use DAPPS through xarray and save the files
+    rather than using requests.
+    '''
+    path_sw='datasets/chl/tpca/seawifs/'
+    if not os.path.isdir(path_sw):
+        print('Creating directory: ',path_sw)
+        os.makedirs(path_sw)
+       
+    path_mod='datasets/chl/tpca/modis/'
+    if not os.path.isdir(path_mod):
+        print('Creating directory: ',path_mod)
+        os.makedirs(path_mod)
+    
+    
+    tpca_link=['http://dapds00.nci.org.au/thredds/fileServer/ks32/CLEX_Data/TPCA_reprocessing/v2019_01/']
+    sensors=['SeaWiFS/tpca_seawifs_','MODIS-Aqua/tpca_modis_aqua_'] #and then year
+    sens=['sw','mod']           
+    #Download SeaWiFS files from the above array, spaced by each year.
+    
+    for i in range(0,2): #To do SeaWiFS and then MODIS
+        for yr in np.arange(1997,2020):
+            if i==0: #SW
+                sensor=tpca_link[0]+sensors[0]+str(yr)+'.nc'
+                path=path_sw
+            elif i==1: #MODIS
+                sensor=tpca_link[0]+sensors[1]+str(yr)+'.nc'
+                path=path_mod
+        
+            #Start the download
+            try:
+                r = requests.get(sensor)#,timeout=s20)
+                fileloc=path+sensors[0].split('/')[1]+str(yr)+'.nc'
+                if r.status_code!=404:
+                    with open(fileloc, 'wb') as f:
+                        f.write(r.content)
+                    print('Downloaded: ' + sens[i] + str(yr))
+                else:
+                    print(i,str(r.status_code))
+            except KeyboardInterrupt:
+                import sys
+                sys.exit()
+            except:
+                print(str(yr)+ sens[i]+'  Unavailable')
+            pass
+        
 buff=0.5 #in degrees.
 l=0
 lats=[l+buff,l-buff]
@@ -72,30 +125,36 @@ for i,x in enumerate(npp_models):
     
     
 #Depending where data stored probably want to comment the breakpoint out.
-print('CHECK HERE - There is a breakpoint installed here but you may need to reproduce this if the tpca and chlor_a files are not in processed/npp_mooring_timeseries/')
-#import sys
-#sys.exit()
+print('CHECK HERE - There is a breakpoint installed.')
+print('If you have TPCA or NASA chlor_a downloaded, please ignore this, and then update the file paths accordingly')
+print('If not, TPCA will be downloaded automatically now into datasets/chl/tpca/seawifs/')
+print('NASA Chlor_a is a little harder, you will need an account with NASA')
+print('https://oceancolor.gsfc.nasa.gov/data/download_methods/')
+print('A shell script in datasets/chl/download_NASA_chlora.sh is provided, you will need to follow the instructions at:')
+print('https://oceancolor.gsfc.nasa.gov/data/download_methods/ to get the auth cookie working')
 
-#This does the samea as above, but for chlorophyll datasets.
-#A hack method but this should copy-paste to where the data lives. + top 35 lines.
-        
-#This runs on Gadi super computer. As the data is stored here. 
-#Or you will need to change this and dow','/day/9km/chlor_a/*nc']
+Download_TPCA() #Downloads Pittman 2019 data
 
-sw_tpca='/g/data/ua8/ocean_color/TPCA_reprocessing/SeaWiFS/*nc'
-mod_tpca='/g/data/ua8/ocean_color/TPCA_reprocessing/MODIS-Aqua/*nc'
+print('TPCA Downloaded, make sure chlor_a is also available')
+
+#sw_tpca='/g/data/ua8/ocean_color/TPCA_reprocessing/SeaWiFS/*nc'
+#mod_tpca='/g/data/ua8/ocean_color/TPCA_reprocessing/MODIS-Aqua/*nc'
+sw_tpca='datasets/chl/tpca/seawifs/*nc'
+mod_tpca='datasets/chl/tpca/modis/*nc'
+
 
 #sw_tpca='datasets/tpca/modis/*nc' #Actually the second one but I only have seawifs stored on gadi. #'datasets/tpca/seawifs/*nc'
 #mod_tpca='datasets/tpca/modis/*nc'nload all of the chlorophyll data locally.
-paths=['/g/data/ua8/ocean_color/tropics/','/day/9km/chlor_a/*nc']
+#paths=['/g/data/ua8/ocean_color/tropics/','/day/9km/chlor_a/*nc']
+paths='datasets/chl/chlor_a/'
 
 chl_models=['seawifs','modis','meris','viirs']
 
 #This uses the GADI versions. You will need to change the above paths to the local storage of these files. I would recommend datasets/chlorophyll or something.
 
 for i,x in enumerate(chl_models):
-
-        path=paths[0]+x+paths[1]
+        path = paths+x+'/*.nc'
+        #path=paths[0]+x+paths[1]
         dat=xr.open_mfdataset(path,concat_dim='time',combine='nested')
         for ii,ll in enumerate(lons):
             datslice=dat.sel(lat=slice(lats[0],lats[1]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).chlor_a.to_series()
