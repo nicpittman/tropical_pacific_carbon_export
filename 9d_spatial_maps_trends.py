@@ -101,10 +101,10 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     if title=='SST':
         
         lev=28.5#29.2 #rather than 28.5
-        early_sst=hovmol.sel(time=slice('1997-01-01','2001-01-01')).mean(dim='time')#.where(co2.seamask==1)
+        early_sst=hovmol.sel(time=slice('1997-01-01','2002-01-01')).mean(dim='time')#.where(co2.seamask==1)
         m.contour(lo1,la1,early_sst,levels=[lev],linestyles='dotted',colors='k')
        
-        late_sst=hovmol.sel(time=slice('2013-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
+        late_sst=hovmol.sel(time=slice('2015-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
         m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k')
 
 

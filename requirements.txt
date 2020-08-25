@@ -21,3 +21,4 @@ statsmodels
 bs4
 joblib
 pillow
+lxml

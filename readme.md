@@ -21,15 +21,21 @@ Secondly, you will need to ensure you have all of the dependencies outlined in *
 You can create a Conda environment using *requirements.txt*:
 
 ```
+conda config --append channels conda-forge
 conda create --name pacific_carbon --file requirements.txt
 ```
 
-You might need conda-forge which you can add before, like: `` conda config --append channels conda-forge``
+Otherwise this may also work:
+
+```
+conda config --add channels conda-forge
+conda config --set channel_priority false
+```
 
 Or if it breaks for a different reason, something like below can also work (Spyder not essential):
 
 ```
-conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray=0.15 dask nco netcdf4 statsmodels h5netcdf bs4c joblib pillow
+conda create -n pacific_carbon python=3.7 basemap cartopy curl cbsyst ESMPy=7.1.0 xesmf==0.3 h5py ipython Markdown numpy pandas scipy matplotlib spyder=4.0 xarray=0.15 dask nco netcdf4 statsmodels h5netcdf bs4c joblib pillow lxml
 ```
 
 Otherwise, try removing the library versions, but this has worked on my system. Things might break if you use different versions. 
@@ -135,7 +141,17 @@ Scripts are organised to be run in numerical order.
 2. Cuts the NPP data into mooring csv files. 
 
    1. **NOTE** This script is not actually essential, has been provided in processed/npp_mooring_timeseries.
-   2. You may have problems as NASA chl and TPCA needs to be downloaded manually, see script 6. It is not necessary to run this step as the necessary files are provided in the repository. This script will need some small changes on a new system to work as intended (ie file paths). See 6 for more information about downloading the relevant data if anything is missing.
+
+   2. NASA chlor_a needs to be downloaded manually. A script in 'datasets/chl/download_NASA_chlora.sh' is provided. Will need authorisation cookie as described at: https://oceancolor.gsfc.nasa.gov/data/download_methods/
+
+   3. Once you create an account at earth data, set it like this. 
+
+   4. ```
+      echo "machine urs.earthdata.nasa.gov login USERNAME password PASSWD" > ~/.netrc ; > ~/.urs_cookies
+      chmod  0600 ~/.netrc
+      ```
+
+   5. TPCA should download automatically during script 2.
 
 3. Downloads CO<sub>2</sub> flux for several products. (Can run scripts 3-5 simultaneous to script 1 in a separate console)
 
