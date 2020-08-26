@@ -10,6 +10,11 @@ cd datasets | curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMP
 #https://www.pmel.noaa.gov/tao/drupal/disdel/
 #These were obtained by selecting every variable for single location timeseries. These files are included here by default in datasets/tao/#physics. These can be downloaded yourself if you want.
 
+echo 'Downloading Landschutzer 2018 for pipeline.'
+cd datasets/co2/landschutzer_co2 | curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
+
+ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc
+
 
 #Climate Indexes are included here. If you want to download them yourself you can:
 # NOTE THAT THE FORMATING NEEDS TO BE FIXED IF YOU DOWNLOAD MANUALLY
