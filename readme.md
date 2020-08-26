@@ -43,13 +43,12 @@ I have noticed the figures turn out differently if run in terminal compared to u
 
 ##### Data to download
 
-Most of the processed data is provided in order for the plotting functions (9[a-f]) to work. However, two sets of data will need to be downloaded manually. SST and the landschutzer CO<sub>2</sub> flux product (and NCO to convert to a usable format). You can perform this as so:
+Most of the processed data is provided in order for the plotting functions (9[a-f]) to work. However, two sets of data will need to be downloaded manually. SST and the landschutzer CO<sub>2</sub> flux product (and NCO to convert to a usable format). You can perform this either running `sh datasets/to_download.sh`, or by pasting the following code into console:
 
 SST:
 
 ```To download manually:
-cd datasets
-mkdir sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst/sst.mnmean.nc
+cd datasets| mkdir sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output datasets/sst/sst.mnmean.nc
 ```
 
 Landschutzer CO<sub>2</sub>  (https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html)
@@ -61,14 +60,14 @@ mkdir co2 | mkdir co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/oc
 You will need to use NCO to convert the time variable name (t to date) so they can be opened by xarray. Included in the conda environment.
 ```cd co2/landschutzer_co2
 cd co2/landschutzer_co2
-ncrename -v date,t spco2_MPI-SOM_FFN_v2020.nc
+ncrename -v t,date spco2_MPI-SOM_FFN_v2020.nc 
 ```
 
 TAO data is included here in datasets/tao/tao_physics/*. You can update it yourself here (but not essential): https://www.pmel.noaa.gov/tao/drupal/disdel/ using all variables at Moorings 110W,125W, 140W,155W,170E,165E
 
 ##### Data included
 
-The following data files are included here for the reproduction of figures (All files are created during the cleanup script):
+The following data files are included here for the reproduction of figures (All files are created during the 8. Cleanup script):
 
     #These files here are monthly and 1 degree averaged from oregon state university website.		
     processed/flux/avg_npp_rg_cbpm.nc 	
@@ -171,7 +170,7 @@ Scripts are organised to be run in numerical order.
      ```
      cd datasets/cos/landschutzer_co2 | curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output spco2_MPI_SOM-FFN_v2018.nc
      
-     ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc
+     ncrename -v t,date spco2_MPI_SOM-FFN_v2018.nc
      ```
 
    - Climate indicies MEI, PDO, EMI, SOI are included in the repository. Scripts to download are included in 6, however not essential, and will need some processing to be opened by pandas.

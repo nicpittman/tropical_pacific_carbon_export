@@ -3,9 +3,9 @@
 # datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc - This will need to be downloaded manually
 #	https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html
 
-mkdir co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
+mkdir co2 | mkdir co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
 cd co2/landschutzer_co2
-ncrename -v date,t spco2_MPI-SOM_FFN_v2020.nc 
+ncrename -v t,date spco2_MPI-SOM_FFN_v2020.nc 
 
 echo 'You might also want the 2018 version for full pipeline, uncomment if needed.'
 # And if you want the 2018 version.
@@ -16,7 +16,7 @@ echo 'You might also want the 2018 version for full pipeline, uncomment if neede
 #datasets/sst/sst.mnmean.nc 
 #	https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
 
-mkdir sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst/sst.mean.nc
+mkdir sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output sst/sst.mnmean.nc
 
 
 #The following data was originally not included but has been now for reproducability sake.

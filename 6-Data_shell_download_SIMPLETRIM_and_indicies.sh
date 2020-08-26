@@ -1,7 +1,7 @@
 #REDUNDANT.
 #Only SIMPLE-TRIM is required:
 echo 'Downloading SIMPLE-TRIM'
-cd datasets | curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --insecure --output datasets/SIMPLE_TRIM_output.nc
+curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output.nc --insecure --output datasets/SIMPLE_TRIM_output.nc
 
 #Download https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/
 #Most of the files required have either been downloaded using scripts 1-5 here, or included in the repository.
@@ -11,7 +11,7 @@ cd datasets | curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMP
 #These were obtained by selecting every variable for single location timeseries. These files are included here by default in datasets/tao/#physics. These can be downloaded yourself if you want.
 
 echo 'Downloading Landschutzer 2018 for pipeline.'
-cd datasets/co2/landschutzer_co2 | curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
+curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
 
 ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc
 
