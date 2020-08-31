@@ -411,7 +411,7 @@ def cut_sst_moorings():
     data=[]
     for i,x in enumerate(lns):
         mooring=dat.sel(lon=x,method='nearest')
-        mooring.sst.plot()
+        #mooring.sst.plot()
         d=mooring.sst.to_dataframe()
         d=d.drop(columns=['lat','lon'])
         d.columns.name = str(ln_names[i])
@@ -544,17 +544,25 @@ def calculate_exports_add_to_mooring():
     dat= dat.assign(sst_rey=sst.sst)
     #lns=[165,190,205,220,235,250]
     
+    
+    
+        
+    #HAD A BUG HERE. Basically, dat.avgnpp was used to calculate f-ratios. Which is wrong.
+    #We are Using CAFE so it must all be CAFE. This should fix it.
+    #If changing the npp model used, modifications will need to be made here.
+    
     #dat=ds
     zeu1= 34*dat.chl**-0.39#lee 2007
     zeu2=38*dat.chl**-0.428#Morel 1989
-    pe_dunne=-0.0101*dat.sst_rey+0.0582*np.log(dat.avgnpp/zeu1)+0.419
-    pe_dunne2=-0.0101*dat.sst_rey+0.0582*np.log(dat.avgnpp/zeu2)+0.419
+    pe_dunne=-0.0101*dat.sst_rey+0.0582*np.log(dat.cafe/zeu1)+0.419
+    pe_dunne2=-0.0101*dat.sst_rey+0.0582*np.log(dat.cafe/zeu2)+0.419
     pe_dunne3=0.0081*dat.sst_rey+0.0668*np.log(dat.chl/zeu2)+0.426
     f_ratio=(0.62-(0.02*dat.sst_rey))
     th_e_ratio=(0.23*np.exp(-0.08*dat.sst_rey))
-    laws2011a=((0.5857-0.0165*dat.sst_rey)*dat.avgnpp)/(51.7+dat.avgnpp)
-    laws2011b=0.04756*(0.78-((0.43*dat.sst_rey)/30))*dat.cbpmmean**0.307 #avgnpp
-    laws2011b1=0.04756*(0.78-((0.43*dat.sst_rey)/30))*dat.avgnpp**0.307
+    laws2011a=((0.5857-0.0165*dat.sst_rey)*dat.cafe)/(51.7+dat.cafe)
+    
+    laws2011b=0.04756*(0.78-((0.43*dat.sst_rey)/30))*dat.cafe**0.307 #avgnpp
+    #laws2011b1=0.04756*(0.78-((0.43*dat.sst_rey)/30))*dat.cafe**0.307
     
     dat= dat.assign(zeu_lee=zeu1)
     dat= dat.assign(zeu_morel89=zeu2)
@@ -564,7 +572,7 @@ def calculate_exports_add_to_mooring():
     dat= dat.assign(thE_ratio=th_e_ratio)
     dat= dat.assign(laws2011a=laws2011a)
     dat= dat.assign(laws2011b=laws2011b)
-    dat= dat.assign(laws2011b_vgpm=laws2011b1)
+    #dat= dat.assign(laws2011b_vgpm=laws2011b1)
     
     dat.to_netcdf('processed/combined_dataset/month_data_exports.nc',engine='h5netcdf',mode='w')
     
@@ -690,7 +698,7 @@ def make_fratio_nc():
         eqpac_trim['avg']=eqpac_trim.avg.T
         eqpac_trim['stdev']=eqpac_trim.stdev.T
         
-        eqpac_trim.stdev.plot.contourf(levels=np.arange(0,0.425,0.025))
+        #eqpac_trim.stdev.plot.contourf(levels=np.arange(0,0.425,0.025))
          
         landschutzer=xr.open_dataset('processed/flux/landshutzer.nc')
         land_pac=landschutzer.fgco2_smoothed
@@ -707,17 +715,20 @@ def make_fratio_nc():
     #land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
     land_pac=moles_to_carbon(land_pac.fgco2_smoothed)/365
     
-    npp=xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc')
+    npp=xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc') #MAKE SURE THIS IS CORRECT MODEL
     zeu=xr.open_dataset('processed/flux/zeu.nc').chl_tpca
     
+
     sst = xr.open_dataset('datasets/sst/sst.mnmean.nc')
     sst= sst.assign_coords(lon=(sst.lon % 360)).roll(lon=(sst.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
     sst=sst.sel(lon=slice(120,290),lat=slice(20,-20))
     sst=sst.sel(time=slice(npp.time.min().values,npp.time.max().values))
     land_pac=land_pac.sel(time=slice(npp.time.min().values,npp.time.max().values))
     land_pac['time']=land_pac.time.astype('datetime64[M]')
-    laws2011a=0.04756*(0.78-((0.43*sst.sst)/30))*npp.avg_npp**0.307
-    laws2011b=((0.5857-0.0165*sst.sst)*npp.avg_npp)/(51.7+npp.avg_npp)
+    
+    #Make sure using the correct npp model to calculate these.
+    laws2011a=((0.5857-0.0165*sst.sst)*npp.avg_npp)/(51.7+npp.avg_npp)
+    laws2011b=0.04756*(0.78-((0.43*sst.sst)/30))*npp.avg_npp**0.307
     laws2000=(0.62-(0.02*sst.sst))
     henson2011=(0.23*np.exp(-0.08*sst.sst))
     pe_dunne=-0.0101*sst.sst+0.0582*np.log((npp.avg_npp/12)/zeu)+0.419
@@ -747,30 +758,31 @@ def save_landschutzer_2018_seamask():
     seamask.to_netcdf('processed/seamask.nc')
 # %% RUN FUNCS HERE.
 
-print('Regridding the NPP models')
-#create_npp_avgs() #Regrid the NPP models.
-print("Running TPCA to month calc")
-convert_tpca_to_month()
-print('Regridding TPCA - xesmf')
-regrid_tpca()
-print('Calculate when ENSOs occured +- 0.5 MEI')
-find_enso_events()
-print('Convert our primary productivity moorings to netcdf')
-npp_csvs_to_nc()
-#combine_csvs_to_nc() #This one should already have been run. 
+# print('Regridding the NPP models')
+# #create_npp_avgs() #Regrid the NPP models.
+# print("Running TPCA to month calc")
+# convert_tpca_to_month()
+# print('Regridding TPCA - xesmf')
+# regrid_tpca()
+# print('Calculate when ENSOs occured +- 0.5 MEI')
+# find_enso_events()
+# print('Convert our primary productivity moorings to netcdf')
+# npp_csvs_to_nc()
+# #combine_csvs_to_nc() #This one should already have been run. 
 print('Working out the SST for each mooring')
 cut_sst_moorings()
-print('Calculate earth size per pixel')
-make_earth_grid_m2()
-print('Convert uatm carbon to grams of carbon')
-#carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
+# print('Calculate earth size per pixel')
+# make_earth_grid_m2()
+# print('Convert uatm carbon to grams of carbon')
+# #carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
 make_fratio_nc()
-print('Combining export data to processed/combined_dataset/month_data_exports.nc')
-calculate_exports_add_to_mooring()
 print('Adding Cafe and SST')
-add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc')
 add_cafe_and_sst(fp='processed/combined_dataset/month_data.nc')
+print('Combining export data to processed/combined_dataset/month_data_exports.nc')
+
+calculate_exports_add_to_mooring()
+
 print('Save landschutzer 2018 seamask')
 save_landschutzer_2018_seamask() #Just to make sure that it stays in the folder as the 2020 version doesnt have this.
 

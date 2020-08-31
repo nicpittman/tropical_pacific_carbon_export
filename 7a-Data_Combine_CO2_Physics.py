@@ -312,8 +312,8 @@ for mooring_name in moorings:
                 pass
             
             
-            holder['avgnpp']=holder[['viirs_eppley','viirs_cbpm','viirs_vgpm','sw_eppley','sw_cbpm','sw_vgpm','mod_cafe','mod_eppley','mod_cbpm','mod_vgpm']].mean(axis=1)
-    
+            holder['avgnpp']=holder[['viirs_eppley','viirs_cbpm','viirs_vgpm','sw_eppley','sw_cbpm','sw_cafe','sw_vgpm','mod_cafe','mod_eppley','mod_cbpm','mod_vgpm']].mean(axis=1)
+            holder['cafe']=holder[['sw_cafe','mod_cafe']].mean(axis=1)
             #Use pad and d1 so we get the months as is
             #Something wrong with Date=d1 in some cases, so convert to a string and it can work.
             try:

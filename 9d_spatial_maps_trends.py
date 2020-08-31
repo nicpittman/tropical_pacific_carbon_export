@@ -150,7 +150,9 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     
     if type(trend_conversion)!=type(None):
         hh['trend']=hh['trend']*trend_conversion
-        
+   
+    
+    #print(hh.sel(lat=0,lon=165,method='nearest').mean(dim='time'))    
     ax2=plt.subplot(sb1,sb2,axn+1)
     
     m1=plot_basemap()
@@ -158,7 +160,7 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     if type(levs_trend)==type(None):
         f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both')
     else:
-        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both',levels=levs_trend) #11 colors
+        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both',levels=levs_trend) #11 colors 
     cb=plt.colorbar(f,ax=ax2,extend='both',fraction=fr)
         
     m1.contourf(lo1,la1,hh.pval,colors='none',hatches=['.'],levels=[0,0.05])
@@ -244,7 +246,7 @@ plot_basemap_row(fig,axn=1,
                  title='New Production',
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
                  levs=np.arange(0,0.26,0.025),
-                 levs_trend=np.arange(-2.5,2.6,0.1),
+                 levs_trend=np.arange(-2,2.1,0.25),
                  trend_conversion=1000,
                  cmap='viridis')
 
@@ -253,8 +255,8 @@ plot_basemap_row(fig,axn=3,
                  units='gC m$^{-2}$ day$^{-1}$',
                  title='Air-Sea CO2 flux',
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
-                 levs=np.arange(-0.15,0.16,0.01),
-                 levs_trend=np.arange(-2.5,2.6,0.1),
+                 levs=np.arange(-0.12,0.13,0.02),
+                 levs_trend=np.arange(-2,2.1,0.5),
                  trend_conversion=1000,
                  cmap='RdBu_r')
 
@@ -264,9 +266,9 @@ plot_basemap_row(fig,axn=5,
                  units='gC m$^{-2}$ day$^{-1}$',
                  title='CO2 flux - New Production',
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',                 
-                 levs=np.arange(-0.12,0.15,0.01),
+                 levs=np.arange(-0.12,0.13,0.02),
                  
-                 levs_trend=np.arange(-2.5,2.6,0.1),
+                 levs_trend=np.arange(-2,2.1,0.5),
                  trend_conversion=1000,
                  cmap='RdBu_r')
 
@@ -278,7 +280,7 @@ plot_basemap_row(fig,axn=7,
                  units_tr='Degrees C year$^{-1}$',
                  levs=np.arange(20,32,1),
                  
-                 levs_trend=np.arange(-0.1,0.11,0.01),
+                 levs_trend=np.arange(-0.06,0.07,0.01),
                  #trend_conversion=1000,
                  cmap='viridis')
 
@@ -290,7 +292,7 @@ plot_basemap_row(fig,axn=9,
                  units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
                  levs=np.arange(0,0.65,0.05),
                  
-                 levs_trend=np.arange(-4,4.1,0.1),
+                 levs_trend=np.arange(-4,4.1,1),
                  trend_conversion=1000,
                  cmap='viridis')
 
@@ -299,10 +301,11 @@ plot_basemap_row(fig,axn=11,
                   units='gC m$^{-2}$',
                   title='pCO2t',
                   units_tr='mgC m$^{-2}$ year$^{-1}$',
-                  levs=np.arange(5.5,9.5,0.25),
-                  levs_trend=np.arange(-100,100,10),
+                  levs=np.arange(5.5,9.5,0.5),
+                  levs_trend=np.arange(0,100,10),
                   trend_conversion=1000,
-                  cmap='RdBu_r')
+                  cmap='viridis',
+                  cmaptr='Reds')
 
 
 

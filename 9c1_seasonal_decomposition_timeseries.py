@@ -309,6 +309,6 @@ for typ in tyyp:
     
             
     plt.tight_layout()     
-    #plt.savefig('figs/Figure3_decomp_megaplot'+div_factor.name+typ+'.png',dpi=200)
+    plt.savefig('figs/Figure3_small'+typ+'.png',dpi=200)
     plt.show()
 
