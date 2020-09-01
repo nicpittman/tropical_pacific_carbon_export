@@ -113,8 +113,7 @@ for typ in tyyp:
     
         div_factor=dat.laws2011a#dat.laws2011b#f_ratio#laws2011b_vgpm
     
-        title=str(mooring_name)#+' (CO2 flux - New Production)'
-     
+        title=str(mooring_name[0:3]+'\xb0'+mooring_name[3:4])
         epp=pd.DataFrame([npp.mod_eppley.values,npp.sw_eppley.values]).mean()/1000*div_factor
         cbpm=pd.DataFrame([npp.mod_cbpm.values,npp.sw_cbpm.values,npp.viirs_cbpm.values]).mean()/1000*div_factor
         vgpm=pd.DataFrame([npp.sw_vgpm.values,npp.mod_vgpm.values,npp.viirs_vgpm.values]).mean()/1000*div_factor

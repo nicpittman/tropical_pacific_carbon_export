@@ -100,7 +100,7 @@ for i, mooring_name in enumerate(moorings):
     smallnext=bignext+2
 
     ax1=fig.add_subplot(gs[start:bignext,0])
-    ax1.set_title(str(mooring_name),fontsize=fs+4)
+    ax1.set_title(str(str(mooring_name[0:3]+'\xb0'+mooring_name[3:4])),fontsize=fs+4)
   
     #ax1.plot(JMAco2flux_data.Date,moles_to_carbon(JMAco2flux_data.flux.values)/365,linewidth=4,label='Iida CO$_{2}$ flux',c='mediumblue')#'medium_')
     ax1.plot(LandSch_co2flux_data.Date.astype('datetime64[M]'),moles_to_carbon(LandSch_co2flux_data.fgco2_smoothed.values)/365,linewidth=4,label='Landschutzer CO$_{2}$ flux',c='slategray' )

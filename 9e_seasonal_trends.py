@@ -43,7 +43,7 @@ def m_fmt(x, pos=None):
     return month_fmt(x)#[0]
 
 
-ax = plt.subplot(6,2,5)
+ax = plt.subplot(6,2,6)
 cols=['#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4']
 cols=['#d73027','#fc8d59','#fee090','#d1e5f0','#91bfdb','#4575b4'][::-1]
 
@@ -64,7 +64,7 @@ for i, mooring in enumerate(dat.Mooring.values):
  
     plt.plot((asfdiff.month-1).astype('datetime64[M]'),asfdiff,c=cols[i],linewidth=3,label=moorings[i])
   
-plt.title('e) Air-Sea Flux - New Production seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('f) Air-sea flux - new production seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
@@ -72,7 +72,7 @@ plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
 plt.grid()
 
-ax = plt.subplot(6,2,6)
+ax = plt.subplot(6,2,5)
 
 means=pd.DataFrame()
 final_mooring_enso=pd.DataFrame()
@@ -115,7 +115,7 @@ for i, mooring_name in enumerate(moorings):
         'Neutral NP':neutral1.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
-    ensoavgs=pd.Series(x,name=mooring_name)
+    ensoavgs=pd.Series(x,name=mooring_name[0:3]+'\xb0'+mooring_name[3:4]) #Add degrees to the lab
     final_mooring_enso=final_mooring_enso.append(ensoavgs)
     
     avgz=pd.Series(avgs,name=mooring_name)
@@ -135,15 +135,17 @@ for x in final_mooring_enso.T.iterrows():
 plt.grid()
 
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
-plt.title('f)  Air-Sea Flux - New Production ENSO',loc='left')
-print(final_mooring_enso_avgs)
+plt.title('e)  Air-sea flux - new production ENSO',loc='left')
+#print(final_mooring_enso_avgs)
+print('AIR SEA FLUX MINUS NEW PROD')
+print(final_mooring_enso.mean())
 ENSOAVG=final_mooring_enso_avgs
 
 
 # %% New Production
 
 
-ax = plt.subplot(6,2,1)
+ax = plt.subplot(6,2,2)
 cols=['#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4']
 cols=['#d73027','#fc8d59','#fee090','#d1e5f0','#91bfdb','#4575b4'][::-1]
 
@@ -158,14 +160,14 @@ for i, mooring in enumerate(dat.Mooring.values):
  
     plt.plot((year.month-1).astype('datetime64[M]'),pco2,c=cols[i],linewidth=3,label=moorings[i])
 
-plt.title('a) New Production seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('b) New production seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
 plt.grid()
 
 
-ax = plt.subplot(6,2,2)
+ax = plt.subplot(6,2,1)
 
 means=pd.DataFrame()
 final_mooring_enso=pd.DataFrame()
@@ -209,7 +211,7 @@ for i, mooring_name in enumerate(moorings):
         'Neutral NP':neutral1.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
-    ensoavgs=pd.Series(x,name=mooring_name)
+    ensoavgs=pd.Series(x,name=mooring_name[0:3]+'\xb0'+mooring_name[3:4])
     final_mooring_enso=final_mooring_enso.append(ensoavgs)
     
     avgz=pd.Series(avgs,name=mooring_name)
@@ -227,13 +229,14 @@ for x in final_mooring_enso.T.iterrows():
             
     plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
 plt.grid()
-
+print('NEW PRODUCTION')
+print(final_mooring_enso.mean())
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
-plt.title('b)  New Production ENSO',loc='left')
+plt.title('a)  New production ENSO',loc='left')
 
 # %%    PCO2 section
    
-plt.subplot(627)
+plt.subplot(628)
 
 
 cols=['#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4']
@@ -253,7 +256,7 @@ for i, mooring_name in enumerate(moors):
  
     plt.plot((year.month-1).astype('datetime64[M]'),pco2,c=cols[i],linewidth=3,label=moorings[i])
 
-plt.title('g) pCO2t seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('h) pCO2t seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
@@ -262,7 +265,7 @@ plt.ylabel('gC m$^{-2}$')
 plt.grid()
 
 #ENSO BREAKDOWN
-plt.subplot(628)
+plt.subplot(627)
 #Change startyear to 1980 for full timeseries and will auto save _alltime.
 startyear=str(1997)
 
@@ -314,7 +317,7 @@ for i, mooring_name in enumerate(moors):
         'Neutral CO2':neutral1.pco2t,
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
-    ensoavgs=pd.Series(x,name=moorings[i])
+    ensoavgs=pd.Series(x,name=moorings[i][0:3]+'\xb0'+moorings[i][3:4])
     final_mooring_enso=final_mooring_enso.append(ensoavgs)
     
     avgz=pd.Series(avgs,name=moorings[i])
@@ -333,12 +336,13 @@ for x in final_mooring_enso_avgs.T.iterrows():
     plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
 plt.grid()
 plt.ylabel('gC m$^{-2}$')
-plt.title('h) pCO2t ENSO',loc='left')
-
+plt.title('g) pCO2t ENSO',loc='left')
+print('pCO2t')
+print(final_mooring_enso_avgs.mean())
 
 
 # %% How about the SST
-plt.subplot(629)
+plt.subplot(6,2,10)
 
 
 cols=['#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4']
@@ -357,7 +361,7 @@ for i, mooring in enumerate(dat.Mooring.values):
     plt.plot((year.month-1).astype('datetime64[M]'),pco2,c=cols[i],linewidth=3,label=moorings[i])
 
 
-plt.title('i) SST seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('j) SST seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 #plt.axhline(0,c='gray')
 #plt.text(np.datetime64('1970-07-15'),0.025,'Air-Sea flux Dominated',fontsize=11)
 #plt.text(np.datetime64('1970-07-15'),-0.02,'Biology Dominated',fontsize=11)
@@ -371,7 +375,7 @@ plt.grid()
 #ENSO BREAKDOWN
 
 
-plt.subplot(6,2,10)
+plt.subplot(6,2,9)
 #Change startyear to 1980 for full timeseries and will auto save _alltime.
 startyear=str(1997)
 
@@ -413,7 +417,7 @@ for i, mooring_name in enumerate(lns):
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
-    ensoavgs=pd.Series(x,name=moorings[i])
+    ensoavgs=pd.Series(x,name=moorings[i][0:3]+'\xb0'+moorings[i][3:4])
     final_mooring_enso=final_mooring_enso.append(ensoavgs)
     
 for x in final_mooring_enso.T.iterrows():
@@ -431,13 +435,14 @@ plt.grid()
 
 plt.xlabel('Mooring')
 plt.ylabel('Degree C')
-plt.title('j) SST ENSO',loc='left')
-
+plt.title('i) SST ENSO',loc='left')
+print('SST')
+print(final_mooring_enso.mean())
 
 
 # %% Air Sea Flux
 
-ax = plt.subplot(6,2,3)
+ax = plt.subplot(6,2,4)
 
 fp='processed/combined_dataset/month_data_exports.nc'
 dat=xr.open_mfdataset(fp)
@@ -453,7 +458,7 @@ for i, mooring in enumerate(dat.Mooring.values):
 
    
    
-plt.title('c) Air-Sea Flux seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('d) Air-sea flux seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
 #plt.legend()
@@ -461,7 +466,7 @@ plt.ylabel('gC m$^{-2}$ day$^{-1}$')
 plt.grid()
 
 
-ax = plt.subplot(6,2,4)
+ax = plt.subplot(6,2,3)
 
 
 means=pd.DataFrame()
@@ -507,7 +512,7 @@ for i, mooring_name in enumerate(moorings):
         'Neutral NP':neutral1.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
-    ensoavgs=pd.Series(x,name=mooring_name)
+    ensoavgs=pd.Series(x,name=mooring_name[0:3]+'\xb0'+mooring_name[3:4])
     final_mooring_enso=final_mooring_enso.append(ensoavgs)
     
     avgz=pd.Series(avgs,name=mooring_name)
@@ -527,12 +532,13 @@ for x in final_mooring_enso.T.iterrows():
 plt.grid()
 
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
-plt.title('d)  Air-Sea Flux ENSO',loc='left')
-
+plt.title('c)  Air-sea flux ENSO',loc='left')
+print('AIR SEA FLUX')
+print(final_mooring_enso.mean())
 
 #%% How about the windspeed
 
-plt.subplot(6,2,11)
+plt.subplot(6,2,12)
 
 fp='processed/combined_dataset/month_data_exports.nc'
 dat=xr.open_mfdataset(fp)
@@ -546,18 +552,18 @@ for i, mooring in enumerate(dat.Mooring.values):
     plt.plot((year.month-1).astype('datetime64[M]'),pco2,c=cols[i],linewidth=3,label=moorings[::-1][i])
 
 
-plt.title('k) Windspeed seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('l) Windspeed seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
 plt.legend(ncol=2)
 plt.xlabel('Month')
-plt.ylabel('Windspeed (m/s)')
+plt.ylabel('Windspeed (m s$^{-1}$)')
 plt.grid()
 
 #ENSO BREAKDOWN
 
-plt.subplot(6,2,12)
+plt.subplot(6,2,11)
 
 means=pd.DataFrame()
 final_mooring_enso=pd.DataFrame()
@@ -595,7 +601,7 @@ for i, mooring_name in enumerate(lns):
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
-    ensoavgs=pd.Series(x,name=moorings[i])
+    ensoavgs=pd.Series(x,name=moorings[i][0:3]+'\xb0'+moorings[i][3:4])
     final_mooring_enso=final_mooring_enso.append(ensoavgs)
     
 for x in final_mooring_enso.T.iterrows():
@@ -613,8 +619,10 @@ plt.grid()
 plt.legend(final_mooring_enso.columns)
 
 plt.xlabel('Mooring')
-plt.ylabel('Windspeeed (m/s)')
-plt.title('l) Windspeed ENSO',loc='left')
+plt.ylabel('Windspeeed (m s$^{-1}$)')
+plt.title('k) Windspeed ENSO',loc='left')
+print('WINDSPEED')
+print(final_mooring_enso.mean())
 plt.tight_layout()
 
 plt.savefig('figs/Figure5a_ENSO_seasonality.png',dpi=200)
