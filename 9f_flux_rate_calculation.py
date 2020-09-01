@@ -160,27 +160,32 @@ for i,ty in enumerate(limits):
     #JMC.plot(label='Iida flux',ax=ax)
     #YAS.plot(label='Yasanaka flux',ax=ax)
     #ax.plot(CO2.time,CO2,c='k')
-    CO2.plot(label='CO2 outgassing',ax=ax,c='k')
+   
     
-    CO=CO2.sel(time=slice('2000-01-01','2017-12-01'))
+    CO=CO2.sel(time=slice('2000-01-01','2019-12-01'))
     trenCO=trends(ax,CO.time.values,CO.values,c='k')
     annual_rate_of_changeCO=trenCO[0]*365
  
     #henson.plot(label='Henson',ax=ax)
-    laws2011a.plot(label='Laws 2011a',ax=ax,c='r')
+    
     #laws2011b.plot(label='Laws2011b',ax=ax,c='pink')
             
-    mod=laws2011a.sel(time=slice('2000-01-01','2017-12-01'))
+    mod=laws2011a.sel(time=slice('2000-01-01','2019-12-01'))
     trenNP=trends(ax,mod.time.values,mod.values)
     annual_rate_of_changeNP=trenNP[0]*365
    
    
     #(CO2+laws2011a).plot(label='combined',ax=ax,c='m')
     if i==3:
-        trim.plot(label='DeVries and Webber 2017',ax=ax,c='purple',linewidth=2)#,linestyle='--')
+        trim.plot(label='DeVries and Webber 2017',ax=ax,c='darkorange',linewidth=2)#,linestyle='--')
     #laws2011b.plot(label='Laws2011b',ax=ax,c='slategray',linewidth=2)
         dunne.sel(time=slice('1997-01-01','2019-07-01')).plot(label='Dunne 2005',ax=ax,c='darkblue')
         laws2000.plot(label='Laws2000',ax=ax,c='green',linestyle='--')
+        laws2011a.plot(label='Laws 2011a',ax=ax,c='r',linewidth=2.5)
+        CO2.plot(label='CO2 outgassing',ax=ax,c='k',linewidth=2.5)
+    else:
+        laws2011a.plot(label='Laws 2011a',ax=ax,c='r')
+        CO2.plot(label='CO2 outgassing',ax=ax,c='k')
         #henson.plot(label='Henson',ax=ax,c='deeppink')
     
     

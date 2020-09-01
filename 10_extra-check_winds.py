@@ -51,6 +51,7 @@ plt.scatter(dat.delta_pCO2,(dat.co2flux4_land_gmyr/365)*1000,label='delta pCO2 (
 plt.xlabel('pCO2 (uatm')
 plt.ylabel('CO2 flux (mgC/day)')
 plt.title('pCO2 vs CO2 flux')
+print('pCO2 vs CO2 flux')
 trends(dat.delta_pCO2.values.flatten(),((dat.co2flux4_land_gmyr/365)*1000).values.flatten(),c='b')
 
 plt.subplot(344)
@@ -58,6 +59,7 @@ plt.scatter(dat.delta_pCO2,dat.laws2011a*dat.cafe,label='delta pCO2 (uatm)',alph
 plt.ylabel('New Production (mgC/day)')
 plt.xlabel('pCO2 (uatm')
 plt.title('pCO2 vs New Production')
+print('pCO2 vs New Production')
 trends((dat.laws2011a*dat.cafe).values.flatten(),((dat.co2flux4_land_gmyr/365)*1000).values.flatten(),c='b')
 
 
@@ -66,8 +68,11 @@ plt.scatter(dat.windspeed,dat.laws2011a*dat.cafe,label='NP (mgC/day)',alpha=0.9)
 plt.scatter(dat.windspeed,(dat.co2flux4_land_gmyr/365)*1000,label='CO2 flux (mgC/day)',alpha=0.5)
 plt.scatter(dat.windspeed,dat.delta_pCO2,label='delta pCO2 (uatm)',alpha=0.45)
 #plt.legend()
+print('Windspeed and NP')
 trends(dat.windspeed.values.flatten(),(dat.laws2011a*dat.cafe).values.flatten(),c='b')
+print('Windspeed and CO2 flux')
 trends(dat.windspeed.values.flatten(),((dat.co2flux4_land_gmyr/365)*1000).values.flatten(),c='orange')
+print('Windspeed and dpCO2')
 trends(dat.windspeed.values.flatten(),((dat.delta_pCO2)).values.flatten(),c='darkgreen')
 plt.xlabel('Windspeed m/s')
 plt.ylabel('NP and CO2 flux (mgC/day)')
