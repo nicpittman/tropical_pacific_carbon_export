@@ -88,12 +88,15 @@ grid=grid.where(seamask.seamask==1)
 #fig=plt.figure(figsize=(8,10))
 
 limits=[['West',165,180],
-      ['Central',190,205],
-      ['East',230,245],
-      #['Basin',180,280]]
-      ['Basin',150,280]]
-      #['Basin',135,280]] #Le Borgne 2002 Warm Pool
-      
+      ['Central',205,220],
+      ['East',235,250],
+      #['Basin_check',180,280]]
+      ['Basin',150,280]] #As used in the paper
+
+      #['Borgne',135,280]] #Le Borgne 2002 Warm Pool
+      #['Wyrtiki',180,280]]
+#Borgne is lims=1
+#Wyrtiki is both lims=5 and 10
 lims=10
 
 mass_table=pd.DataFrame({
@@ -197,9 +200,9 @@ for i,ty in enumerate(limits):
     if i <=2:
         #ax.set_ylim([0,0.27*1e15])131
         
-        ax.set_ylim([-0.005*1e15,0.175*1e15])
+        ax.set_ylim([-0.005*1e15,0.2*1e15])
         ax.set_title(chr(97+i)+') '+ty[0]+' Pacific',pad=16)
-        ax.set_ylabel('New Production / CO$_{2}$ flux (PgC yr$^{-1}$)')
+        ax.set_ylabel('New production / CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.yaxis.set_major_formatter(FixedOrderFormatter(15))
 
        #y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
@@ -225,8 +228,11 @@ for i,ty in enumerate(limits):
     #print('gridsize= '+str(gs.values/1e14))
     
     print('CO2: '+str(dat.CO2.mean()/1e15))
+    print('CO2 STD: '+str(dat.CO2.std()/1e15))
     print('henson: '+str(dat.henson.mean()/1e15))
     print('laws2011a: '+str(dat.laws2011a.mean()/1e15))
+    print('laws2011a STD: '+str(dat.laws2011a.std()/1e15))
+    
     print('laws2011b: '+str(dat.laws2011b.mean()/1e15))
     print('laws2000: '+str(dat.laws2000.mean()/1e15))
     print('Dunne: '+str(dat.dunne.mean()/1e15))
@@ -329,10 +335,10 @@ for i,ty in enumerate(limits):
         d=a-b
         return (c*100).round(1),d.round(3)
         
-    p0=perc(means.laws2011a.iloc[2],means.laws2011a.iloc[4]) #Nina
-    p1=(perc(means.laws2011a.iloc[0],means.laws2011a.iloc[4])) #Nino
-    p2=(perc(means.CO2.iloc[2],means.CO2.iloc[4])) #Nina
-    p3=(perc(means.CO2.iloc[0],means.CO2.iloc[4])) #Nina
+    p0=(perc(means.laws2011a.iloc[4],means.laws2011a.iloc[2])) #Nina
+    p1=(perc(means.laws2011a.iloc[4],means.laws2011a.iloc[0])) #Nino
+    p2=(perc(means.CO2.iloc[4],means.CO2.iloc[2])) #Nina
+    p3=(perc(means.CO2.iloc[4],means.CO2.iloc[0])) #Nina
     
     print('Nina change% NP: '+str(p0))
     print('Nino change% NP: '+str(p1))
@@ -342,22 +348,22 @@ for i,ty in enumerate(limits):
     mass_table=mass_table.append(pd.DataFrame({
     'Region':ty[0],
     'Area':str((gs.values/1e12).round(3))+' (10^12m)',
-    'NP Mean':str(nd.laws2011a.round(3).values[0])+' PgC/yr',
-    'NP Neutral':str(nc.laws2011a.round(3).values[0])+' PgC/yr',
-    'NP El Nino':str(na.laws2011a.round(3).values[0])+' PgC/yr',
-    'NP La Nina':str(nb.laws2011a.round(3).values[0])+' PgC/yr',
-    'NP El Nino Diff':str(p0[0])+'% ,'+str(p0[1])+'PgC/yr',
-    'NP La Nina Diff':str(p1[0])+'% ,'+str(p1[1])+'PgC/yr',
-    'NP Trends':str((annual_rate_of_changeNP/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)) +' TgC/yr-2',
-    'NP Pval':trenNP[3].round(7),
-    'CO2 Mean':str(nd.CO2.round(3).values[0])+' PgC/yr',
-    'CO2 Neutral':str(nc.CO2.round(3).values[0])+' PgC/yr',
-    'CO2 El Nino':str(na.CO2.round(3).values[0])+' PgC/yr',
-    'CO2 La Nina':str(nb.CO2.round(3).values[0])+' PgC/yr',
-    'CO2 El Nino Diff':str(p2[0])+'% ,'+str(p2[1])+'PgC/yr',
-    'CO2 La Nina Diff':str(p3[0])+'% ,'+str(p3[1])+'PgC/yr',
-    'CO2 Trends':str((annual_rate_of_changeCO/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)) +' TgC/yr-2',
-    'CO2 Pval':trenCO[3].round(7)},index=[i]))
+    'NP Mean':str(nd.laws2011a.round(3).values[0])+' PgC yr-1',
+    'NP Neutral':str(nc.laws2011a.round(3).values[0])+' PgC yr-1',
+    'NP El Nino':str(na.laws2011a.round(3).values[0])+' PgC yr-1',
+    'NP La Nina':str(nb.laws2011a.round(3).values[0])+' PgC yr-1',
+    'NP El Nino Diff':str(p0[0])+'% ,'+str(p0[1])+'PgC yr-1',
+    'NP La Nina Diff':str(p1[0])+'% ,'+str(p1[1])+'PgC yr-1',
+    'NP Trends':str((annual_rate_of_changeNP/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)) +' TgC yr-2',
+    'NP Pval':trenNP[3].round(10),
+    'CO2 Mean':str(nd.CO2.round(3).values[0])+' Pg yr-1',
+    'CO2 Neutral':str(nc.CO2.round(3).values[0])+' PgC yr-1',
+    'CO2 El Nino':str(na.CO2.round(3).values[0])+' PgC yr-1',
+    'CO2 La Nina':str(nb.CO2.round(3).values[0])+' PgC yr-1',
+    'CO2 El Nino Diff':str(p2[0])+'% ,'+str(p2[1])+'PgC yr-1',
+    'CO2 La Nina Diff':str(p3[0])+'% ,'+str(p3[1])+'PgC yr-1',
+    'CO2 Trends':str((annual_rate_of_changeCO/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)) +' TgC yr-2',
+    'CO2 Pval':trenCO[3].round(10)},index=[i]))
         
     
     
@@ -365,7 +371,7 @@ for i,ty in enumerate(limits):
     
 means.to_csv('processed/results/enso_basin_means.csv',index=False)
 mass_table=mass_table.T
-mass_table.to_csv('processed/results/carbon_mass.csv')
+mass_table.to_csv('processed/results/carbon_mass.csv',header=False)
 plt.tight_layout()
 plt.savefig('figs/Figure6_basinavg_pG.png',dpi=200)
 plt.show()
