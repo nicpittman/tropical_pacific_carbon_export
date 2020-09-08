@@ -175,7 +175,7 @@ print('Yasanaka Data was obtained from private communication. Please email her f
 print('---------------------------------------------')
 
 #Uncomment this to preprocess the JAMS and Yasanaka data.
-process_jams()
+#process_jams()
 #process_yasanaka()
 out_path='processed/flux/'    
 #new_flux=xr.open_mfdataset(out_path+'jma_flux.nc')
@@ -209,15 +209,15 @@ mooring_sites=['165E','170W','155W','140W','125W','110W']
 #dat=new_flux
 
 moorings=[]
-dat=xr.open_mfdataset(out_path+'jma_flux.nc')
+#dat=xr.open_mfdataset(out_path+'jma_flux.nc')
 
 land_moorings=[]
 yasanaka_moorings=[]
 
 for ii,ll in enumerate(lons):
-    datslice=dat.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon'])
-    datslice=datslice.assign_coords(Mooring=mooring_sites[ii])
-    moorings.append(datslice)
+    #datslice=dat.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon'])
+    #datslice=datslice.assign_coords(Mooring=mooring_sites[ii])
+    #moorings.append(datslice)
     
     #yasanaka_datslice=yasanaka.sel(lat=slice(lats[1],lats[0]),lon=slice(ll[0],ll[1])).mean(dim=['lat','lon']).assign_coords(Mooring=mooring_sites[ii])
     #yasanaka_moorings.append(yasanaka_datslice)
@@ -234,9 +234,9 @@ for ii,ll in enumerate(lons):
 #yasanaka_mooring_flux=xr.concat(yasanaka_moorings,dim='Mooring')    
 #yasanaka_mooring_flux.to_netcdf(out_path+'yasanaka_mooring_co2_flux.nc')
 
-mooring_fluxes=xr.concat(moorings,dim='Mooring')
-mooring_fluxes.to_netcdf(out_path+'JMA_mooring_co2_flux.nc') #Renamed this filepath to JMA_*
+#mooring_fluxes=xr.concat(moorings,dim='Mooring')
+#mooring_fluxes.to_netcdf(out_path+'JMA_mooring_co2_flux.nc') #Renamed this filepath to JMA_*
 
 
 land_mooring_flux=xr.concat(land_moorings,dim='Mooring')
-land_mooring_flux.to_netcdf(out_path+'landsch_mooring_co2_flux.nc')
+land_mooring_flux.to_netcdf(out_path+'landsch_mooring_co2_flux_20.nc')

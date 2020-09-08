@@ -183,12 +183,12 @@ for i,ty in enumerate(limits):
         trim.plot(label='DeVries and Webber 2017',ax=ax,c='darkorange',linewidth=2)#,linestyle='--')
     #laws2011b.plot(label='Laws2011b',ax=ax,c='slategray',linewidth=2)
         dunne.sel(time=slice('1997-01-01','2019-07-01')).plot(label='Dunne 2005',ax=ax,c='darkblue')
-        laws2000.plot(label='Laws2000',ax=ax,c='green',linestyle='--')
+        laws2000.plot(label='Laws 2000',ax=ax,c='green',linestyle='--')
         laws2011a.plot(label='Laws 2011a',ax=ax,c='r',linewidth=2.5)
-        CO2.plot(label='CO2 outgassing',ax=ax,c='k',linewidth=2.5)
+        CO2.plot(label='CO$_{2}$ outgassing',ax=ax,c='k',linewidth=2.5)
     else:
         laws2011a.plot(label='Laws 2011a',ax=ax,c='r')
-        CO2.plot(label='CO2 outgassing',ax=ax,c='k')
+        CO2.plot(label='CO$_{2}$ outgassing',ax=ax,c='k')
         #henson.plot(label='Henson',ax=ax,c='deeppink')
     
     

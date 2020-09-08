@@ -58,7 +58,7 @@ print((dat.sel(Mooring=155).co2flux4_land_gmyr/365).min().values) #Min value at 
 for i, mooring_name in enumerate(moorings):
     print(mooring_name)
     #JMAco2flux_data=xr.open_mfdataset('processed/flux/JMA_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
-    LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
+    LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux_20.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
     npp=xr.open_mfdataset('processed/flux/npp.nc').sel(Mooring=mooring_name)
     #mooring_obs_npp=npp_insitu[((npp_insitu.mooring.astype(int)>=int(mooring_name[:-1])-1)&(npp_insitu.mooring.astype(int)<=int(mooring_name[:-1])+1))]
     

@@ -1,19 +1,18 @@
-,0,1,2,3
 Region,West,Central,East,Basin
 Area,3.684 (10^12m),3.684 (10^12m),3.684 (10^12m),31.428 (10^12m)
-NP Mean,0.096 PgC/yr,0.115 PgC/yr,0.136 PgC/yr,1.024 PgC/yr
-NP Neutral,0.091 PgC/yr,0.114 PgC/yr,0.136 PgC/yr,1.013 PgC/yr
-NP El Nino,0.089 PgC/yr,0.102 PgC/yr,0.128 PgC/yr,0.954 PgC/yr
-NP La Nina,0.103 PgC/yr,0.122 PgC/yr,0.14 PgC/yr,1.066 PgC/yr
-NP El Nino Diff,"13.2% ,0.012PgC/yr","7.0% ,0.008PgC/yr","2.9% ,0.004PgC/yr","5.2% ,0.053PgC/yr"
-NP La Nina Diff,"-2.2% ,-0.002PgC/yr","-10.5% ,-0.012PgC/yr","-5.9% ,-0.008PgC/yr","-5.8% ,-0.059PgC/yr"
-NP Trends,-0.701 ± 0.156 TgC/yr-2,-0.411 ± 0.146 TgC/yr-2,-0.837 ± 0.149 TgC/yr-2,-5.791 ± 1.015 TgC/yr-2
-NP Pval,1.17e-05,0.0051865,1e-07,0.0
-CO2 Mean,0.018 PgC/yr,0.053 PgC/yr,0.08 PgC/yr,0.471 PgC/yr
-CO2 Neutral,0.011 PgC/yr,0.049 PgC/yr,0.083 PgC/yr,0.46 PgC/yr
-CO2 El Nino,0.005 PgC/yr,0.027 PgC/yr,0.068 PgC/yr,0.339 PgC/yr
-CO2 La Nina,0.03 PgC/yr,0.069 PgC/yr,0.083 PgC/yr,0.536 PgC/yr
-CO2 El Nino Diff,"172.7% ,0.019PgC/yr","40.8% ,0.02PgC/yr","0.0% ,0.0PgC/yr","16.5% ,0.076PgC/yr"
-CO2 La Nina Diff,"-54.5% ,-0.006PgC/yr","-44.9% ,-0.022PgC/yr","-18.1% ,-0.015PgC/yr","-26.3% ,-0.121PgC/yr"
-CO2 Trends,-0.309 ± 0.156 TgC/yr-2,-0.412 ± 0.146 TgC/yr-2,-0.105 ± 0.149 TgC/yr-2,-2.065 ± 1.015 TgC/yr-2
-CO2 Pval,0.1206323,0.1419239,0.633493,0.108784
+NP Mean,0.074 PgC yr-1,0.113 PgC yr-1,0.135 PgC yr-1,0.938 PgC yr-1
+NP Neutral,0.067 PgC yr-1,0.109 PgC yr-1,0.134 PgC yr-1,0.914 PgC yr-1
+NP El Nino,0.068 PgC yr-1,0.092 PgC yr-1,0.12 PgC yr-1,0.825 PgC yr-1
+NP La Nina,0.084 PgC yr-1,0.125 PgC yr-1,0.143 PgC yr-1,1.011 PgC yr-1
+NP El Nino Diff,"-20.2% ,-0.017PgC yr-1","-12.8% ,-0.016PgC yr-1","-6.3% ,-0.009PgC yr-1","-9.6% ,-0.097PgC yr-1"
+NP La Nina Diff,"-1.5% ,-0.001PgC yr-1","18.5% ,0.017PgC yr-1","11.7% ,0.014PgC yr-1","10.8% ,0.089PgC yr-1"
+NP Trends,-0.802 ± 0.13 TgC yr-2,-0.567 ± 0.16 TgC yr-2,-0.808 ± 0.203 TgC yr-2,-5.884 ± 1.1 TgC yr-2
+NP Pval,2.6e-09,0.0004920892,9.16355e-05,2.101e-07
+CO2 Mean,0.018 Pg yr-1,0.07 Pg yr-1,0.082 Pg yr-1,0.471 Pg yr-1
+CO2 Neutral,0.011 PgC yr-1,0.068 PgC yr-1,0.085 PgC yr-1,0.46 PgC yr-1
+CO2 El Nino,0.005 PgC yr-1,0.046 PgC yr-1,0.071 PgC yr-1,0.339 PgC yr-1
+CO2 La Nina,0.03 PgC yr-1,0.081 PgC yr-1,0.084 PgC yr-1,0.536 PgC yr-1
+CO2 El Nino Diff,"-63.3% ,-0.019PgC yr-1","-16.0% ,-0.013PgC yr-1","1.2% ,0.001PgC yr-1","-14.2% ,-0.076PgC yr-1"
+CO2 La Nina Diff,"120.0% ,0.006PgC yr-1","47.8% ,0.022PgC yr-1","19.7% ,0.014PgC yr-1","35.7% ,0.121PgC yr-1"
+CO2 Trends,-0.408 ± 0.13 TgC yr-2,-0.573 ± 0.16 TgC yr-2,0.155 ± 0.203 TgC yr-2,-2.486 ± 1.1 TgC yr-2
+CO2 Pval,0.0125512681,0.0055510691,0.4130897626,0.0198793657

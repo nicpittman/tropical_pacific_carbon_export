@@ -95,24 +95,36 @@ for i, mooring_name in enumerate(moorings):
     info['co2']=info.co2flux4_land_gmyr/365
     info=info[~np.isnan(info.select_model)]
     
-    nino1=info[info.mei>0.5].mean()
-    nina1=info[info.mei<-0.5].mean()
-    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)].mean()
-
+    nino1=info[info.mei>0.5]#.mean()
+    modoki=info[info.emi>0.5]#.mean()
+    nina1=info[info.mei<-0.5]#.mean()
+    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
+    
+    EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
+    modoki=modoki.mean()
+    nina1=nina1.mean()
+    neutral1=neutral1.mean()
+    nino1=nino1.mean()
+    
+    
     #pd.Serie
-    x ={'El Nino':nino1.co2-nino1.select_model,
+    x ={#'El Nino':nino1.co2-nino1.select_model,
         'La Nina':nina1.co2-nina1.select_model,
-        'Neutral':neutral1.co2-neutral1.select_model
+        'Neutral':neutral1.co2-neutral1.select_model,
+        'Modoki':modoki.co2-modoki.select_model,
+        'EP':EP.co2-EP.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
 
-    avgs ={'El Nino CO2':nino1.co2,
+    avgs ={'El Nino CO2':EP.co2,
         'La Nina CO2':nina1.co2,
         'Neutral CO2':neutral1.co2,
-        'El Nino NP':nino1.select_model,
+        'Modoki CO2':modoki.co2,
+        'El Nino NP':EP.select_model,
         'La Nina NP':nina1.select_model,
-        'Neutral NP':neutral1.select_model
+        'Neutral NP':neutral1.select_model,
+        'Modoki NP':modoki.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     ensoavgs=pd.Series(x,name=mooring_name[0:3]+'\xb0'+mooring_name[3:4]) #Add degrees to the lab
@@ -124,14 +136,21 @@ for i, mooring_name in enumerate(moorings):
 for x in final_mooring_enso.T.iterrows():
    # if 'All time' in x[0]:
    #     c='k'
+    ls='-'
     if 'Neutral' in x[0]:
-        c='darkgoldenrod'
+        c='black'
     elif 'Nino' in x[0]:
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Modoki' in x[0]:
+        c='darkred'
+        ls='--'
+    elif 'EP' in x[0]:
+        c='darkred'
             
-    plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
+            
+    plt.plot(x[1].index,x[1],c=c,linestyle=ls,label=x[0],linewidth=3,alpha=0.8)
 plt.grid()
 
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
@@ -190,25 +209,36 @@ for i, mooring_name in enumerate(moorings):
     info['select_model']=info.laws2011a*info.cafe/1000 #Was cbpmmean
     info['co2']=info.co2flux4_land_gmyr/365
     info=info[~np.isnan(info.co2)]
+            
+    nino1=info[info.mei>0.5]#.mean()
+    modoki=info[info.emi>0.5]#.mean()
+    nina1=info[info.mei<-0.5]#.mean()
+    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
-    nino1=info[info.mei>0.5].mean()
-    nina1=info[info.mei<-0.5].mean()
-    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)].mean()
+    EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
+    modoki=modoki.mean()
+    nina1=nina1.mean()
+    neutral1=neutral1.mean()
+    nino1=nino1.mean()
     
     #pd.Serie
-    x ={'El Nino':nino1.select_model,
+    x ={#'El Nino':nino1.select_model,
         'La Nina':nina1.select_model,
-        'Neutral':neutral1.select_model
+        'Neutral':neutral1.select_model,
+        'Modoki':modoki.select_model,
+        'EP':EP.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
 
-    avgs ={'El Nino CO2':nino1.co2,
+    avgs ={'El Nino CO2':EP.co2,
         'La Nina CO2':nina1.co2,
         'Neutral CO2':neutral1.co2,
-        'El Nino NP':nino1.select_model,
+        'Modoki CO2':modoki.co2,
+        'El Nino NP':EP.select_model,
         'La Nina NP':nina1.select_model,
-        'Neutral NP':neutral1.select_model
+        'Neutral NP':neutral1.select_model,
+        'Modoki NP':modoki.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     ensoavgs=pd.Series(x,name=mooring_name[0:3]+'\xb0'+mooring_name[3:4])
@@ -220,14 +250,21 @@ for i, mooring_name in enumerate(moorings):
 for x in final_mooring_enso.T.iterrows():
    # if 'All time' in x[0]:
    #     c='k'
+    ls='-'
     if 'Neutral' in x[0]:
-        c='darkgoldenrod'
+        c='black'
     elif 'Nino' in x[0]:
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Modoki' in x[0]:
+        c='darkred'
+        ls='--'
+    elif 'EP' in x[0]:
+        c='darkred'
             
-    plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
+            
+    plt.plot(x[1].index,x[1],c=c,linestyle=ls,label=x[0],linewidth=3,alpha=0.8)
 plt.grid()
 print('NEW PRODUCTION')
 print(final_mooring_enso.mean())
@@ -256,7 +293,7 @@ for i, mooring_name in enumerate(moors):
  
     plt.plot((year.month-1).astype('datetime64[M]'),pco2,c=cols[i],linewidth=3,label=moorings[i])
 
-plt.title('h) pCO2t seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('h) pCO$_{2}$t seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
@@ -300,21 +337,32 @@ for i, mooring_name in enumerate(moors):
     info['co2']=info.co2flux4_land_gmyr/365
     info=info[~np.isnan(info.select_model)]
     
-    nino1=info[info.mei>0.5].mean()
-    nina1=info[info.mei<-0.5].mean()
-    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)].mean()
+    nino1=info[info.mei>0.5]#.mean()
+    modoki=info[info.emi>0.5]#.mean()
+    nina1=info[info.mei<-0.5]#.mean()
+    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
+    
+    EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
+    modoki=modoki.mean()
+    nina1=nina1.mean()
+    neutral1=neutral1.mean()
+    nino1=nino1.mean()
     
     #pd.Serie
     x ={'El Nino':nino1.co2-nino1.select_model,
         'La Nina':nina1.co2-nina1.select_model,
-        'Neutral':neutral1.co2-neutral1.select_model
+        'Neutral':neutral1.co2-neutral1.select_model,
+        'Modoki':modoki.co2-modoki.select_model,
+        'EP':EP.co2-EP.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
 
-    avgs ={'El Nino CO2':nino1.pco2t,
+    avgs ={#'El Nino CO2':nino1.pco2t,
         'La Nina CO2':nina1.pco2t,
         'Neutral CO2':neutral1.pco2t,
+        'Modoki CO2':modoki.pco2t,
+        'EP CO2':EP.pco2t
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     ensoavgs=pd.Series(x,name=moorings[i][0:3]+'\xb0'+moorings[i][3:4])
@@ -326,17 +374,24 @@ for i, mooring_name in enumerate(moors):
 for x in final_mooring_enso_avgs.T.iterrows():
    # if 'All time' in x[0]:
    #     c='k'
+    ls='-'
     if 'Neutral' in x[0]:
-        c='darkgoldenrod'
+        c='black'
     elif 'Nino' in x[0]:
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Modoki' in x[0]:
+        c='darkred'
+        ls='--'
+    elif 'EP' in x[0]:
+        c='darkred'
             
-    plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
+            
+    plt.plot(x[1].index,x[1],c=c,linestyle=ls,label=x[0],linewidth=3,alpha=0.8)
 plt.grid()
 plt.ylabel('gC m$^{-2}$')
-plt.title('g) pCO2t ENSO',loc='left')
+plt.title('g) pCO$_{2}$t ENSO',loc='left')
 print('pCO2t')
 print(final_mooring_enso_avgs.mean())
 
@@ -399,21 +454,35 @@ for i, mooring_name in enumerate(lns):
     except:
         dat=xr.open_mfdataset(fp).sel(Mooring=195)
 
-    d=dat.sel(Date=slice(pco2_month.Date.min().values,pco2_month.Date.max().values))
+    #d=dat.sel(Date=slice(pco2_month.Date.min().values,pco2_month.Date.max().values))
     
-    pco2_m=d.sst_rey#seasonaltrend_sstobs[i]
-    mei=d.mei
+    #pco2_m=d.sst_rey#seasonaltrend_sstobs[i]
+    #mei=d.mei
     #We want to create a table of NINO, NINA, neutral and all CO2 and NP averages for each mooring
 
-
-    nino1=pco2_m[mei>0.5].mean()
-    nina1=pco2_m[mei<-0.5].mean()
-    neutral1=pco2_m[(mei<0.5)&(mei>-0.5)].mean()
+    info=dat.to_dataframe()
+    info['select_model']=info.laws2011a*info.cafe/1000 #Was cbpmmean
+    info['co2']=info.co2flux4_land_gmyr/365
+    info=info[~np.isnan(info.co2)]
+       
+    nino1=info[info.mei>0.5]#.mean()
+    modoki=info[info.emi>0.5]#.mean()
+    nina1=info[info.mei<-0.5]#.mean()
+    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
+    
+    EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
+    modoki=modoki.mean()
+    nina1=nina1.mean()
+    neutral1=neutral1.mean()
+    nino1=nino1.mean()
+    
     
     #pd.Serie
-    x ={'El Nino':nino1,
-        'La Nina':nina1,
-        'Neutral':neutral1
+    x ={#'El Nino':nino1.sst_rey,
+        'La Nina':nina1.sst_rey,
+        'Neutral':neutral1.sst_rey,
+        'Modoki':modoki.sst_rey,
+        'EP':EP.sst_rey
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
@@ -423,14 +492,21 @@ for i, mooring_name in enumerate(lns):
 for x in final_mooring_enso.T.iterrows():
    # if 'All time' in x[0]:
    #     c='k'
+    ls='-'
     if 'Neutral' in x[0]:
-        c='darkgoldenrod'
+        c='black'
     elif 'Nino' in x[0]:
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Modoki' in x[0]:
+        c='darkred'
+        ls='--'
+    elif 'EP' in x[0]:
+        c='darkred'
             
-    plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
+            
+    plt.plot(x[1].index,x[1],c=c,linestyle=ls,label=x[0],linewidth=3,alpha=0.8)
 plt.grid()
 
 plt.xlabel('Mooring')
@@ -492,22 +568,32 @@ for i, mooring_name in enumerate(moorings):
     info['co2']=info.co2flux4_land_gmyr/365
     info=info[~np.isnan(info.co2)]
     
-    nino1=info[info.mei>0.5].mean()
-    nina1=info[info.mei<-0.5].mean()
-    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)].mean()
+        
+    nino1=info[info.mei>0.5]#.mean()
+    modoki=info[info.emi>0.5]#.mean()
+    nina1=info[info.mei<-0.5]#.mean()
+    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
+    
+    EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
+    modoki=modoki.mean()
+    nina1=nina1.mean()
+    neutral1=neutral1.mean()
+    nino1=nino1.mean()
     
     #pd.Serie
-    x ={'El Nino':nino1.co2,
+    x ={#'El Nino':nino1.co2,
         'La Nina':nina1.co2,
-        'Neutral':neutral1.co2
+        'Neutral':neutral1.co2,
+        'Modoki':modoki.co2,
+        'EP':EP.co2
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
 
-    avgs ={'El Nino CO2':nino1.co2,
+    avgs ={#'El Nino CO2':nino1.co2,
         'La Nina CO2':nina1.co2,
         'Neutral CO2':neutral1.co2,
-        'El Nino NP':nino1.select_model,
+        'El Nino NP':EP.select_model,
         'La Nina NP':nina1.select_model,
         'Neutral NP':neutral1.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
@@ -521,14 +607,21 @@ for i, mooring_name in enumerate(moorings):
 for x in final_mooring_enso.T.iterrows():
    # if 'All time' in x[0]:
    #     c='k'
+    ls='-'
     if 'Neutral' in x[0]:
-        c='darkgoldenrod'
+        c='black'
     elif 'Nino' in x[0]:
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Modoki' in x[0]:
+        c='darkred'
+        ls='--'
+    elif 'EP' in x[0]:
+        c='darkred'
             
-    plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
+            
+    plt.plot(x[1].index,x[1],c=c,linestyle=ls,label=x[0],linewidth=3,alpha=0.8)
 plt.grid()
 
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
@@ -585,19 +678,32 @@ for i, mooring_name in enumerate(lns):
 
     d=dat.sel(Date=slice(pco2_month.Date.min().values,pco2_month.Date.max().values))
     
-    pco2_m=d.windspeed#seasonaltrend_sstobs[i]
-    mei=d.mei
+    #pco2_m=d.windspeed#seasonaltrend_sstobs[i]
+    #mei=d.mei
     #We want to create a table of NINO, NINA, neutral and all CO2 and NP averages for each mooring
 
-
-    nino1=pco2_m[mei>0.5].mean()
-    nina1=pco2_m[mei<-0.5].mean()
-    neutral1=pco2_m[(mei<0.5)&(mei>-0.5)].mean()
+    info=dat.to_dataframe()
+    info['select_model']=info.laws2011a*info.cafe/1000 #Was cbpmmean
+    info['co2']=info.co2flux4_land_gmyr/365
+    info=info[~np.isnan(info.co2)]
+        
+    nino1=info[info.mei>0.5]#.mean()
+    modoki=info[info.emi>0.5]#.mean()
+    nina1=info[info.mei<-0.5]#.mean()
+    neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
+    
+    EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
+    modoki=modoki.mean()
+    nina1=nina1.mean()
+    neutral1=neutral1.mean()
+    nino1=nino1.mean()
     
     #pd.Serie
-    x ={'El Nino':nino1,
-        'La Nina':nina1,
-        'Neutral':neutral1
+    x ={#'El Nino':nino1.windspeed,
+        'La Nina':nina1.windspeed,
+        'Neutral':neutral1.windspeed,
+        'CP El Nino':modoki.windspeed,
+        'EP El Nino':EP.windspeed
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
     
@@ -607,14 +713,25 @@ for i, mooring_name in enumerate(lns):
 for x in final_mooring_enso.T.iterrows():
    # if 'All time' in x[0]:
    #     c='k'
+    print(x[0])
+    print(x[0]=='CP El Nino')
+    ls='-'
     if 'Neutral' in x[0]:
-        c='darkgoldenrod'
-    elif 'Nino' in x[0]:
-        c='darkred'
+        c='black'
+    #elif 'Nino' in x[0]:
+    #    c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'EP' in x[0]:
+        print('EP')
+        c='darkred'
+    elif (x[0]=='CP El Nino')==True:#if 'CP' in x[0]:
+        c='darkred'
+        print('CP')
+        ls='--'
             
-    plt.plot(x[1].index,x[1],c=c,label=x[0],linewidth=3)
+    
+    plt.plot(x[1].index,x[1],c=c,linestyle=ls,label=x[0],linewidth=3,alpha=0.8)
 plt.grid()
 plt.legend(final_mooring_enso.columns)
 
