@@ -93,11 +93,14 @@ for mooring_name in moorings:
     soifp='datasets/indexes/soi.csv'
     pdofp='datasets/indexes/pdo.csv'
     meifp='datasets/indexes/meiv2.csv'
-    emifp='datasets/indexes/emi.csv'
+    #emifp='datasets/indexes/emi.csv' #Now updated to SINTEX_EMI.csv
     soi=pd.read_csv(soifp)
     pdo=pd.read_csv(pdofp,header=1)
     mei=pd.read_csv(meifp,index_col=0,header=None)# If using original (not v2) need to use this. ,header=1)
-    emi=pd.read_csv(emifp)
+    
+    emi=pd.read_csv('datasets/indexes/SINTEX_EMI.csv',index_col=0).Obs
+    emi.index=emi.index.astype(np.datetime64)
+    
     #Primary Productivity Models and Time Series
     mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
     mod_cbpm=pd.read_csv('processed/npp_mooring_timeseries/cbpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
@@ -275,7 +278,7 @@ for mooring_name in moorings:
             except:
                 holder['pdo']=np.nan
             try:
-                holder['emi']=emi[emi.Date.astype('datetime64[M]')==d0.astype('datetime64[M]')].EMI.values[0]
+                holder['emi']=emi[emi.index==d0.astype('datetime64[M]')].values[0]
             except:
                 holder['emi']=np.nan
             #Append our desired data into this.        
