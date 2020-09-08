@@ -98,8 +98,11 @@ for mooring_name in moorings:
     pdo=pd.read_csv(pdofp,header=1)
     mei=pd.read_csv(meifp,index_col=0,header=None)# If using original (not v2) need to use this. ,header=1)
     
-    emi=pd.read_csv('datasets/indexes/SINTEX_EMI.csv',index_col=0).Obs
-    emi.index=emi.index.astype(np.datetime64)
+    emi=pd.read_csv('datasets/indexes/SINTEX_EMI.csv')
+    emi.time=emi.time.astype('datetime64[M]')
+    emi.index=emi.time
+    emi=emi.Obs
+    #emi.index=emi.index.astype('datetime64[ns]')
     
     #Primary Productivity Models and Time Series
     mod_vgpm=pd.read_csv('processed/npp_mooring_timeseries/vgpm_mod_nc_'+mooring_name+'.csv',skiprows=1,names=['Date','NPP'])
