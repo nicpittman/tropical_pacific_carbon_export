@@ -58,7 +58,7 @@ print((dat.sel(Mooring=155).co2flux4_land_gmyr/365).min().values) #Min value at 
 for i, mooring_name in enumerate(moorings):
     print(mooring_name)
     #JMAco2flux_data=xr.open_mfdataset('processed/flux/JMA_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
-    LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux_20.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
+    LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
     npp=xr.open_mfdataset('processed/flux/npp.nc').sel(Mooring=mooring_name)
     #mooring_obs_npp=npp_insitu[((npp_insitu.mooring.astype(int)>=int(mooring_name[:-1])-1)&(npp_insitu.mooring.astype(int)<=int(mooring_name[:-1])+1))]
     
@@ -219,25 +219,35 @@ for i, mooring_name in enumerate(moorings):
     ax2.tick_params(which='minor', length=6,direction='inout')
     
     #Put in the ENSO box regions
+    #ep_events and cp events
     ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv']
+    ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv','processed/indexes/cp_events.csv','processed/indexes/cold_cp_events.csv']
     for whichenso,fp in enumerate(ensofps):
         events=pd.read_csv(fp)
         for ev in events.iterrows():
             endm=np.datetime64(ev[1].end).astype('datetime64[M]')
             endm1=endm-np.timedelta64(1,'M')
+            endm2=endm+np.timedelta64(1,'M')
             start=np.datetime64(ev[1].start).astype('datetime64[M]')
-            if start==endm1:
+            print(start,endm,fp)
+            if start==endm1: #We don't want to plot events that last for only a month
                 pass    
+            #elif start==endm2-np.timedelta64(1,'M'): #There was some weirdness with the 2015 event not being continuous, and this fixes it..,
+            #    pass
             else:
                 if whichenso==0:
                     #if el nino
-                    patchcol='firebrick'
-                else:
+                    patchcol='darkred'#'firebrick'
+                elif whichenso==1:
                     #if la nina
                     patchcol='deepskyblue'
-                rect=patches.Rectangle((start,0),endm-start,0.5,linewidth=0,alpha=0.2,color=patchcol)
+                elif whichenso==2:
+                    patchcol='darkorange'
+                elif whichenso==3:
+                    patchcol='navy'
+                rect=patches.Rectangle((start,0),endm-start,0.5,linewidth=0,alpha=0.3,color=patchcol)
                 ax1.add_patch(rect)
-                rect=patches.Rectangle((start,-0.5),endm-start,0.5,linewidth=0,alpha=0.2,color=patchcol)
+                rect=patches.Rectangle((start,-0.5),endm-start,0.5,linewidth=0,alpha=0.3,color=patchcol)
                 ax1.add_patch(rect)
                 
 
@@ -257,12 +267,22 @@ for i, mooring_name in enumerate(moorings):
         cax.set_visible(False)
         ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
         ax1.text(np.datetime64('2015-09-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2002-11-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2004-06-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2019-08-01'),0.22,'CP',fontsize=14)
+        
+        
     elif i==0:
         ax1.legend(ncol=4,fontsize=fs,loc='upper center')
         ax2.tick_params(labelbottom=False)
     else:
         ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
         ax1.text(np.datetime64('2015-09-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2002-11-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2004-06-01'),0.22,'CP',fontsize=14)
+        ax1.text(np.datetime64('2019-08-01'),0.22,'CP',fontsize=14)
+        
+        
         ax2.tick_params(labelbottom=False)
    
     #We want to create a table of NINO, NINA, neutral and all CO2 and NP averages for each mooring

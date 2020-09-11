@@ -175,6 +175,8 @@ Scripts are organised to be run in numerical order.
 
    - Climate indicies MEI, PDO, EMI, SOI are included in the repository. Scripts to download are included in 6, however not essential, and will need some processing to be opened by pandas.
 
+   - Re EMI. The original data file was downloaded from: http://www.jamstec.go.jp/aplinfo/sintexf/DATA/emi.monthly.txt which has now changed to: http://www.jamstec.go.jp/virtualearth/data/SINTEX/SINTEX_EMI.csv.  This is reflected in the scripts.
+
 8. a - Processes all of this data into the mooring timeseries. This is an inefficient script (ie. will take days to run), and I would implement this differently if I was to rewrite this. **Because it is so inefficient, a parallelised version (7b) has been produced to be run** on the Australian supercomputer GADI/NCI but still takes 6 cores and 6 hours (or can be run on 6 or 3 native cores). Oops for pandas inefficiencies. Be aware here. 
 
    

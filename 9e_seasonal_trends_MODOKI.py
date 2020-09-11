@@ -97,11 +97,13 @@ for i, mooring_name in enumerate(moorings):
     
     nino1=info[info.mei>0.5]#.mean()
     modoki=info[info.emi>0.5]#.mean()
+    nmodoki=info[info.emi<-0.5]
     nina1=info[info.mei<-0.5]#.mean()
     neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
     EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
     modoki=modoki.mean()
+    nmodoki=nmodoki.mean()
     nina1=nina1.mean()
     neutral1=neutral1.mean()
     nino1=nino1.mean()
@@ -112,6 +114,7 @@ for i, mooring_name in enumerate(moorings):
         'La Nina':nina1.co2-nina1.select_model,
         'Neutral':neutral1.co2-neutral1.select_model,
         'Modoki':modoki.co2-modoki.select_model,
+        'Cold Modoki':nmodoki.co2-nmodoki.select_model,
         'EP':EP.co2-EP.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
@@ -143,6 +146,9 @@ for x in final_mooring_enso.T.iterrows():
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Cold Modoki' in x[0]:
+        c='royalblue'
+        ls='--'
     elif 'Modoki' in x[0]:
         c='darkred'
         ls='--'
@@ -212,11 +218,14 @@ for i, mooring_name in enumerate(moorings):
             
     nino1=info[info.mei>0.5]#.mean()
     modoki=info[info.emi>0.5]#.mean()
+    nmodoki=info[info.emi<-0.5]#.mean()
+    
     nina1=info[info.mei<-0.5]#.mean()
     neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
     EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
     modoki=modoki.mean()
+    nmodoki=nmodoki.mean()
     nina1=nina1.mean()
     neutral1=neutral1.mean()
     nino1=nino1.mean()
@@ -226,6 +235,7 @@ for i, mooring_name in enumerate(moorings):
         'La Nina':nina1.select_model,
         'Neutral':neutral1.select_model,
         'Modoki':modoki.select_model,
+        'Cold Modoki':nmodoki.select_model,
         'EP':EP.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
@@ -257,6 +267,9 @@ for x in final_mooring_enso.T.iterrows():
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Cold Modoki' in x[0]:
+        c='royalblue'
+        ls='--'
     elif 'Modoki' in x[0]:
         c='darkred'
         ls='--'
@@ -339,11 +352,13 @@ for i, mooring_name in enumerate(moors):
     
     nino1=info[info.mei>0.5]#.mean()
     modoki=info[info.emi>0.5]#.mean()
+    nmodoki=info[info.emi<-0.5]#.mean()
     nina1=info[info.mei<-0.5]#.mean()
     neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
     EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
     modoki=modoki.mean()
+    nmodoki=nmodoki.mean()
     nina1=nina1.mean()
     neutral1=neutral1.mean()
     nino1=nino1.mean()
@@ -353,6 +368,7 @@ for i, mooring_name in enumerate(moors):
         'La Nina':nina1.co2-nina1.select_model,
         'Neutral':neutral1.co2-neutral1.select_model,
         'Modoki':modoki.co2-modoki.select_model,
+        'Cold Modoki':nmodoki.co2-nmodoki.select_model,
         'EP':EP.co2-EP.select_model
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
@@ -362,6 +378,8 @@ for i, mooring_name in enumerate(moors):
         'La Nina CO2':nina1.pco2t,
         'Neutral CO2':neutral1.pco2t,
         'Modoki CO2':modoki.pco2t,
+        'Cold Modoki CO2':nmodoki.pco2t,
+        
         'EP CO2':EP.pco2t
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
@@ -381,6 +399,9 @@ for x in final_mooring_enso_avgs.T.iterrows():
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Cold Modoki' in x[0]:
+        c='royalblue'
+        ls='--'
     elif 'Modoki' in x[0]:
         c='darkred'
         ls='--'
@@ -467,11 +488,15 @@ for i, mooring_name in enumerate(lns):
        
     nino1=info[info.mei>0.5]#.mean()
     modoki=info[info.emi>0.5]#.mean()
+    nmodoki=info[info.emi<-0.5]#.mean()
+    
     nina1=info[info.mei<-0.5]#.mean()
+    
     neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
     EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
     modoki=modoki.mean()
+    nmodoki=nmodoki.mean()
     nina1=nina1.mean()
     neutral1=neutral1.mean()
     nino1=nino1.mean()
@@ -482,6 +507,7 @@ for i, mooring_name in enumerate(lns):
         'La Nina':nina1.sst_rey,
         'Neutral':neutral1.sst_rey,
         'Modoki':modoki.sst_rey,
+        'Cold Modoki':nmodoki.sst_rey,
         'EP':EP.sst_rey
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
@@ -499,6 +525,9 @@ for x in final_mooring_enso.T.iterrows():
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Cold Modoki' in x[0]:
+        c='royalblue'
+        ls='--'
     elif 'Modoki' in x[0]:
         c='darkred'
         ls='--'
@@ -571,11 +600,14 @@ for i, mooring_name in enumerate(moorings):
         
     nino1=info[info.mei>0.5]#.mean()
     modoki=info[info.emi>0.5]#.mean()
+    nmodoki=info[info.emi<-0.5]#.mean()
     nina1=info[info.mei<-0.5]#.mean()
     neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
     EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
     modoki=modoki.mean()
+    nmodoki=nmodoki.mean()
+    
     nina1=nina1.mean()
     neutral1=neutral1.mean()
     nino1=nino1.mean()
@@ -585,6 +617,7 @@ for i, mooring_name in enumerate(moorings):
         'La Nina':nina1.co2,
         'Neutral':neutral1.co2,
         'Modoki':modoki.co2,
+        'Cold Modoki':nmodoki.co2,
         'EP':EP.co2
        # 'All time':info.co2.mean()-info.select_model.mean()
         }
@@ -614,6 +647,9 @@ for x in final_mooring_enso.T.iterrows():
         c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Cold Modoki' in x[0]:
+        c='royalblue'
+        ls='--'
     elif 'Modoki' in x[0]:
         c='darkred'
         ls='--'
@@ -689,11 +725,14 @@ for i, mooring_name in enumerate(lns):
         
     nino1=info[info.mei>0.5]#.mean()
     modoki=info[info.emi>0.5]#.mean()
+    nmodoki=info[info.emi<-0.5]#.mean()
+    
     nina1=info[info.mei<-0.5]#.mean()
     neutral1=info[(info.mei<0.5)&(info.mei>-0.5)]#.mean()
     
     EP=nino1[~nino1.index.isin(modoki.index)].mean() #Remove if it is in MODOKI
     modoki=modoki.mean()
+    nmodoki=nmodoki.mean()
     nina1=nina1.mean()
     neutral1=neutral1.mean()
     nino1=nino1.mean()
@@ -701,6 +740,7 @@ for i, mooring_name in enumerate(lns):
     #pd.Serie
     x ={#'El Nino':nino1.windspeed,
         'La Nina':nina1.windspeed,
+        'Cold Modoki':nmodoki.windspeed,
         'Neutral':neutral1.windspeed,
         'CP El Nino':modoki.windspeed,
         'EP El Nino':EP.windspeed
@@ -718,12 +758,14 @@ for x in final_mooring_enso.T.iterrows():
     ls='-'
     if 'Neutral' in x[0]:
         c='black'
-    #elif 'Nino' in x[0]:
+    elif 'Nino' in x[0]:
     #    c='darkred'
     elif 'Nina' in x[0]:
         c='royalblue'
+    elif 'Cold Modoki' in x[0]:
+        c='royalblue'
+        ls='--'
     elif 'EP' in x[0]:
-        print('EP')
         c='darkred'
     elif (x[0]=='CP El Nino')==True:#if 'CP' in x[0]:
         c='darkred'
