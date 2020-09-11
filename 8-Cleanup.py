@@ -113,8 +113,8 @@ def combine_csvs_to_nc():
     
         aavg_a.append(alld)
         davg_a.append(davg)
-        wavg_a.append(mavg)
-        mavg_a.append(wavg)
+        wavg_a.append(wavg)
+        mavg_a.append(mavg)
         
         #plt.scatter(wavg.co2flux_gmyr,wavg.mod_vgbm)
         #plt.scatter(wavg.co2flux_gmyr,wavg.mod_cpbm)
@@ -130,8 +130,15 @@ def combine_csvs_to_nc():
     daily.coords['Mooring']=mooring_int
     weekly.coords['Mooring']=mooring_int
     monthly.coords['Mooring']=mooring_int
-    
+   
     fp='processed/combined_dataset/'
+    try:
+        os.remove(fp+'month_data.nc')
+        os.remove(fp+'week_data.nc')
+        os.remove(fp+'day_data.nc')
+    except:
+        pass
+
     all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf')
     daily.to_netcdf(fp+'day_data.nc')
     weekly.to_netcdf(fp+'week_data.nc')
@@ -190,7 +197,12 @@ def npp_csvs_to_nc():
     flux=flux.resample(Date='M').mean()
     flux['Date']=flux.Date.astype('datetime64[M]')
     flux=flux.rename({'sw_vgbm':'sw_vgpm'})
-    flux.to_netcdf('processed/flux/npp.nc')
+    try:
+        os.remove('processed/flux/npp.nc')
+    except:
+        pass
+    
+    flux.to_netcdf('processed/flux/npp.nc',engine='h5netcdf')
     
     
 def add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc'):
@@ -202,7 +214,7 @@ def add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc'):
     dat['Date']=dat['Date'].astype('datetime64[M]')
     npp['Date']=npp['Date'].astype('datetime64[M]')
     npp['Mooring']=dat.Mooring.values
-    dat['sw_cafe']=npp.sw_cafe.T
+    #dat['sw_cafe']=npp.sw_cafe.T
     
     
     cafe=dat[['sw_cafe','mod_cafe']]
@@ -242,7 +254,7 @@ def add_cafe_and_sst(fp='processed/combined_dataset/month_data_exports.nc'):
     out=out.rename({'time':'Date'})
     
     
-    dat['reySST']=out    
+    #dat['reySST']=out    
     dat.load()
     dat.close()
 
@@ -419,6 +431,11 @@ def cut_sst_moorings():
         
     d=xr.concat(data,dim=ln_names)
     d=d.rename({'concat_dim':'Mooring'})
+    try:
+        os.remove('processed/indexes/sst.nc')
+    except:
+        pass
+
     d.to_netcdf('processed/indexes/sst.nc',engine='h5netcdf',mode='w')
     return True
 
@@ -573,7 +590,11 @@ def calculate_exports_add_to_mooring():
     dat= dat.assign(laws2011a=laws2011a)
     dat= dat.assign(laws2011b=laws2011b)
     #dat= dat.assign(laws2011b_vgpm=laws2011b1)
-    
+    try:
+        os.remove('processed/combined_dataset/month_data_exports.nc')
+    except:
+        pass
+ 
     dat.to_netcdf('processed/combined_dataset/month_data_exports.nc',engine='h5netcdf',mode='w')
     
     #pe_dunne.plot()
@@ -767,12 +788,12 @@ def save_landschutzer_2018_seamask():
 # print('Calculate when ENSOs occured +- 0.5 MEI')
 # find_enso_events()
 # print('Convert our primary productivity moorings to netcdf')
-# npp_csvs_to_nc()
-# #combine_csvs_to_nc() #This one should already have been run. 
+npp_csvs_to_nc()
+combine_csvs_to_nc() #This one should already have been run. 
 print('Working out the SST for each mooring')
 cut_sst_moorings()
-# print('Calculate earth size per pixel')
-# make_earth_grid_m2()
+print('Calculate earth size per pixel')
+make_earth_grid_m2()
 # print('Convert uatm carbon to grams of carbon')
 # #carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
