@@ -22,7 +22,7 @@ from carbon_math import *
 
 
     
-def find_enso_events(threshold=0.5):
+def find_enso_events_redundent(threshold=0.5):
     '''
     A function to pull ENSO data from our datasets/indexes/meiv2.csv
     save events (months) stronger than threshold (0.5 by default)
@@ -85,36 +85,199 @@ def find_enso_events(threshold=0.5):
     lanina.to_csv('processed/indexes/la_nina_events.csv')
 
 
+def find_enso_events_CP(threshold=0.5):
+        '''
+    A function to pull ENSO data from our datasets/indexes/meiv2.csv
+    save events (months) stronger than threshold (0.5 by default)
+    
+    Modified to include CP, EP, El Nino and La Nina events and are saved to csv.
+    
+    'processed/indexes/el_nino_events.csv'
+    'processed/indexes/la_nina_events.csv'
+    'processed/indexes/ep_el_nino_events.csv'
+    'processed/indexes/cp_el_nina_events.csv'
+    
+    Returns
+    -------
+    None.
+    
+    '''
+    
+    #enso=pd.read_csv('datasets/indexes/meiv2.csv',index_col='Year')
+    enso=pd.read_csv('datasets/indexes/meiv2.csv',index_col=0,header=None)
+    enso=enso.iloc[3:] #Just so Both EMI and MEI start in 1981-01-01
+    enso_flat=enso.stack()
+    enso_dates=pd.date_range('1982','2020-07-01',freq='M')- pd.offsets.MonthBegin(1) #Probably want to check this is correct if updating.
+    
+    emi=pd.read_csv('datasets/indexes/SINTEX_EMI.csv')
+    emi.time=emi.time.astype('datetime64[M]')
+    emi.index=emi.time
+    emi=emi.Obs
+    
+    enso_timeseries=pd.DataFrame({'Date':enso_dates,'mei':enso_flat})
+    
+    
+    fp='processed/combined_dataset/month_data_exports.nc'
+    dat=xr.open_mfdataset(fp)
+    #Check if we are in or out of an event so far
+    el_event=False
+    la_event=False
+    ep_event=False
+    cp_event=False
+    cpc_event=False
+    el_startdate=''
+    la_startdate=''
+    ep_startdate=''
+    cp_startdate=''
+    cpc_startdate=''
+    
+    elnino=pd.DataFrame()
+    lanina=pd.DataFrame()
+    cp=pd.DataFrame()
+    cpc=pd.DataFrame()
+    ep=pd.DataFrame()
+    
+    month_threshold=5 #Months over threshold)
+    threshold=0.5
+    
+    #All El Nino
+    for i,today in enumerate(enso_timeseries.Date):
+    val=enso_timeseries.mei.iloc[i]
+    if val>=threshold:
+        if el_event==False:  #And we havent yet entered an event
+            el_startdate=today
+            el_event=True
+        else:
+            pass
+            #Dont need to do anything because it will get caught later
+    else:
+        if el_event==True:
+            if ((today-el_startdate)>=np.timedelta64(month_threshold,'M')): #Make sure event is long enough
+     
+                if el_startdate.to_datetime64()!=enso_timeseries.Date.iloc[i-1].to_datetime64():
+                    elnino=elnino.append({'start':el_startdate.to_datetime64(),
+                                          'end':enso_timeseries.Date.iloc[i-1],
+                                          'mei':enso_timeseries.mei.iloc[i-1]},ignore_index=True)
+                    el_event=False
+            else: el_event=False
+    
+    #La Nina
+    for i,today in enumerate(enso_timeseries.Date):
+    val=enso_timeseries.mei.iloc[i]
+    if val<=-threshold:
+        if la_event==False:  #And we havent yet entered an event
+            la_startdate=today
+            la_event=True
+        else:
+            pass
+            #Dont need to do anything because it will get caught later
+    else:
+        if la_event==True:
+            if ((today-la_startdate)>=np.timedelta64(month_threshold,'M')): #Make sure event is long enough
+     
+                if la_startdate.to_datetime64()!=enso_timeseries.Date.iloc[i-1].to_datetime64():
+                    
+                    lanina=lanina.append({'start':la_startdate.to_datetime64(),
+                                      'end':enso_timeseries.Date.iloc[i-1],
+                                      'mei':enso_timeseries.mei.iloc[i-1]},ignore_index=True)
+                    la_event=False
+            else: la_event=False
+    
+    
+    #CP events
+    for i,today in enumerate(emi.index):
+    #val=emi.iloc[i]
+    val=np.mean(emi.iloc[i:i+2])
+    if val>=threshold:
+        if cp_event==False:  #And we havent yet entered an event
+            cp_startdate=today
+            cp_event=True
+        else:
+            pass
+            #Dont need to do anything because it will get caught later
+    else:
+        if cp_event==True:
+            if ((today-cp_startdate)>=np.timedelta64(month_threshold,'M')): #Make sure event is long enough
+                if cp_startdate.to_datetime64()!=emi.index[i-1].to_datetime64():
+                    cp=cp.append({'start':cp_startdate.to_datetime64(),
+                                      'end':emi.index[i-1],
+                                      'emi':emi.values[i-1]},ignore_index=True)
+                    cp_event=False
+            else: cp_event=False
+    
+    
+    #EP El Nino
+    for i,today in enumerate(enso_timeseries.Date):
+        val=enso_timeseries.mei.iloc[i]
+        val1=np.mean(enso_timeseries.mei.iloc[i])
+        emi_val=emi.iloc[i]
+        emi_val1=np.mean(emi.iloc[i:i+8]) #Just to make sure the 2015 EP event is classified as such
+        
+        print(today)
+        print(emi.index[i])
+        print(enso_timeseries.iloc[i].Date)
+        print()
+        print(emi_val,val)
+        print('\n')
+        
+        #print()
+        if (val1>=threshold)&(emi_val1<threshold):#&(emi_val1<threshold):
+            if ep_event==False:  #And we havent yet entered an event
+                ep_startdate=today
+                ep_event=True
+            else:
+                pass
+                #Dont need to do anything because it will get caught later
+        else:
+            if ep_event==True:
+                if ((today-ep_startdate)>=np.timedelta64(month_threshold,'M')): #Make sure event is long enough
+             
+                    if ep_startdate.to_datetime64()!=enso_timeseries.Date.iloc[i-1].to_datetime64():
+                        ep=ep.append({'start':ep_startdate.to_datetime64(),
+                                          'end':enso_timeseries.Date.iloc[i-1],
+                                          'mei':enso_timeseries.mei.iloc[i-1]},ignore_index=True)
+                        ep_event=False
+                else: ep_event=False
+    
+    
+    print(elnino)
+    print(lanina)
+    print(cp)
+    print(ep)
+    
+    elnino.to_csv('processed/indexes/el_nino_events.csv')
+    lanina.to_csv('processed/indexes/la_nina_events.csv')
+    cp.to_csv('processed/indexes/cp_events.csv')
+    ep.to_csv('processed/indexes/ep_events.csv')
+
+
 def combine_csvs_to_nc():
     '''
     Combine all our data into daily, weekly, monthly or all data files. 
     This should be done at the end of 7ab already so may not be essential to run this one.
     Previously known as data day average.
     '''
-    moorings=['110W','125W','140W','155W','170W','165E']
-    mooring_int=[110,125,140,155,170,195]
-    aavg_a=[]
-    davg_a=[]
-    wavg_a=[]
-    mavg_a=[]
-    
-    for mooring in moorings:
-        fp='processed/combined_dataset/'+mooring+'_combined.csv'
-        dat=pd.read_csv(fp,index_col=False)
-        #print(dat)
-        
-        dat['Date']=dat.Date.astype(np.datetime64)
-        dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
-        
-        alld = dat.to_xarray()#.drop('Unnamed: 0')
-        davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
-        wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
-        mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
-    
-        aavg_a.append(alld)
-        davg_a.append(davg)
-        wavg_a.append(wavg)
-        mavg_a.append(mavg)
+moorings=['110W','125W','140W','155W','170W','165E']
+mooring_int=[110,125,140,155,170,195]
+aavg_a=[]
+davg_a=[]
+wavg_a=[]
+mavg_a=[]
+
+for mooring in moorings:
+    fp='processed/combined_dataset/'+mooring+'_combined.csv'
+    dat=pd.read_csv(fp,index_col=False)
+    #print(dat)
+    dat['Date']=dat.Date.astype(np.datetime64)
+    dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
+    alld = dat.to_xarray()#.drop('Unnamed: 0')
+    davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
+    wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
+    mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
+    aavg_a.append(alld)
+    davg_a.append(davg)
+    wavg_a.append(wavg)
+    mavg_a.append(mavg)
         
         #plt.scatter(wavg.co2flux_gmyr,wavg.mod_vgbm)
         #plt.scatter(wavg.co2flux_gmyr,wavg.mod_cpbm)
@@ -533,6 +696,54 @@ def carbon_uatm_to_grams(plotter=0):
 
 
 
+def carbon_uatm_to_grams_normal(plotter=0):
+co2=xr.open_dataset('processed/flux/landshutzer.nc')
+   	co2['time']=co2.time.astype('datetime64[M]')
+   	ratios=xr.open_mfdataset('processed/flux/fratios.nc').laws2011b
+   	#ratio=f_ratios.laws2011a #laws2000,laws2011a,laws2011b,henson2011
+   
+   	npp=(xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc').avg_npp/1000*365)
+   
+   	sst = xr.open_dataset('datasets/sst/sst.mnmean.nc')
+   	sst= sst.assign_coords(lon=(sst.lon % 360)).roll(lon=(sst.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
+   	sst=sst.sel(lon=slice(120,290),lat=slice(20,-20)).sst
+   	sst=sst.sel(time=slice(npp.time.min().values,npp.time.max().values))
+   
+   	sst=sst.reindex(lat=sst.lat[::-1]) #Lat indexes are backwards
+   
+   	co2=co2.sel(time=slice(npp.time.min().values,npp.time.max().values))
+   	sst=sst.sel(time=slice(co2.time.min().values,co2.time.max().values))
+   
+   	iida=xr.open_dataset('processed/flux/jma_flux.nc')
+   	iida=iida.sel(lon=slice(120,290),lat=slice(-20,20))
+   	iida=iida.sel(time=slice(co2.time.min().values,co2.time.max().values))
+   	dic=iida.dic.values
+   
+   
+   	pco2=co2.spco2_smoothed.values
+   	
+   	seasurf=sst.values
+   	flat_pco2=pco2.reshape(pco2.shape[0]*pco2.shape[1]*pco2.shape[2])
+   	flat_sst=seasurf.reshape(pco2.shape[0]*pco2.shape[1]*pco2.shape[2])
+   	flat_dic=dic.reshape(pco2.shape[0]*pco2.shape[1]*pco2.shape[2])
+   	volumes=np.array([])
+   
+   	#Flatten and rebuild the array with bespoke sst and dic. 
+   
+   	#Annoying that I have to calculate it this way. Obviously quite slow but allows bespoke pixel calcultaion. 
+   	for i,dat in enumerate(flat_pco2):
+   	    vol=cb.CBsys(DIC=flat_dic[i],pCO2=flat_pco2[i],T_in=flat_sst[i])#T_in=28)#
+   	    co=(vol.CO2/1000000)*1000
+   	    #if ~np.isnan(co):
+   	    #    print(co)
+   	    #print(i,co)
+   	    volumes=np.append(volumes,co)
+   	answer=xr.DataArray(volumes.reshape((pco2.shape[0],pco2.shape[1],pco2.shape[2])),coords=co2.spco2_smoothed.coords)
+   	answer.to_netcdf('processed/flux/pco2grams_norm.nc',engine='h5netcdf',mode='w')
+return True
+
+
+
 #Calculate different f/ep ratios
 def calculate_exports_add_to_mooring():
     fp='processed/combined_dataset/month_data.nc'
@@ -779,15 +990,15 @@ def save_landschutzer_2018_seamask():
     seamask.to_netcdf('processed/seamask.nc')
 # %% RUN FUNCS HERE.
 
-# print('Regridding the NPP models')
-# #create_npp_avgs() #Regrid the NPP models.
-# print("Running TPCA to month calc")
-# convert_tpca_to_month()
-# print('Regridding TPCA - xesmf')
-# regrid_tpca()
-# print('Calculate when ENSOs occured +- 0.5 MEI')
-# find_enso_events()
-# print('Convert our primary productivity moorings to netcdf')
+print('Regridding the NPP models')
+create_npp_avgs() #Regrid the NPP models.
+print("Running TPCA to month calc")
+convert_tpca_to_month()
+print('Regridding TPCA - xesmf')
+regrid_tpca()
+print('Calculate when ENSOs occured +- 0.5 MEI')
+find_enso_events_CP() #Use the CP version as it is important!
+print('Convert our primary productivity moorings to netcdf')
 npp_csvs_to_nc()
 combine_csvs_to_nc() #This one should already have been run. 
 print('Working out the SST for each mooring')
@@ -795,6 +1006,8 @@ cut_sst_moorings()
 print('Calculate earth size per pixel')
 make_earth_grid_m2()
 # print('Convert uatm carbon to grams of carbon')
+
+carbon_uatm_to_grams_normal() #Updated version of the one below. No Temperature correction.
 # #carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
 make_fratio_nc()

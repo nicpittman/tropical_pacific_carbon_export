@@ -71,10 +71,15 @@ seasonaltrend=[]
 tsd = '2000-01-01' #Trend start at
 
 
+check_lag_corr_np=[]
+
+
 tyyp=['np','asf','both'] #So we can do all three plot types. Onl one in the paper is 'both'
+#tyyp=['both']
 #tyyp=['both']
 for typ in tyyp:
 
+    check_lag_corr_asf=[]
 #190 mm x 230 mm
     print('\n\n'+typ)
     fig=plt.figure(figsize=((19/2.54)*2,(14/2.54)*2))#,constrained_layout=True)
@@ -215,6 +220,9 @@ for typ in tyyp:
         #ax2.plot(decomp.seasonal,c='k',linestyle=':')
         trd=decomp.trend[decomp.trend.index>=tsd]
         
+        check_lag_corr_asf.append(decomp.trend.values)
+        #check_lag_corr_y.append(CO2.sel(time=slice('1998-01-01','2019-12-01')).values)
+    
         #tren=trends(ax2,trd.index,trd.values)
         ax2.xaxis.set_minor_locator(AutoMinorLocator(4))
         ax2.grid(axis='y',which='major')
@@ -282,37 +290,98 @@ for typ in tyyp:
         ax1.set_xticklabels([])
         #ax2.set_xticklabels([])        
         # ax3.set_xticklabels([])
-
-       #Put in the ENSO box regions
-        ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv']
+    
+        ensofps=['processed/indexes/ep_events.csv','processed/indexes/la_nina_events.csv','processed/indexes/cp_events.csv']
         for whichenso,fp in enumerate(ensofps):
             events=pd.read_csv(fp)
             for ev in events.iterrows():
                 endm=np.datetime64(ev[1].end).astype('datetime64[M]')
                 endm1=endm-np.timedelta64(1,'M')
+                endm2=endm+np.timedelta64(1,'M')
                 start=np.datetime64(ev[1].start).astype('datetime64[M]')
-                if start==endm1:
+              
+                if start==endm1: #We don't want to plot events that last for only a month
                     pass    
+                #elif start==endm2-np.timedelta64(1,'M'): #There was some weirdness with the 2015 event not being continuous, and this fixes it..,
+                #    pass
                 else:
                     if whichenso==0:
                         #if el nino
-                        patchcol='firebrick'
-                    else:
+                        patchcol='darkred'#'firebrick'
+                    elif whichenso==1:
                         #if la nina
                         patchcol='deepskyblue'
-                    rect=patches.Rectangle((start,-500),endm-start,1000,linewidth=0,alpha=0.4,color=patchcol)
+                    elif whichenso==2:
+                        patchcol='darkorange'
+                    rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
                     ax1.add_patch(rect)
-                    rect=patches.Rectangle((start,-500),endm-start,1000,linewidth=0,alpha=0.4,color=patchcol)
+                    rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
+                    ax1.add_patch(rect)
+                    rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
                     ax2.add_patch(rect)
-                    # rect=patches.Rectangle((start,-500),endm-start,1000,linewidth=0,alpha=0.4,color=patchcol)
-                    # ax3.add_patch(rect)
-                    
-                    #ax2.add_patch(rect)
-                    #rect=patches.Rectangle((start,-50),endm-start,350,linewidthty=0,alpha=0.2,color=patchcol)
-                    #ax2.add_patch(rect)
-    
+                    rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
+                    ax2.add_patch(rect)
+        
             
     plt.tight_layout()     
     plt.savefig('figs/Figure3_small'+typ+'.png',dpi=200)
+    try:
+        plt.savefig('figs/Figure_small'+typ+'.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+    except:
+        pass
+    plt.savefig('figs/Figure2small'+typ+'.eps',dpi=300)
     plt.show()
+
+
+
+
+
+    
+    
+    check_lag_corr_asf1=check_lag_corr_asf[::-1]
+    #check_lag_corr_np1=check_lag_corr_np[::-1]
+    moorings1=moorings[::-1]
+    #Just so it starts with the west
+    
+    
+    fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+    for i in range(len(check_lag_corr_asf)):
+        ax=plt.subplot(3,2,i+1)
+        hh=ax.xcorr(check_lag_corr_asf1[0],check_lag_corr_asf1[i],maxlags=24,normed=True)
+        plt.ylim([0.5,1])
+        plt.title('ASF: Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+        #plt.show()
+        coefs=hh[1]
+        index_max = max(range(len(coefs)), key=coefs.__getitem__)
+        plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+        print('largest')
+        print(hh[0][index_max],hh[1][index_max])
+        print('0 lag')
+        print(hh[1][3])
+        print('Difference')
+        print(hh[1][index_max]-hh[1][3])
+        print('\n')
+    #print(gs)
+    plt.show()
+
+# #fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+# for i in range(len(check_lag_corr_asf)):
+#     ax=plt.subplot(7,2,8+i+1)
+#     hh=ax.xcorr(check_lag_corr_np1[0],check_lag_corr_np1[i],maxlags=12,normed=True)
+#     plt.ylim([0.75,1])
+#     plt.title('NP: Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+#     #plt.show()
+#     coefs=hh[1]
+#     index_max = max(range(len(coefs)), key=coefs.__getitem__)
+#     plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+#     print('largest')
+#     print(hh[0][index_max],hh[1][index_max])
+#     print('0 lag')
+#     print(hh[1][3])
+#     print('Difference')
+#     print(hh[1][index_max]-hh[1][3])
+#     print('\n')
+# print(gs)
+# plt.tight_layout()
+# plt.show()
 

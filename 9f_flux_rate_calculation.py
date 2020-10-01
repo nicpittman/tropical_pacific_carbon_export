@@ -91,38 +91,22 @@ limits=[['West',165,180],
       ['Central',205,220],
       ['East',235,250],
       #['Basin_check',180,280]]
-      ['Basin',150,280]] #As used in the paper
+      ['Basin',150,270]] #As used in the paper
 
-      #['Borgne',135,280]] #Le Borgne 2002 Warm Pool
-      #['Wyrtiki',180,280]]
+      #['Ishii',135,270]]
+      #['Borgne',135,270]] #Le Borgne 2002 Warm Pool
+      #['Wyrtiki',180,270]]
 #Borgne is lims=1
 #Wyrtiki is both lims=5 and 10
-lims=10
+lims=18
 
-mass_table=pd.DataFrame({
-    'Region':[],
-    'Area':[],
-    'NP Mean':[],
-    'NP Neutral':[],
-    'NP EP El Nino':[],
-    'NP CP El Nino':[],
-    'NP La Nina':[],
-    'NP EP El Nino Diff':[],
-    'NP CP El Nino Diff':[],
-    'NP La Nina Diff':[],
-    'NP Trends':[],
-    'NP Pval':[],
-    
-    'CO2 Mean':[],
-    'CO2 Neutral':[],
-    'CO2 EP El Nino':[],
-    'CO2 CP El Nino':[],
-    'CO2 La Nina':[],
-    'CO2 EP El Nino Diff':[],
-    'CO2 CP El Nino Diff':[],
-    'CO2 La Nina Diff':[],
-    'CO2 Trends':[],
-    'CO2 Pval':[]})
+
+mass_table=pd.DataFrame({})
+
+
+
+check_lag_corr_x=[]
+check_lag_corr_y=[]
 
 #Calculating overall flux rates.
 plt.figure(figsize=(13,10))
@@ -248,85 +232,89 @@ for i,ty in enumerate(limits):
     print('pval= '+str(trenCO[3]))
     
     dat=dat[dat.index>np.datetime64('1997-08')]
-    nino=pd.DataFrame()
-    nina=pd.DataFrame()
-    ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv']
+    
+    
+    lanina=pd.read_csv('processed/indexes/la_nina_events.csv')
+    cp_nino=pd.read_csv('processed/indexes/cp_events.csv')
+    #cpc.to_csv('processed/indexes/cold_cp_events.csv')
+    ep_nino=pd.read_csv('processed/indexes/ep_events.csv')
+
+    info=dat
+    ninaf=pd.DataFrame()
+    epf=pd.DataFrame()
+    cpf=pd.DataFrame()
+    for i in lanina.iterrows(): ninaf=ninaf.append(info[slice(i[1].start,i[1].end)])
+    for i in ep_nino.iterrows(): epf=epf.append(info[slice(i[1].start,i[1].end)])
+    for i in cp_nino.iterrows(): cpf=cpf.append(info[slice(i[1].start,i[1].end)])
+    nina_dates=ninaf.index
+    ep_dates=epf.index
+    cp_dates=cpf.index
+    
+    ensofps=['processed/indexes/ep_events.csv','processed/indexes/la_nina_events.csv','processed/indexes/cp_events.csv']
     for whichenso,fp in enumerate(ensofps):
         events=pd.read_csv(fp)
         for ev in events.iterrows():
             endm=np.datetime64(ev[1].end).astype('datetime64[M]')
             endm1=endm-np.timedelta64(1,'M')
+            endm2=endm+np.timedelta64(1,'M')
             start=np.datetime64(ev[1].start).astype('datetime64[M]')
-            if np.datetime64(start)==np.datetime64(endm1):
-                pass
-                #print('fail',start,endm1,whichenso)
+          
+            if start==endm1: #We don't want to plot events that last for only a month
+                pass    
+            #elif start==endm2-np.timedelta64(1,'M'): #There was some weirdness with the 2015 event not being continuous, and this fixes it..,
+            #    pass
             else:
-                #print(start,endm,whichenso)
                 if whichenso==0:
                     #if el nino
-                    
-                    vol=dat[(dat.index>=start) & (dat.index<=endm)]
-                    nino=nino.append(vol)
-                    patchcol='firebrick'
+                    patchcol='darkred'#'firebrick'
                 elif whichenso==1:
-                    patchcol='deepskyblue'
                     #if la nina
-                    vol=dat[(dat.index>=start) & (dat.index<=endm)]
-                    nina=nina.append(vol)
+                    patchcol='deepskyblue'
+                elif whichenso==2:
+                    patchcol='darkorange'
+                rect=patches.Rectangle((start,-1*10e15),endm-start,2*10e15,linewidth=0,alpha=0.3,color=patchcol)
+                ax.add_patch(rect)
+                rect=patches.Rectangle((start,-1*10e15),endm-start,2*10e15,linewidth=0,alpha=0.3,color=patchcol)
+                ax.add_patch(rect)
+       
+    
+   
+    epnino=info[info.index.isin(ep_dates)]
+    cpnino=info[info.index.isin(cp_dates)]
+    nina=info[info.index.isin(nina_dates)]
+    neutral1=info[~info.index.isin(cp_dates)]
+    neutral1=neutral1[~neutral1.index.isin(ep_dates)]
+    neutral=neutral1[~neutral1.index.isin(nina_dates)]
 
-                rect=patches.Rectangle((start,-0.005*1e15),endm-start,1e16,linewidth=0,alpha=0.2,color=patchcol)
-                ax.add_patch(rect)
-                rect=patches.Rectangle((start,-0.005*1e15),endm-start,1e16,linewidth=0,alpha=0.2,color=patchcol)
-                ax.add_patch(rect)
-    neutral=dat.drop(index=nina.index).drop(index=nino.index)
     
     
-    
-    
-    # #Put in the ENSO box regions
-    # ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv']
-    # for whichenso,fp in enumerate(ensofps):
-    #     events=pd.read_csv(fp)
-    #     for ev in events.iterrows():
-    #         endm=np.datetime64(ev[1].end).astype('datetime64[M]')
-    #         endm1=endm-np.timedelta64(1,'M')
-    #         start=np.datetime64(ev[1].start).astype('datetime64[M]')
-    #         if start==endm1:
-    #             pass    
-    #         else:
-    #             if whichenso==0:
-    #                 #if el nino
-    #                 patchcol='firebrick'
-    #             else:
-    #                 #if la nina
-    #                 patchcol='deepskyblue'
-    #             rect=patches.Rectangle((start,-0.005*1e15),endm-start,1e16,linewidth=0,alpha=0.2,color=patchcol)
-    #             ax.add_patch(rect)
-    #             rect=patches.Rectangle((start,-0.005*1e15),endm-start,1e16,linewidth=0,alpha=0.2,color=patchcol)
-    #             ax.add_patch(rect)
-    
-    
-    na=pd.DataFrame(nino.mean(axis=0)/1e15).T
+    na=pd.DataFrame(epnino.mean(axis=0)/1e15).T
     nb=pd.DataFrame(nina.mean(axis=0)/1e15).T
     nc=pd.DataFrame(neutral.mean(axis=0)/1e15).T
     nd=pd.DataFrame(dat.mean(axis=0)/1e15).T
+    ne=pd.DataFrame(cpnino.mean(axis=0)/1e15).T
     
-    na1=pd.DataFrame(nino.std(axis=0)/1e15).T
+    
+    na1=pd.DataFrame(epnino.std(axis=0)/1e15).T
     nb1=pd.DataFrame(nina.std(axis=0)/1e15).T
     nc1=pd.DataFrame(neutral.std(axis=0)/1e15).T
     nd1=pd.DataFrame(dat.std(axis=0)/1e15).T
+    ne1=pd.DataFrame(cpnino.std(axis=0)/1e15).T
     
-    na['name']='nino mean'
-    na1['name']='nino std'
+    na['name']='ep mean'
+    na1['name']='ep std'
     nb['name']='nina mean'
     nb1['name']='nina std'
     nc['name']='neutral mean'
     nc1['name']='neutral std'
     nd['name']='all mean'
     nd1['name']='all std'
+    ne['name']='cp mean'
+    ne1['name']='cp std'
+    
     
     #print(na,nb,nc,nd)
-    means=na.append(na1).append(nb).append(nb1).append(nc).append(nc1).append(nd).append(nd1)
+    means=na.append(na1).append(nb).append(nb1).append(nc).append(nc1).append(nd).append(nd1).append(ne).append(ne1)
     means=means.round(3)
     print(means)
     
@@ -339,10 +327,16 @@ for i,ty in enumerate(limits):
         d=a-b
         return (c*100).round(1),d.round(3)
         
-    p0=(perc(means.laws2011a.iloc[4],means.laws2011a.iloc[2])) #Nina
-    p1=(perc(means.laws2011a.iloc[4],means.laws2011a.iloc[0])) #Nino
-    p2=(perc(means.CO2.iloc[4],means.CO2.iloc[2])) #Nina
-    p3=(perc(means.CO2.iloc[4],means.CO2.iloc[0])) #Nina
+    p0=(perc(means.laws2011a.iloc[2],means.laws2011a.iloc[4])) #Nina
+    p1=(perc(means.laws2011a.iloc[0],means.laws2011a.iloc[4])) #EP Nino
+    p1a=(perc(means.laws2011a.iloc[8],means.laws2011a.iloc[4])) #CP Nino
+    
+    p2=(perc(means.CO2.iloc[2],means.CO2.iloc[4])) #Nina
+    p3=(perc(means.CO2.iloc[0],means.CO2.iloc[4])) #EP Nino
+    p3a=(perc(means.CO2.iloc[8],means.CO2.iloc[4])) #CP Nino
+    
+     
+    #ADD CP here
     
     print('Nina change% NP: '+str(p0))
     print('Nino change% NP: '+str(p1))
@@ -352,25 +346,30 @@ for i,ty in enumerate(limits):
     mass_table=mass_table.append(pd.DataFrame({
     'Region':ty[0],
     'Area':str((gs.values/1e12).round(3))+' (10^12m)',
-    'NP Mean':str(nd.laws2011a.round(3).values[0])+' PgC yr-1',
-    'NP Neutral':str(nc.laws2011a.round(3).values[0])+' PgC yr-1',
-    'NP El Nino':str(na.laws2011a.round(3).values[0])+' PgC yr-1',
-    'NP La Nina':str(nb.laws2011a.round(3).values[0])+' PgC yr-1',
-    'NP El Nino Diff':str(p0[0])+'% ,'+str(p0[1])+'PgC yr-1',
-    'NP La Nina Diff':str(p1[0])+'% ,'+str(p1[1])+'PgC yr-1',
-    'NP Trends':str((annual_rate_of_changeNP/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)) +' TgC yr-2',
+    'NP Mean (PgC yr-1)':str(nd.laws2011a.round(3).values[0]),
+    'NP Neutral (PgC yr-1)':str(nc.laws2011a.round(3).values[0]),
+    'NP EP El Nino (PgC yr-1)':str(na.laws2011a.round(3).values[0]),
+    'NP CP El Nino (PgC yr-1)':str(ne.laws2011a.round(3).values[0]),
+    'NP La Nina (PgC yr-1)':str(nb.laws2011a.round(3).values[0]),
+    'NP EP El Nino Diff':str(p1[0])+'% ,'+str(p1[1]),
+    'NP CP El Nino Diff':str(p1a[0])+'% ,'+str(p1a[1]),
+    'NP La Nina Diff':str(p0[0])+'% ,'+str(p0[1]),
+    'NP Trends (TgC yr-2)':str((annual_rate_of_changeNP/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)),
     'NP Pval':trenNP[3].round(10),
-    'CO2 Mean':str(nd.CO2.round(3).values[0])+' Pg yr-1',
-    'CO2 Neutral':str(nc.CO2.round(3).values[0])+' PgC yr-1',
-    'CO2 El Nino':str(na.CO2.round(3).values[0])+' PgC yr-1',
-    'CO2 La Nina':str(nb.CO2.round(3).values[0])+' PgC yr-1',
-    'CO2 El Nino Diff':str(p2[0])+'% ,'+str(p2[1])+'PgC yr-1',
-    'CO2 La Nina Diff':str(p3[0])+'% ,'+str(p3[1])+'PgC yr-1',
-    'CO2 Trends':str((annual_rate_of_changeCO/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)) +' TgC yr-2',
+    
+    'CO2 Mean (PgC yr-1)':str(nd.CO2.round(3).values[0]),
+    'CO2 Neutral (PgC yr-1)':str(nc.CO2.round(3).values[0]),
+    'CO2 EP El Nino (PgC yr-1)':str(na.CO2.round(3).values[0]),
+    'CO2 CP El Nino (PgC yr-1)':str(ne.CO2.round(3).values[0]),
+    'CO2 La Nina (PgC yr-1)':str(nb.CO2.round(3).values[0]),
+    'CO2 EP El Nino Diff':str(p3[0])+'% ,'+str(p3[1]),
+    'CO2 CP El Nino Diff':str(p3a[0])+'% ,'+str(p3a[1]),
+    'CO2 La Nina Diff':str(p2[0])+'% ,'+str(p2[1]),
+    'CO2 Trends (TgC yr-2)':str((annual_rate_of_changeCO/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)),
     'CO2 Pval':trenCO[3].round(10)},index=[i]))
         
-    
-    
+    check_lag_corr_x.append(laws2011a.sel(time=slice('1998-01-01','2019-12-01')).values)
+    check_lag_corr_y.append(CO2.sel(time=slice('1998-01-01','2019-12-01')).values)
     
     
 means.to_csv('processed/results/enso_basin_means.csv',index=False)
@@ -380,4 +379,13 @@ plt.tight_layout()
 plt.savefig('figs/Figure6_basinavg_pG.png',dpi=200)
 plt.show()
 
+#Check Lag coefficient.
+
+for i in range(len(check_lag_corr_x)):
+    hh=plt.xcorr(check_lag_corr_x[i],check_lag_corr_y[i],maxlags=3,normed=True)
+    coefs=hh[1]
+    index_max = max(range(len(coefs)), key=coefs.__getitem__)
+    print(hh[0][index_max],hh[1][index_max])
+    print(hh[1][3])
+    print(hh[1][index_max]-hh[1][3])
 print(gs)

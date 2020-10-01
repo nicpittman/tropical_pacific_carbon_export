@@ -199,7 +199,14 @@ seamask= seamask.assign_coords(lon=(seamask.lon % 360)).roll(lon=(seamask.dims['
 landschutzer=xr.open_dataset(landsch_fp)
 landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
 land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
+land_pac_all=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
+
 land_pac=land_pac.fgco2_smoothed
+
+atmco2=land_pac_all.atm_co2
+dco2=land_pac_all.dco2
+pco2=land_pac_all.spco2_smoothed
+kw=land_pac_all.kw
 
 f_ratios=xr.open_mfdataset('processed/flux/fratios.nc')
 ratio=f_ratios.laws2011a#laws2000#laws2000,laws2011a,laws2011b,henson2011
@@ -230,7 +237,7 @@ sst= sst.assign_coords(lon=(sst.lon % 360)).roll(lon=(sst.dims['lon']),roll_coor
 sst=sst.sel(lon=slice(120,290),lat=slice(20,-20)).sst
 sst=sst.where(seamask.seamask==1)
 
-pCO2 = xr.open_dataarray('processed/flux/pco2grams.nc')
+pCO2 = xr.open_dataarray('processed/flux/pco2grams.nc') #_norm
 integratedpCO2 = (pCO2*12*50)
 #monthlyPCO2=integratedpCO2.diff('time',1)/30
 
@@ -296,19 +303,103 @@ plot_basemap_row(fig,axn=9,
                  trend_conversion=1000,
                  cmap='viridis')
 
-plot_basemap_row(fig,axn=11,
-                  hovmol=integratedpCO2,#monthlyPCO2*1000,
-                  units='gC m$^{-2}$',
-                  title='pCO2t',
-                  units_tr='mgC m$^{-2}$ year$^{-1}$',
-                  levs=np.arange(5.5,9.5,0.5),
-                  levs_trend=np.arange(0,100,10),
-                  trend_conversion=1000,
+
+
+
+#Delta pCO2
+h=plot_basemap_row(fig,axn=11,
+                  hovmol=dco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+                  units='μatm',
+                  title='\u0394pCO$_{2}$',#'pCO21',
+                  units_tr='μatm year$^{-1}$',
+                  levs=np.arange(-10,121,10),#(200,1200,10),#(5.5,9.5,0.5),
+                  levs_trend=np.arange(-2.5,2.6,0.1),
+                  trend_conversion=1,#1000,
                   cmap='viridis',
-                  cmaptr='Reds')
+                  cmaptr='RdBu_r')#'Reds')
+
+
+# #Ocean pCO2
+# plot_basemap_row(fig,axn=11,
+#                   hovmol=pco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+#                   units='ppm',
+#                   title='ocean pco2',#'pCO21',
+#                   units_tr='ppm year$^{-1}$',
+#                   levs=np.arange(300,550,10),#(200,1200,10),#(5.5,9.5,0.5),
+#                   levs_trend=np.arange(-4,4,0.01),
+#                   trend_conversion=1,#1000,
+#                   cmap='viridis',
+#                   cmaptr='RdBu_r')#'Reds')
+
+
+
+# #Gas transfer velocity
+# plot_basemap_row(fig,axn=11,
+#                   hovmol=kw,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+#                   units='ppm',
+#                   title='\u0394pCO$_{2}$',#'pCO21',
+#                   units_tr='ppm year$^{-1}$',
+#                   levs=np.arange(500,3000,10),#(200,1200,10),#(5.5,9.5,0.5),
+#                   levs_trend=np.arange(-30,30,1),
+#                   trend_conversion=1,#1000,
+#                   cmap='viridis',
+#                   cmaptr='RdBu_r')#'Reds')
+
+# #Atmospheric pCO2
+# plot_basemap_row(fig,axn=11,
+#                   hovmol=atm pco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+#                   units='ppm',
+#                   title='atm co2',#'pCO21',
+#                   units_tr='ppm year$^{-1}$',
+#                   levs=np.arange(300,500,10),#(200,1200,10),#(5.5,9.5,0.5),
+#                   levs_trend=np.arange(4,6,0.01),
+#                   trend_conversion=1,#1000,
+#                   cmap='viridis',
+#                   cmaptr='RdBu_r')#'Reds')
+
+
+# plot_basemap_row(fig,axn=11,
+#                   hovmol=integratedpCO2,#monthlyPCO2*1000,
+#                   units='gC m$^{-2}$',
+#                   title='pCO2t',
+#                   units_tr='mgC m$^{-2}$ year$^{-1}$',
+#                   levs=np.arange(5.5,9.5,0.5),
+#                   levs_trend=np.arange(0,100,10),
+#                   trend_conversion=1000,
+#                   cmap='viridis',
+#                   cmaptr='Reds')
+
+
+# #F-ratio - Need to comment out integratedpCO2 above.
+# plot_basemap_row(fig,axn=11,
+#                   hovmol=ratio,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+#                   units='gC m$^{-2}$',
+#                   title='fratio',#'pCO21',
+#                   units_tr='ppm year$^{-1}$',
+#                   levs=np.arange(0.05,0.35,0.01),#(200,1200,10),#(5.5,9.5,0.5),
+#                   levs_trend=np.arange(-0.1,0.1,0.001),
+#                   trend_conversion=100,#1000,
+#                   cmap='viridis',
+#                   cmaptr='RdBu_r')
+
+# #CAFE NPP mean
+# hh=plot_basemap_row(fig,axn=11,
+#                   hovmol=npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+#                   units='gC m$^{-2}$',
+#                   title='NPP Average',
+#                   units_tr='ppm year$^{-1}$',
+#                   levs=np.arange(200,1200,10),#(5.5,9.5,0.5),
+#                   levs_trend=np.arange(-15,15,1),
+#                   trend_conversion=1,#1000,
+#                   cmap='viridis',
+#                   cmaptr='RdBu_r')
 
 
 
 plt.tight_layout()
 plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.png',dpi=100)
+try:
+    plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.jpeg',dpi=300)
+except:
+    pass
 plt.show()

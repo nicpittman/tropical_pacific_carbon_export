@@ -44,6 +44,9 @@ moorings=['110W','125W','140W','155W','170W','165E'][::-1]
 #Change startyear to 1980 for full timeseries and will auto save _alltime.
 startyear=str(1997)
 
+check_lag_corr_asf=[]
+check_lag_corr_np=[]
+
 
 fs=20
 fig=plt.figure(figsize=(28,30))#,constrained_layout=True)
@@ -109,6 +112,12 @@ for i, mooring_name in enumerate(moorings):
     ax1.plot(avg_npp.index,avg_npp.values/1000*ratio.sel({'Date':avg_npp.index}),linewidth=5,label='New Production',c='orangered')
     ax1.axhline(0,linestyle='--',c='k',linewidth=3,alpha=0.8)
 
+    asf=(moles_to_carbon(LandSch_co2flux_data.fgco2_smoothed)/365)
+    npp=avg_npp.values/1000*ratio.sel({'Date':avg_npp.index})
+    check_lag_corr_asf.append(asf.sel(Date=slice('1998-01-01','2019-12-31')).values)
+    check_lag_corr_np.append(npp.sel(Date=slice('1998-01-01','2019-12-31')).values)
+    
+
 
     #ax1.scatter(mooring_obs_npp.time.astype('datetime64').values,abs(mooring_obs_npp.pp.values)/1000*ratio.sel({'Date':mooring_obs_npp.time.astype('datetime64[M]').values}),marker='x',c='k',s=40,alpha=0.8,label='_nolegend_')
     #print('Have :'+str(len(mooring_obs_npp))+' insitu NPP observations for '+mooring_name)
@@ -120,6 +129,8 @@ for i, mooring_name in enumerate(moorings):
     drawdown=co222.where(co222<0)
     draw_dates=drawdown[~drawdown.isnull()].Date.values
     print('Drawdown Mean: '+str(drawdown.mean().values))
+    #if ~np.isnan(drawdown.mean()):
+    #    print(drawdown.values)
     ax1.scatter(draw_dates.astype('datetime64[M]'),np.zeros(len(draw_dates))+0.015,c='r',s=500,marker=11,label='Drawdown')
     #Drawdown indicator
     
@@ -222,6 +233,7 @@ for i, mooring_name in enumerate(moorings):
     #ep_events and cp events
     ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv']
     ensofps=['processed/indexes/el_nino_events.csv','processed/indexes/la_nina_events.csv','processed/indexes/cp_events.csv','processed/indexes/cold_cp_events.csv']
+    ensofps=['processed/indexes/ep_events.csv','processed/indexes/la_nina_events.csv','processed/indexes/cp_events.csv']
     for whichenso,fp in enumerate(ensofps):
         events=pd.read_csv(fp)
         for ev in events.iterrows():
@@ -229,7 +241,7 @@ for i, mooring_name in enumerate(moorings):
             endm1=endm-np.timedelta64(1,'M')
             endm2=endm+np.timedelta64(1,'M')
             start=np.datetime64(ev[1].start).astype('datetime64[M]')
-            print(start,endm,fp)
+          
             if start==endm1: #We don't want to plot events that last for only a month
                 pass    
             #elif start==endm2-np.timedelta64(1,'M'): #There was some weirdness with the 2015 event not being continuous, and this fixes it..,
@@ -265,22 +277,20 @@ for i, mooring_name in enumerate(moorings):
         cbar.ax.tick_params(labelsize=fs)
         cbar.set_label('Temperature (C)',fontsize=fs)
         cax.set_visible(False)
-        ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2015-09-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2002-11-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2004-06-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2019-08-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2003-01-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2004-06-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2019-08-01'),0.22,'CP',fontsize=14)
         
         
     elif i==0:
         ax1.legend(ncol=4,fontsize=fs,loc='upper center')
         ax2.tick_params(labelbottom=False)
     else:
-        ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2015-09-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2002-11-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2004-06-01'),0.22,'CP',fontsize=14)
-        ax1.text(np.datetime64('2019-08-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2009-11-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2003-01-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2004-06-01'),0.22,'CP',fontsize=14)
+        # ax1.text(np.datetime64('2019-08-01'),0.22,'CP',fontsize=14)
         
         
         ax2.tick_params(labelbottom=False)
@@ -309,7 +319,10 @@ for i, mooring_name in enumerate(moorings):
 plt.tight_layout()
 if startyear==str(1997):
     #plt.savefig('figs/Figure2_Co2fluxevents'+ratio_name+'.png',format='png',dpi=100)
-    plt.savefig('figs/Figure2.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+    try:
+        plt.savefig('figs/Figure2.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+    except:
+        pass
     plt.savefig('figs/Figure2.eps',dpi=300)
     plt.savefig('figs/Figure2.png',dpi=100)
     
@@ -326,3 +339,117 @@ mm.to_csv('processed/results/means.csv')
 final_mooring_enso.to_csv('processed/results/enso_mooring_avg.csv')
 print(final_mooring_enso)
 #final_mooring_enso.plot()
+
+check_lag_corr_asf1=check_lag_corr_asf[::-1]
+check_lag_corr_np1=check_lag_corr_np[::-1]
+moorings1=moorings[::-1]
+#Just so it starts with the west
+
+
+fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+for i in range(len(check_lag_corr_asf)):
+    ax=plt.subplot(7,2,i+1)
+    hh=ax.xcorr(check_lag_corr_asf1[0],check_lag_corr_asf1[i],maxlags=12,normed=True)
+    plt.ylim([0.5,1])
+    plt.title('ASF: Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+    #plt.show()
+    coefs=hh[1]
+    index_max = max(range(len(coefs)), key=coefs.__getitem__)
+    plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+    print('largest')
+    print(hh[0][index_max],hh[1][index_max])
+    print('0 lag')
+    print(hh[1][3])
+    print('Difference')
+    print(hh[1][index_max]-hh[1][3])
+    print('\n')
+print(gs)
+#plt.show()
+
+#fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+for i in range(len(check_lag_corr_asf)):
+    ax=plt.subplot(7,2,8+i+1)
+    hh=ax.xcorr(check_lag_corr_np1[0],check_lag_corr_np1[i],maxlags=12,normed=True)
+    plt.ylim([0.75,1])
+    plt.title('NP: Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+    #plt.show()
+    coefs=hh[1]
+    index_max = max(range(len(coefs)), key=coefs.__getitem__)
+    plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+    print('largest')
+    print(hh[0][index_max],hh[1][index_max])
+    print('0 lag')
+    print(hh[1][3])
+    print('Difference')
+    print(hh[1][index_max]-hh[1][3])
+    print('\n')
+print(gs)
+plt.tight_layout()
+plt.show()
+
+fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+for i in range(len(check_lag_corr_asf)):
+    ax=plt.subplot(3,2,i+1)
+    #hh=ax.xcorr(check_lag_corr_asf[0],check_lag_corr_asf[i],maxlags=12,normed=True)
+    hh=ax.xcorr(check_lag_corr_asf1[i],check_lag_corr_np1[i],maxlags=12,normed=True)
+    plt.ylim([0.5,1])
+    plt.title('ASF vs new production at: Mooring '+moorings1[i])
+    #plt.show()
+    coefs=hh[1]
+    index_max = max(range(len(coefs)), key=coefs.__getitem__)
+    plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+    print('largest')
+    print(hh[0][index_max],hh[1][index_max])
+    print('0 lag')
+    print(hh[1][3])
+    print('Difference')
+    print(hh[1][index_max]-hh[1][3])
+    print('\n')
+print(gs)
+plt.show()
+
+# fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+# for i in range(len(check_lag_corr_asf)):
+#     ax=plt.subplot(3,2,i+1)
+#     hh=ax.xcorr(check_lag_corr_asf1[2],check_lag_corr_asf1[i],maxlags=12,normed=True)
+#     plt.ylim([0.5,1])
+#     plt.title('ASF: Mooring '+moorings1[2]+' verse: mooring '+moorings1[i])
+#     #plt.show()
+#     coefs=hh[1]
+#     index_max = max(range(len(coefs)), key=coefs.__getitem__)
+#     plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+#     print('largest')
+#     print(hh[0][index_max],hh[1][index_max])
+#     print('0 lag')
+#     print(hh[1][3])
+#     print('Difference')
+#     print(hh[1][index_max]-hh[1][3])
+#     print('\n')
+# print(gs)
+# plt.show()
+
+
+# check_lag_corr_asf2=check_lag_corr_asf
+# check_lag_corr_np12=check_lag_corr_np
+# moorings2=moorings
+# fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+# for i in range(len(check_lag_corr_asf)):
+#     ax=plt.subplot(3,2,i+1)
+#     hh=ax.xcorr(check_lag_corr_asf2[0],check_lag_corr_asf2[i],maxlags=12,normed=True)
+#     plt.ylim([0.5,1])
+#     plt.title('ASF: Mooring '+moorings2[0]+' verse: mooring '+moorings2[i])
+#     #plt.show()
+#     coefs=hh[1]
+#     index_max = max(range(len(coefs)), key=coefs.__getitem__)
+#     plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+#     print('largest')
+#     print(hh[0][index_max],hh[1][index_max])
+#     print('0 lag')
+#     print(hh[1][3])
+#     print('Difference')
+#     print(hh[1][index_max]-hh[1][3])
+#     print('\n')
+# print(gs)
+# plt.show()
+
+
