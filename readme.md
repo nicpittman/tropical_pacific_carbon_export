@@ -60,9 +60,8 @@ mkdir -p co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/
 ````
 
 You will need to use NCO to convert the time variable name (t to date) so they can be opened by xarray. Included in the conda environment.
-```cd co2/landschutzer_co2
-cd co2/landschutzer_co2
-ncrename -v date,t spco2_MPI-SOM_FFN_v2020.nc 
+```
+ncrename -v date,t co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc 
 ```
 
 TAO data is included here in datasets/tao/tao_physics/*. You can update it yourself here (but not essential): https://www.pmel.noaa.gov/tao/drupal/disdel/ using all variables at Moorings 110W,125W, 140W,155W,170E,165E

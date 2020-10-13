@@ -150,7 +150,7 @@ paths='datasets/chl/chlor_a/'
 
 chl_models=['seawifs','modis','meris','viirs']
 
-#This uses the GADI versions. You will need to change the above paths to the local storage of these files. I would recommend datasets/chlorophyll or something.
+#This uses the downloaded versions in datasets/chl/download shell script. If the data is stored locally, you can indicate it like the commented paths. You might also need to change the path definitions below as well (commented line).
 
 for i,x in enumerate(chl_models):
         path = paths+x+'/*.nc'
