@@ -98,7 +98,7 @@ limits=[['West',165,180],
       #['Wyrtiki',180,270]]
 #Borgne is lims=1
 #Wyrtiki is both lims=5 and 10
-lims=18
+lims=10
 
 
 mass_table=pd.DataFrame({})

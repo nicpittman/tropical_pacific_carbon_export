@@ -343,13 +343,19 @@ for typ in tyyp:
     moorings1=moorings[::-1]
     #Just so it starts with the west
     
+    if typ=='both':
+        both=check_lag_corr_asf1
+    elif typ=='np':
+        newprod=check_lag_corr_asf1
+    elif typ=='asf':
+        airseaflux=check_lag_corr_asf1
     
     fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
     for i in range(len(check_lag_corr_asf)):
         ax=plt.subplot(3,2,i+1)
-        hh=ax.xcorr(check_lag_corr_asf1[0],check_lag_corr_asf1[i],maxlags=24,normed=True)
+        hh=ax.xcorr(check_lag_corr_asf1[0],check_lag_corr_asf1[i],maxlags=12,normed=True)
         plt.ylim([0.5,1])
-        plt.title('ASF: Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+        plt.title(typ+': Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
         #plt.show()
         coefs=hh[1]
         index_max = max(range(len(coefs)), key=coefs.__getitem__)
@@ -363,6 +369,30 @@ for typ in tyyp:
         print('\n')
     #print(gs)
     plt.show()
+    
+    
+    
+    
+    
+fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+for i in range(len(newprod)):
+    ax=plt.subplot(3,2,i+1)
+    hh=ax.xcorr(newprod[i],airseaflux[i],maxlags=12,normed=True)
+    plt.ylim([0.5,1])
+    plt.title(typ+'new prod and asf at: '+moorings1[i])
+    #plt.show()
+    coefs=hh[1]
+    index_max = max(range(len(coefs)), key=coefs.__getitem__)
+    plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+    print('largest')
+    print(hh[0][index_max],hh[1][index_max])
+    print('0 lag')
+    print(hh[1][3])
+    print('Difference')
+    print(hh[1][index_max]-hh[1][3])
+    print('\n')
+#print(gs)
+plt.show()
 
 # #fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
 # for i in range(len(check_lag_corr_asf)):
