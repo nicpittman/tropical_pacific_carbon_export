@@ -13,7 +13,7 @@ wget -q --post-data="sensor=modis_aqua&sdate=2002-01-01&edate=2020-12-01&dtype=L
 #Make our dir 
 mkdir chlor_a
 mkdir chlor_a/seawifs
-mkdir chlora/modis
+mkdir chlor_a/modis
 
 echo 'Downloading Seawifs'
 for url in $(cat seawifs.txt); do

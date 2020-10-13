@@ -33,8 +33,10 @@ conda create -n pacific_carbon python=3.7 ESMPy=7.1.0 xesmf==0.3 spyder=4.0 xarr
 
 Otherwise, try removing the library versions, but this has worked on my system. Things might break if you use different versions. 
 
-
-
+and then activate it like so:
+```
+conda activate pacific_carbon
+```
 
 
 ### 	2. Reproduce figures:
@@ -48,13 +50,13 @@ Most of the processed data is provided in order for the plotting functions (9[a-
 SST:
 
 ```To download manually:
-cd datasets| mkdir sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output datasets/sst/sst.mnmean.nc
+mkdir datasets/sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output datasets/sst/sst.mnmean.nc
 ```
 
 Landschutzer CO<sub>2</sub>  (https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html)
 
 ````
-mkdir co2 | mkdir co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
+mkdir -p co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
 ````
 
 You will need to use NCO to convert the time variable name (t to date) so they can be opened by xarray. Included in the conda environment.
@@ -147,7 +149,7 @@ Scripts are organised to be run in numerical order.
       chmod  0600 ~/.netrc
       ```
 
-   5. TPCA should download automatically during script 2. Sourced from: https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905 
+   5. TPCA should download automatically during script 2. They will be downloaded to datasets/chl/*nc and then moved automatically to the relevant folder /chlor_a/ seawifs or modis. Sourced from: https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905 
 
 3. Downloads CO<sub>2</sub> flux for several products. (Can run scripts 3-5 simultaneous to script 1 in a separate console)
 
