@@ -175,7 +175,7 @@ print('Yasanaka Data was obtained from private communication. Please email her f
 print('---------------------------------------------')
 
 #Uncomment this to preprocess the JAMS and Yasanaka data.
-#process_jams()
+process_jams()
 #process_yasanaka()
 out_path='processed/flux/'    
 #new_flux=xr.open_mfdataset(out_path+'jma_flux.nc')
@@ -239,4 +239,4 @@ for ii,ll in enumerate(lons):
 
 
 land_mooring_flux=xr.concat(land_moorings,dim='Mooring')
-land_mooring_flux.to_netcdf(out_path+'landsch_mooring_co2_flux_20.nc')
+land_mooring_flux.to_netcdf(out_path+'landsch_mooring_co2_flux.nc')

@@ -613,7 +613,7 @@ def make_earth_grid_m2():
     return True
     
 	
-def carbon_uatm_to_grams(plotter=0):
+def carbon_uatm_to_grams_tempcorrected(plotter=0):
     
 	co2=xr.open_dataset('processed/flux/landshutzer.nc')
 	co2['time']=co2.time.astype('datetime64[M]')
@@ -691,13 +691,14 @@ def carbon_uatm_to_grams(plotter=0):
 	    #print(i,co)
 	    volumes=np.append(volumes,co)
 	answer=xr.DataArray(volumes.reshape((pco2monthvals.shape[0],pco2monthvals.shape[1],pco2monthvals.shape[2])),coords=deltapCO2bio.coords)
-	answer.to_netcdf('processed/flux/pco2grams.nc',engine='h5netcdf',mode='w')
+	answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
 	return True
 
 
 
-def carbon_uatm_to_grams_normal(plotter=0):
-co2=xr.open_dataset('processed/flux/landshutzer.nc')
+def carbon_uatm_to_grams(plotter=0):
+#Difference to above script is that this is the non-temperature corrected version.
+        co2=xr.open_dataset('processed/flux/landshutzer.nc')
    	co2['time']=co2.time.astype('datetime64[M]')
    	ratios=xr.open_mfdataset('processed/flux/fratios.nc').laws2011b
    	#ratio=f_ratios.laws2011a #laws2000,laws2011a,laws2011b,henson2011
@@ -739,7 +740,7 @@ co2=xr.open_dataset('processed/flux/landshutzer.nc')
    	    #print(i,co)
    	    volumes=np.append(volumes,co)
    	answer=xr.DataArray(volumes.reshape((pco2.shape[0],pco2.shape[1],pco2.shape[2])),coords=co2.spco2_smoothed.coords)
-   	answer.to_netcdf('processed/flux/pco2grams_norm.nc',engine='h5netcdf',mode='w')
+   	answer.to_netcdf('processed/flux/pco2grams.nc',engine='h5netcdf',mode='w')
 return True
 
 
@@ -1007,8 +1008,8 @@ print('Calculate earth size per pixel')
 make_earth_grid_m2()
 # print('Convert uatm carbon to grams of carbon')
 
-carbon_uatm_to_grams_normal() #Updated version of the one below. No Temperature correction.
-# #carbon_uatm_to_grams(plotter=0) #This one uses lots of memory and time. might need to qsub it.
+carbon_uatm_to_grams() #Updated version of the one below. No Temperature correction.
+# #carbon_uatm_to_grams_tempcorrected(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
 make_fratio_nc()
 print('Adding Cafe and SST')

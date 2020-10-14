@@ -37,7 +37,7 @@ and then activate it like so:
 ```
 conda activate pacific_carbon
 ```
-
+I have tried my best to make this a reproducable repository. A balance between versions and reproducability. For example, throughout processing, a beautiful soup or lxml update (which I had not versioned), broke script 4. Provided as is. 
 
 ### 	2. Reproduce figures:
 
@@ -50,18 +50,18 @@ Most of the processed data is provided in order for the plotting functions (9[a-
 SST:
 
 ```To download manually:
-mkdir datasets/sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output datasets/sst/sst.mnmean.nc
+mkdir -p datasets/sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output datasets/sst/sst.mnmean.nc
 ```
 
 Landschutzer CO<sub>2</sub>  (https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html)
 
 ````
-mkdir -p co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
+mkdir -p datasets/co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
 ````
 
 You will need to use NCO to convert the time variable name (t to date) so they can be opened by xarray. Included in the conda environment.
 ```
-ncrename -v date,t co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc 
+ncrename -v date,t datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc 
 ```
 
 TAO data is included here in datasets/tao/tao_physics/*. You can update it yourself here (but not essential): https://www.pmel.noaa.gov/tao/drupal/disdel/ using all variables at Moorings 110W,125W, 140W,155W,170E,165E
@@ -85,7 +85,8 @@ The following data files are included here for the reproduction of figures (All 
     processed/earth_m2.nc							
     processed/flux/landsch_mooring_co2_flux.nc 		
     processed/flux/npp.nc								
-    processed/indexes/el_nino_events.csv				
+    processed/indexes/ep_nino_events.csv
+    processed/indexes/cp_nino_events.csv				
     processed/indexes/la_nina_events.csv
 
 
@@ -102,7 +103,7 @@ python 9e ...
 python 9f ...
 ```
 
-Note*, Figure 4 (9d) uses basemap, a depreciated package. A rough version of this figure is provided using cartopy but is not publication quality, so I recommend using the basemap version if possible. It should work in the provided Conda environment. 
+Note*, Figure 4 (9d) uses basemap, a depreciated package. It should work in the provided Conda environment. 
 
 
 
@@ -137,7 +138,7 @@ Scripts are organised to be run in numerical order.
 
 2. Cuts the NPP data into mooring csv files. 
 
-   1. **NOTE** This script is not actually essential, has been processed data provided in processed/npp_mooring_timeseries.
+   1. **NOTE** This script is not actually essential, processed data is provided in processed/npp_mooring_timeseries. The processing here can be pretty memory / CPU intensive. I actually cut out the tropics so it wouldn't get killed by the supercomputer login node for too much memory.
 
    2. NASA chlor_a needs to be downloaded manually. If you already have it stored locally, make sure you change the path variables in script 2. To download, A script in 'datasets/chl/download_NASA_chlora.sh' is provided. You will need authorisation cookie as described at: https://oceancolor.gsfc.nasa.gov/data/download_methods/. Sourced from https://oceandata.sci.gsfc.nasa.gov/ 
 
@@ -148,7 +149,7 @@ Scripts are organised to be run in numerical order.
       chmod  0600 ~/.netrc
       ```
       and then run it like ```sh download_NASA_chlora.sh```
-      They will be downloaded to datasets/chl/*nc and then moved automatically to the relevant folder /chlor_a/ seawifs or modis. 
+      They will be downloaded to datasets/chl/*nc and then moved automatically to the relevant folder /chlor_a/ seawifs or modis. Note that for some reason, some downloaded files are corrupt. You will need to manually download the broken netcdf files, i don't have an easy fix for this.  
 
    5. TPCA should download automatically during script 2. It will download to datasets/chl/TPCA/. Sourced from: https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905 
 
@@ -180,14 +181,13 @@ Scripts are organised to be run in numerical order.
 
    - Re EMI. The original data file was downloaded from: http://www.jamstec.go.jp/aplinfo/sintexf/DATA/emi.monthly.txt which has now changed to: http://www.jamstec.go.jp/virtualearth/data/SINTEX/SINTEX_EMI.csv.  This is reflected in the scripts.
 
-8. a - Processes all of this data into the mooring timeseries. This is an inefficient script (ie. will take days to run), and I would implement this differently if I was to rewrite this. **Because it is so inefficient, a parallelised version (7b) has been produced to be run** on the Australian supercomputer GADI/NCI but still takes 6 cores and 6 hours (or can be run on 6 or 3 native cores). Oops for pandas inefficiencies. Be aware here. 
-
+8. a - Processes all of this data into the mooring timeseries. This is an inefficient script (ie. will take days to run), and I would implement this differently if I was to rewrite this. **Because it is so inefficient, a parallelised version (7b) has been produced to be run** on the Australian supercomputer GADI/NCI but still takes 6 cores and 6 hours (or can be run on 6 or 3 native cores). Oops for pandas inefficiencies. Be aware here. I recommend using 7b (And submitted with `run_combiner.sh` if you need to que this up. This shell script will need modification for your system. If you have 6 CPU cores accessible, you can run it like normal.)
    
    
 8. Is a cleanup script with miscellaneous cleanup functions that i have added on add hoc during development. For example, CAFE was released late in the development process, and a function will plug this (and SST) into the Mooring timeseries.  Another part finds ENSO events, and another function converts the mooring csvs into an easy to use netcdf file. These have been debugged but may still contain system specific problems. 
 
-   1. You will need to change some filepaths, particularly the `convert_TPCA_to_month()`function. You will also need to create the directory datasets/tpca otherwise it may brexak (unless you have stored TPCA in datasets/tpca, which would make sense.) `mkdir datasets/tpca`
-   2. The carbon conversion( `carbon_uatm_to_grams()`) takes a long time, and I get killed on the supercomputer login nodes, for I assume memory. This can be made into its own script and submitted very easily if you have this problem. Again, not entirely necessary as the relevant files are provided.
+   1. You will need to change some filepaths if anything breaks.
+   2. The carbon conversion( `carbon_uatm_to_grams()`) takes a long time, and I get killed on the supercomputer login nodes, for I assume memory. This can be made into its own script and submitted very easily if you have this problem. Again, not entirely necessary as the relevant files are provided. Two versions are provided. We want the normal and not temperature corrected version.
 
 9. Are plotting scripts as discussed above.
 

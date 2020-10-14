@@ -22,6 +22,7 @@ import subprocess
 import calendar
 import shutil
 import glob
+import lxml
 
 def downloader(urls,mooring=None, meta=False):
     """" Function designed to download TaoTriton data from: """

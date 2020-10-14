@@ -11,9 +11,10 @@ curl https://tdevries.eri.ucsb.edu/wp-content/uploads/2018/03/SIMPLE_TRIM_output
 #These were obtained by selecting every variable for single location timeseries. These files are included here by default in datasets/tao/#physics. These can be downloaded yourself if you want.
 
 echo 'Downloading Landschutzer 2018 for pipeline.'
+echo 'Expecting that the 2020 version has already been downloaded as per readme instructions'
 curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
 
-ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc
+ncrename -v date,t datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
 
 
 #Climate Indexes are included here. If you want to download them yourself you can:
@@ -23,7 +24,7 @@ ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc
 #PDO: http://research.jisao.washington.edu/pdo/PDO.latest
 
 echo 'CLIMATE INDICIES'
-echo 'Uncomment these if you need to download them, but note you must fix them in excel before being opened by pandas'
+echo 'Uncomment these if you need to download them, but note you must fix their formating in excel before being opened by pandas. Instructions are provided at the bottom of this shell script. These files are already provided in this repository, so I would recommend to leave this as is.'
 
 # curl https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/soi.long.data --output soi.csv
 # curl https://psl.noaa.gov/enso/mei/data/meiv2.data --output meiv2.csv

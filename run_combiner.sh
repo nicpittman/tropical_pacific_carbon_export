@@ -12,4 +12,4 @@ module purge
 module use /g/data3/hh5/public/modules/
 module load conda/analysis3
 
-python3 /g/data/v45/np1383/cb3/tropical_pacific_carbon_export/7b-gadi-Data_Combine_CO2_Physics_parallel.py 
+python3 /g/data/v45/np1383/finalcheckCH3/tropical_pacific_carbon_export/7b-gadi-Data_Combine_CO2_Physics_parallel.py 
