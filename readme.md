@@ -139,7 +139,7 @@ Scripts are organised to be run in numerical order.
 
    1. **NOTE** This script is not actually essential, has been processed data provided in processed/npp_mooring_timeseries.
 
-   2. NASA chlor_a needs to be downloaded manually. A script in 'datasets/chl/download_NASA_chlora.sh' is provided. Will need authorisation cookie as described at: https://oceancolor.gsfc.nasa.gov/data/download_methods/. Sourced from https://oceandata.sci.gsfc.nasa.gov/ 
+   2. NASA chlor_a needs to be downloaded manually. If you already have it stored locally, make sure you change the path variables in script 2. To download, A script in 'datasets/chl/download_NASA_chlora.sh' is provided. You will need authorisation cookie as described at: https://oceancolor.gsfc.nasa.gov/data/download_methods/. Sourced from https://oceandata.sci.gsfc.nasa.gov/ 
 
    3. Once you create an account at earth data, set the cookie like this. 
 
@@ -147,8 +147,10 @@ Scripts are organised to be run in numerical order.
       echo "machine urs.earthdata.nasa.gov login USERNAME password PASSWD" > ~/.netrc ; > ~/.urs_cookies
       chmod  0600 ~/.netrc
       ```
+      and then run it like ```sh download_NASA_chlora.sh```
+      They will be downloaded to datasets/chl/*nc and then moved automatically to the relevant folder /chlor_a/ seawifs or modis. 
 
-   5. TPCA should download automatically during script 2. They will be downloaded to datasets/chl/*nc and then moved automatically to the relevant folder /chlor_a/ seawifs or modis. Sourced from: https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905 
+   5. TPCA should download automatically during script 2. It will download to datasets/chl/TPCA/. Sourced from: https://researchdata.ands.org.au/tropical-pacific-chlorophyll-reprocessing-v10/1438905 
 
 3. Downloads CO<sub>2</sub> flux for several products. (Can run scripts 3-5 simultaneous to script 1 in a separate console)
 
