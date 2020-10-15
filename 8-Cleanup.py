@@ -257,55 +257,55 @@ def combine_csvs_to_nc():
     This should be done at the end of 7ab already so may not be essential to run this one.
     Previously known as data day average.
     '''
-moorings=['110W','125W','140W','155W','170W','165E']
-mooring_int=[110,125,140,155,170,195]
-aavg_a=[]
-davg_a=[]
-wavg_a=[]
-mavg_a=[]
-
-for mooring in moorings:
-    fp='processed/combined_dataset/'+mooring+'_combined.csv'
-    dat=pd.read_csv(fp,index_col=False)
-    #print(dat)
-    dat['Date']=dat.Date.astype(np.datetime64)
-    dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
-    alld = dat.to_xarray()#.drop('Unnamed: 0')
-    davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
-    wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
-    mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
-    aavg_a.append(alld)
-    davg_a.append(davg)
-    wavg_a.append(wavg)
-    mavg_a.append(mavg)
-        
-        #plt.scatter(wavg.co2flux_gmyr,wavg.mod_vgbm)
-        #plt.scatter(wavg.co2flux_gmyr,wavg.mod_cpbm)
-        #plt.scatter(wavg.co2flux_gmyr,wavg.mod_cafe)
-        #plt.scatter(wavg.co2flux_gmyr,wavg.mod_eppley)
-        
-        
-    all_data=xr.concat(aavg_a,dim='Mooring')
-    daily=xr.concat(davg_a,dim='Mooring')
-    weekly=xr.concat(wavg_a,dim='Mooring')
-    monthly=xr.concat(mavg_a,dim='Mooring')
-    all_data.coords['Mooring']=moorings
-    daily.coords['Mooring']=mooring_int
-    weekly.coords['Mooring']=mooring_int
-    monthly.coords['Mooring']=mooring_int
-   
-    fp='processed/combined_dataset/'
-    try:
-        os.remove(fp+'month_data.nc')
-        os.remove(fp+'week_data.nc')
-        os.remove(fp+'day_data.nc')
-    except:
-        pass
-
-    all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf')
-    daily.to_netcdf(fp+'day_data.nc')
-    weekly.to_netcdf(fp+'week_data.nc')
-    monthly.to_netcdf(fp+'month_data.nc')
+    moorings=['110W','125W','140W','155W','170W','165E']
+    mooring_int=[110,125,140,155,170,195]
+    aavg_a=[]
+    davg_a=[]
+    wavg_a=[]
+    mavg_a=[]
+    
+    for mooring in moorings:
+        fp='processed/combined_dataset/'+mooring+'_combined.csv'
+        dat=pd.read_csv(fp,index_col=False)
+        #print(dat)
+        dat['Date']=dat.Date.astype(np.datetime64)
+        dat.set_index(pd.DatetimeIndex(dat.Date),inplace=True)
+        alld = dat.to_xarray()#.drop('Unnamed: 0')
+        davg = dat.resample('D').mean().to_xarray()#.drop('Unnamed: 0') #Day average
+        wavg = dat.resample('W').mean().to_xarray()#.drop('Unnamed: 0') #Week average
+        mavg = dat.resample('M').mean().to_xarray()#.drop('Unnamed: 0') #Month average
+        aavg_a.append(alld)
+        davg_a.append(davg)
+        wavg_a.append(wavg)
+        mavg_a.append(mavg)
+            
+            #plt.scatter(wavg.co2flux_gmyr,wavg.mod_vgbm)
+            #plt.scatter(wavg.co2flux_gmyr,wavg.mod_cpbm)
+            #plt.scatter(wavg.co2flux_gmyr,wavg.mod_cafe)
+            #plt.scatter(wavg.co2flux_gmyr,wavg.mod_eppley)
+            
+            
+        all_data=xr.concat(aavg_a,dim='Mooring')
+        daily=xr.concat(davg_a,dim='Mooring')
+        weekly=xr.concat(wavg_a,dim='Mooring')
+        monthly=xr.concat(mavg_a,dim='Mooring')
+        all_data.coords['Mooring']=moorings
+        daily.coords['Mooring']=mooring_int
+        weekly.coords['Mooring']=mooring_int
+        monthly.coords['Mooring']=mooring_int
+       
+        fp='processed/combined_dataset/'
+        try:
+            os.remove(fp+'month_data.nc')
+            os.remove(fp+'week_data.nc')
+            os.remove(fp+'day_data.nc')
+        except:
+            pass
+    
+        all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf')
+        daily.to_netcdf(fp+'day_data.nc')
+        weekly.to_netcdf(fp+'week_data.nc')
+        monthly.to_netcdf(fp+'month_data.nc')
     
 def npp_csvs_to_nc():
     '''
