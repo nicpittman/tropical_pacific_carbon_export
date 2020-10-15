@@ -285,27 +285,27 @@ def combine_csvs_to_nc():
             #plt.scatter(wavg.co2flux_gmyr,wavg.mod_eppley)
             
             
-        all_data=xr.concat(aavg_a,dim='Mooring')
-        daily=xr.concat(davg_a,dim='Mooring')
-        weekly=xr.concat(wavg_a,dim='Mooring')
-        monthly=xr.concat(mavg_a,dim='Mooring')
-        all_data.coords['Mooring']=moorings
-        daily.coords['Mooring']=mooring_int
-        weekly.coords['Mooring']=mooring_int
-        monthly.coords['Mooring']=mooring_int
+    all_data=xr.concat(aavg_a,dim='Mooring')
+    daily=xr.concat(davg_a,dim='Mooring')
+    weekly=xr.concat(wavg_a,dim='Mooring')
+    monthly=xr.concat(mavg_a,dim='Mooring')
+    all_data.coords['Mooring']=moorings
+    daily.coords['Mooring']=mooring_int
+    weekly.coords['Mooring']=mooring_int
+    monthly.coords['Mooring']=mooring_int
        
-        fp='processed/combined_dataset/'
-        try:
-            os.remove(fp+'month_data.nc')
-            os.remove(fp+'week_data.nc')
-            os.remove(fp+'day_data.nc')
-        except:
-            pass
+    fp='processed/combined_dataset/'
+    try:
+        os.remove(fp+'month_data.nc')
+        os.remove(fp+'week_data.nc')
+        os.remove(fp+'day_data.nc')
+    except:
+        pass
     
-        all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf')
-        daily.to_netcdf(fp+'day_data.nc')
-        weekly.to_netcdf(fp+'week_data.nc')
-        monthly.to_netcdf(fp+'month_data.nc')
+    all_data.to_netcdf(fp+'all_data.nc',engine='h5netcdf')
+    daily.to_netcdf(fp+'day_data.nc')
+    weekly.to_netcdf(fp+'week_data.nc')
+    monthly.to_netcdf(fp+'month_data.nc')
     
 def npp_csvs_to_nc():
     '''
@@ -520,23 +520,29 @@ def create_npp_avgs(): #This function will regrid New production models to the L
 def convert_tpca_to_month():
     #Process TPCA into monthly so we can regrid it (too big before and this is the resolution we want)
     #sw=xr.open_mfdataset('/g/data/ua8/ocean_color/TPCA_reprocessing/SeaWiFS/*nc',combine='nested',concat_dim='time')# You will need to modify this file path#datasets/tpca/seawifs/*nc')
+    try:
+        os.remove('datasets/chl/tpca/sw_month.nc')
+        os.remove('datasets/chl/tpca/mod_month.nc')
+    except:
+        pass
+
     sw=xr.open_mfdataset('datasets/chl/tpca/seawifs/*nc',combine='nested',concat_dim='time')
     sw=sw.rename(chl_tpca='sw_tpca')
     sw=sw.resample(time='M').mean(dim='time') 
-    sw.to_netcdf('datasets/tpca/sw_month.nc',engine='h5netcdf',mode='w')
+    sw.to_netcdf('datasets/chl/tpca/sw_month.nc',engine='h5netcdf',mode='w')
     print('saved monthly SW TPCA')
 
     #mod=xr.open_mfdataset('/g/data/ua8/ocean_color/TPCA_reprocessing/MODIS-Aqua/*nc',combine='nested',concat_dim='time')# Modify this file path #datasets/tpca/modis/*nc')
     mod=xr.open_mfdataset('datasets/chl/tpca/modis/*nc',combine='nested',concat_dim='time')#
     mod=mod.rename(chl_tpca='mod_tpca')
     mod=mod.resample(time='M').mean(dim='time') 
-    mod.to_netcdf('datasets/tpca/mod_month.nc',engine='h5netcdf',mode='w')
+    mod.to_netcdf('datasets/chl/tpca/mod_month.nc',engine='h5netcdf',mode='w')
     print('saved monthly modis TPCA')
 
 
 def regrid_tpca():
-    sw=xr.open_dataset('datasets/tpca/sw_month.nc')
-    mod=xr.open_dataset('datasets/tpca/mod_month.nc')
+    sw=xr.open_dataset('datasets/chl/tpca/sw_month.nc')
+    mod=xr.open_dataset('datasets/chl/tpca/mod_month.nc')
     
     tpca=sw
     tpca=tpca.merge(mod)
@@ -574,8 +580,7 @@ def regrid_tpca():
     print('Regridding TPCA')
     regridder = xe.Regridder(mod, land_pac, 'conservative')
     chl=regridder(mod)
-    chl.to_netcdf('datasets/tpca/tpca.nc',engine='h5netcdf',mode='w')
- 
+    chl.to_netcdf('processed/flux/tpca.nc',engine='h5netcdf',mode='w') 
 
 def cut_sst_moorings():
     dat = xr.open_dataset('datasets/sst/sst.mnmean.nc')
@@ -1007,8 +1012,7 @@ print('Working out the SST for each mooring')
 cut_sst_moorings()
 print('Calculate earth size per pixel')
 make_earth_grid_m2()
-# print('Convert uatm carbon to grams of carbon')
-
+print('Convert uatm carbon to grams of carbon. This one crashes on login node for me. Might need to qsub it or run it somewhere else.')
 carbon_uatm_to_grams() #Updated version of the one below. No Temperature correction.
 # #carbon_uatm_to_grams_tempcorrected(plotter=0) #This one uses lots of memory and time. might need to qsub it.
 print('Calculate f-ratio maps')
