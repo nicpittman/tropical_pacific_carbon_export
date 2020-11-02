@@ -97,7 +97,7 @@ for i, mooring in enumerate(dat.Mooring.values):
     plt.plot((asfdiff.month-1).astype('datetime64[M]'),asfdiff,c=cols[i],linewidth=3,label=moorings[i])
   
 plt.ylim([xl2,yl2])
-plt.title('f) Air-sea flux - new production seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('f) Air-sea CO$_{2}$ flux - new production seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
@@ -196,7 +196,7 @@ plt.grid()
 
 plt.ylim([xl2,yl2])
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
-plt.title('e)  Air-sea flux - new production ENSO',loc='left')
+plt.title('e)  Air-sea CO$_{2}$ flux - new production ENSO',loc='left')
 #print(final_mooring_enso_avgs)
 print('AIR SEA FLUX MINUS NEW PROD')
 print(final_mooring_enso.mean())
@@ -621,7 +621,7 @@ for i, mooring in enumerate(dat.Mooring.values):
 
    
 plt.ylim([xl1,yl1])  
-plt.title('d) Air-sea flux seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
+plt.title('d) Air-sea CO$_{2}$ flux seasonality',loc='left')#'Seasonal cycle in '+t,loc='left')
 plt.gca().xaxis.set_major_locator(MonthLocator())
 plt.gca().xaxis.set_major_formatter(FuncFormatter(m_fmt))
 #plt.legend()
@@ -722,7 +722,7 @@ for x in final_mooring_enso.T.iterrows():
 plt.grid()
 
 plt.ylabel('gC m$^{-2}$ day$^{-1}$')
-plt.title('c)  Air-sea flux ENSO',loc='left')
+plt.title('c)  Air-sea CO$_{2}$ flux ENSO',loc='left')
 plt.ylim([xl0,yl0])
 print('AIR SEA FLUX')
 print(final_mooring_enso.mean())

@@ -619,7 +619,7 @@ def make_earth_grid_m2():
     
 	
 def carbon_uatm_to_grams_tempcorrected(plotter=0):
-    
+
 	co2=xr.open_dataset('processed/flux/landshutzer.nc')
 	co2['time']=co2.time.astype('datetime64[M]')
 	ratios=xr.open_mfdataset('processed/flux/fratios.nc').laws2011b
@@ -661,13 +661,13 @@ def carbon_uatm_to_grams_tempcorrected(plotter=0):
 	#Equation 3
 	deltapCO2bio=pco2Tmean_max-pco2Tmean_min
 	
-        #if plotter==1:
-        #    deltapCO2bio.mean(dim='time').plot(),plt.title('deltapco2bio'),plt.show()
+    #if plotter==1:
+    #    deltapCO2bio.mean(dim='time').plot(),plt.title('deltapco2bio'),plt.show()
 	#Equation 4
 	deltapCO2temp=pco2Tobs_max-pco2Tobs_min
-        
-        #if plotter==1:
-        #    deltapCO2temp.mean(dim='time').plot(),plt.title('deltapco2temp'),plt.show()
+    
+    #if plotter==1:
+    #    deltapCO2temp.mean(dim='time').plot(),plt.title('deltapco2temp'),plt.show()
 	#Equation 5
 	diff=(deltapCO2temp-deltapCO2bio)
 	ratio=(deltapCO2temp/deltapCO2bio)
@@ -696,7 +696,8 @@ def carbon_uatm_to_grams_tempcorrected(plotter=0):
 	    #print(i,co)
 	    volumes=np.append(volumes,co)
 	answer=xr.DataArray(volumes.reshape((pco2monthvals.shape[0],pco2monthvals.shape[1],pco2monthvals.shape[2])),coords=deltapCO2bio.coords)
-	answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
+	answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',mode='w')
+#answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
 	return True
 
 
@@ -706,45 +707,45 @@ def carbon_uatm_to_grams(plotter=0):
     co2=xr.open_dataset('processed/flux/landshutzer.nc')
     co2['time']=co2.time.astype('datetime64[M]')
     ratios=xr.open_mfdataset('processed/flux/fratios.nc').laws2011b
-   	#ratio=f_ratios.laws2011a #laws2000,laws2011a,laws2011b,henson2011
-   
+       	#ratio=f_ratios.laws2011a #laws2000,laws2011a,laws2011b,henson2011
+       
     npp=(xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc').avg_npp/1000*365)
-   
+       
     sst = xr.open_dataset('datasets/sst/sst.mnmean.nc')
     sst= sst.assign_coords(lon=(sst.lon % 360)).roll(lon=(sst.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
     sst=sst.sel(lon=slice(120,290),lat=slice(20,-20)).sst
     sst=sst.sel(time=slice(npp.time.min().values,npp.time.max().values))
-   
+       
     sst=sst.reindex(lat=sst.lat[::-1]) #Lat indexes are backwards
-   
+       
     co2=co2.sel(time=slice(npp.time.min().values,npp.time.max().values))
     sst=sst.sel(time=slice(co2.time.min().values,co2.time.max().values))
-   
+       
     iida=xr.open_dataset('processed/flux/jma_flux.nc')
     iida=iida.sel(lon=slice(120,290),lat=slice(-20,20))
     iida=iida.sel(time=slice(co2.time.min().values,co2.time.max().values))
     dic=iida.dic.values
-   
-   
+       
+       
     pco2=co2.spco2_smoothed.values
-   	
+       	
     seasurf=sst.values
     flat_pco2=pco2.reshape(pco2.shape[0]*pco2.shape[1]*pco2.shape[2])
     flat_sst=seasurf.reshape(pco2.shape[0]*pco2.shape[1]*pco2.shape[2])
     flat_dic=dic.reshape(pco2.shape[0]*pco2.shape[1]*pco2.shape[2])
     volumes=np.array([])
-   
+       
     #Flatten and rebuild the array with bespoke sst and dic. 
-   
-   	#Annoying that I have to calculate it this way. Obviously quite slow but allows bespoke pixel calcultaion. 
+       
+       	#Annoying that I have to calculate it this way. Obviously quite slow but allows bespoke pixel calcultaion. 
     for i,dat in enumerate(flat_pco2):
         vol=cb.CBsys(DIC=flat_dic[i],pCO2=flat_pco2[i],T_in=flat_sst[i])#T_in=28)#
         co=(vol.CO2/1000000)*1000
-   	    #if ~np.isnan(co):
-   	    #    print(co)
-   	    #print(i,co)
+       	    #if ~np.isnan(co):
+       	    #    print(co)
+       	    #print(i,co)
         volumes=np.append(volumes,co)
-
+    
     answer=xr.DataArray(volumes.reshape((pco2.shape[0],pco2.shape[1],pco2.shape[2])),coords=co2.spco2_smoothed.coords)
     answer.to_netcdf('processed/flux/pco2grams.nc',engine='h5netcdf',mode='w')
     return True
