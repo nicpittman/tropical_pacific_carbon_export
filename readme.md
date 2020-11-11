@@ -239,27 +239,34 @@ Scripts are to be run in numerical order.
 
 Figure 1. 
 
-![](figs/Figure1.png)
+<img src="figs/Figure1.png" width="35%">
+
+
 
 
 
 Figure 2. 
 
-![](figs/Figure2.png)
+<img src="figs/Figure2.png" width="50%">
 
-Figure 3![](figs/Figure3_smallboth.png)
+
+
+Figure 3
+
+<img src="figs/Figure3_smallboth.png" width="80%">
 
 Figure 4
 
-![](figs/Figure4_Spatial_map_update_laws2011a.png)
+<img src="figs/Figure4_Spatial_map_update_laws2011a.png" width="50%">
 
 Figure 5
 
-![](figs/Figure5a_ENSO_seasonality.png)
-
-
+<img src="figs/Figure5a_ENSO_seasonality.png" width="50%">
 
 Figure 6
 
-![](figs/Figure6_basinavg_pG.png)
+
+<img src="figs/Figure6_basinavg_pG.png" width="60%">
+
+
 
