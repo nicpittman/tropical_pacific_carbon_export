@@ -329,7 +329,7 @@ for typ in tyyp:
         plt.savefig('figs/Figure_small'+typ+'.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
     except:
         pass
-    plt.savefig('figs/Figure2small'+typ+'.eps',dpi=300)
+    plt.savefig('figs/Figure3_small'+typ+'.eps',dpi=300)
     plt.show()
 
 

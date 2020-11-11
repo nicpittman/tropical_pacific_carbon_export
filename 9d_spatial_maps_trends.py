@@ -398,6 +398,9 @@ h=plot_basemap_row(fig,axn=11,
 
 plt.tight_layout()
 plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.png',dpi=100)
+plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.eps')
+plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.pdf')
+
 try:
     plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.jpeg',dpi=300)
 except:

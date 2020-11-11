@@ -45,6 +45,8 @@ I have tried my best to make this a reproducible repository, with a balance betw
 
 I have noticed the figures turn out differently if run in terminal compared to using Spyder (likely due to graphics software differences, on the supercomputer i get the error: `MESA-LOADER: failed to load driver swrast (search paths /usr/lib64/dri)` - This may be fixable? I don't know. Spyder is included in the dependencies and should reproduce the figures accurately if used.  The numbers reported in the manuscript are printed to console during figure production, and some are saved into *processed/results/\*.csv*.
 
+Figures are embedded at the bottom of this document for reference. 
+
 ##### 3.1 Data to download
 
 Most of the processed data is provided in order for the plotting functions (scripts 9[a-f]) to work. However, two sets of data will need to be downloaded manually. SST and the Landschutzer CO<sub>2</sub> flux product (and NCO to convert to a usable format). You can perform this either running `sh datasets/to_download.sh`, or by pasting the following code into console:
@@ -171,7 +173,11 @@ Scripts are to be run in numerical order.
 
 4. Downloads mooring CO<sub>2</sub> data (Including Japanese JMA product, downloaded automagically).
 
+   1. This data comes from https://www.ncei.noaa.gov/access/ocean-carbon-data-system/oceans/Moorings/Pacific.html and https://www.pmel.noaa.gov/co2/timeseries/. 
+
 5. Downloads mooring physics data and combines with the mooring CO<sub>2</sub> data.
+
+   1. Mooring Data was sourced from https://www.pmel.noaa.gov/tao/drupal/disdel/ but can also be sourced from: https://tao.ndbc.noaa.gov/tao/data_download/search_map.shtml
 
 6. Is a shell file with a list of other datasets that need to be manually downloaded (or you can just run the shell commands outlined here).
 
@@ -195,8 +201,8 @@ Scripts are to be run in numerical order.
 
    - Regarding EMI. The original data file was downloaded from: http://www.jamstec.go.jp/aplinfo/sintexf/DATA/emi.monthly.txt which has now changed to: http://www.jamstec.go.jp/virtualearth/data/SINTEX/SINTEX_EMI.csv.  This is reflected in the scripts.
 
-8. a - Processes all of this data into the mooring timeseries. This is an inefficient script (ie. will take days to run), and I would implement this differently if I was to rewrite this. **Because it is so inefficient, a parallelised version (7b) has been produced to be run** on the Australian supercomputer GADI/NCI but still takes 6 cores and 6 hours (or can be run on 6 or 3 native cores). Oops for pandas inefficiencies. Be aware here. I recommend using 7b (And submitted with `run_combiner.sh` if you need to queue this up. This shell script will need modification for your system. If you have 6 CPU cores accessible, you can run it you usually would.)
-   
+7. a - Processes all of this data into the mooring timeseries. This is an inefficient script (ie. will take days to run), and I would implement this differently if I was to rewrite this. **Because it is so inefficient, a parallelised version (7b) has been produced to be run** on the Australian supercomputer GADI/NCI but still takes 6 cores and 6 hours (or can be run on 6 or 3 native cores). Oops for pandas inefficiencies. Be aware here. I recommend using 7b (And submitted with `run_combiner.sh` if you need to queue this up. This shell script will need modification for your system. If you have 6 CPU cores accessible, you can run it you usually would.)
+
 8. Is a cleanup script with miscellaneous cleanup functions that i have added on ad-hoc during development. For example, CAFE was released late in the development process, and a function will plug this (and SST) into the Mooring timeseries.  Another part finds ENSO events, and another function converts the mooring csvs into an easy to use netcdf file. These have been debugged but may still contain system specific problems. 
 
    1. You may need to change some hard-coded file paths if anything breaks.
@@ -216,7 +222,7 @@ Scripts are to be run in numerical order.
 
    f. Compares the overall volumes of CO2 removal from the equatorial Pacific (East, West, Central and overall).
 
-1. run_combiner.sh will submit 7b to the supercomputer. You may need to change this depending on your system paths, or you may not need it at all. Depending on the number of cores, you can change the bottom script 7b to use say 3 cores, taking approximately 12 hours. Has been left at default of 6 cores, one for each mooring.
+10. run_combiner.sh will submit 7b to the supercomputer. You may need to change this depending on your system paths, or you may not need it at all. Depending on the number of cores, you can change the bottom script 7b to use say 3 cores, taking approximately 12 hours. Has been left at default of 6 cores, one for each mooring.
 
 ##### 4.2 Other scripts:
 
@@ -228,3 +234,32 @@ Scripts are to be run in numerical order.
 
 - Things have changed around a lot, with some redundant code still in the repo. I have tried to refactor where possible, but there is still some messiness and possible system dependent issues.  I have tried to fix this the best I can with Anaconda (see Conda, Section 2). I have tried my best to provide at least the minimum standard of code for reproducible science. 
 - All data for the figures is provided. However, all scripts to process the data yourself are also provided for complete reproducibility of this paper 
+
+#### 6. Figures
+
+Figure 1. 
+
+![](figs/Figure1.png)
+
+
+
+Figure 2. 
+
+![](figs/Figure2.png)
+
+Figure 3![](figs/Figure3_smallboth.png)
+
+Figure 4
+
+![](figs/Figure4_Spatial_map_update_laws2011a.png)
+
+Figure 5
+
+![](figs/Figure5a_ENSO_seasonality.png)
+
+
+
+Figure 6
+
+![](figs/Figure6_basinavg_pG.png)
+

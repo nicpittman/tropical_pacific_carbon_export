@@ -696,8 +696,8 @@ def carbon_uatm_to_grams_tempcorrected(plotter=0):
 	    #print(i,co)
 	    volumes=np.append(volumes,co)
 	answer=xr.DataArray(volumes.reshape((pco2monthvals.shape[0],pco2monthvals.shape[1],pco2monthvals.shape[2])),coords=deltapCO2bio.coords)
-	answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',mode='w')
-#answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
+	#answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',mode='w')
+    answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
 	return True
 
 

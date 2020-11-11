@@ -190,7 +190,7 @@ for i,ty in enumerate(limits):
         
         ax.set_ylim([-0.005*1e15,0.2*1e15])
         ax.set_title(chr(97+i)+') '+ty[0]+' Pacific',pad=16)
-        ax.set_ylabel('New production / CO$_{2}$ flux (PgC yr$^{-1}$)')
+        ax.set_ylabel('New production and CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.yaxis.set_major_formatter(FixedOrderFormatter(15))
 
        #y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
@@ -198,7 +198,7 @@ for i,ty in enumerate(limits):
     else:
         ax.legend(loc='lower center',ncol=5)
         ax.set_title(chr(97+i)+') Entire Basin')
-        ax.set_ylabel('New Production / CO$_{2}$ flux (PgC yr$^{-1}$)')
+        ax.set_ylabel('New Production and CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.set_ylim([0,1.25*1e15])
     import matplotlib.patches as patches
       
@@ -377,6 +377,15 @@ mass_table=mass_table.T
 mass_table.to_csv('processed/results/carbon_mass.csv',header=False)
 plt.tight_layout()
 plt.savefig('figs/Figure6_basinavg_pG.png',dpi=200)
+plt.savefig('figs/Figure6.eps',dpi=300)
+plt.savefig('figs/Figure6.pdf',dpi=600)
+
+try:
+    plt.savefig('figs/Figure6.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+except:
+    pass
+
+        
 plt.show()
 
 #Check Lag coefficient.

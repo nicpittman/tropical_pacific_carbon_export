@@ -849,6 +849,7 @@ plt.tight_layout()
 
 plt.savefig('figs/Figure5a_ENSO_seasonality.png',dpi=200)
 plt.savefig('figs/Figure5a_ENSO_seasonality.eps')
+plt.savefig('figs/Figure5a_ENSO_seasonality.pdf')
 plt.show()
 
 print(ENSOAVG.mean())
