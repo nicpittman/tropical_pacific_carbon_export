@@ -55,7 +55,7 @@ def plot_basemap():
 
 
 
-def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=None,trend_conversion=None,sb1=7,sb2=2,cmap='viridis',cmaptr='RdBu_r'):
+def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=None,trend_conversion=None,sb1=7,sb2=2,cmap='viridis',cmaptr='RdBu_r',wu=None,wv=None):
     '''
     Create a plotting function to make it repeatable and nicer
     colormaps should either be viridis or RdBu_r
@@ -107,6 +107,14 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         late_sst=hovmol.sel(time=slice('2015-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
         m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k')
 
+        #late_sst=hovmol.sel(time=slice('2015-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
+        #m.contour(lo1,la1,late_sst,levels=[27],linestyles='dashed',colors='k')
+
+    #wu['lon'],wu['lat']=m(lo,la,wu.lon.values,wu.lat.values)
+    if title=='Wind speed':
+          skip=(slice(None,None,2),slice(None,None,2))
+          m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip]/2,wv.mean(dim='time')[skip]/2,scale=90,headwidth=4.5)#,minshaft=2)
+
 
     cb=plt.colorbar(f,ax=ax1,fraction=fr)
     cb.set_label(units,fontsize=fs)
@@ -123,8 +131,8 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     num_dates=dt_dates
     hm['time']=num_dates
 
-
-
+    
+ 
     #This will calculate the per pixel trends and pvalues
 
     time=hm.time.values
@@ -169,7 +177,7 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     cb.set_label(units_tr,fontsize=fs)
     cb.ax.tick_params(labelsize=fs)
     ax2.axhline(0,c='k',linestyle=':')
-    
+
     ax2.set_title(chr(ord('`')+axn+1)+') Trends: '+title,fontsize=fs)
     for x in moorings:
         x1,y1=m(x,0)
@@ -199,6 +207,7 @@ seamask= seamask.assign_coords(lon=(seamask.lon % 360)).roll(lon=(seamask.dims['
 landschutzer=xr.open_dataset(landsch_fp)
 landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
 land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
+land_pac['time']=land_pac.time.astype('datetime64[M]')
 land_pac_all=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
 
 land_pac=land_pac.fgco2_smoothed
@@ -216,7 +225,6 @@ avg_npp=(npp1.avg_npp/1000)*ratio
 
 land=moles_to_carbon(land_pac)/365  #LANDSCHUTZ
 
-land['time']=land.time.astype('datetime64[M]')
 
 diff=land-avg_npp
 diff1=diff.where((diff<0.1)|(diff<-0.1),np.nan)
@@ -224,8 +232,9 @@ diff1=diff.where((diff<0.1)|(diff<-0.1),np.nan)
 
 # Need to combine the chlorophyll products, takes a bit of memory.
 chl=xr.open_dataset('processed/flux/tpca.nc').tpca#'sw_month.nc')
+
 #mod=xr.open_dataset('datasets/tpca/mod_month.nc')
-#sw['time']=sw.time.astype('datetime64[M]')
+chl['time']=chl.time.astype('datetime64[M]')
 #mod['time']=mod.time.astype('datetime64[M]')
 #tpca=sw
 #tpca=tpca.merge(mod)
@@ -239,49 +248,52 @@ sst=sst.where(seamask.seamask==1)
 
 pCO2 = xr.open_dataarray('processed/flux/pco2grams.nc') #_norm
 integratedpCO2 = (pCO2*12*50)
+
+#wu=xr.open_dataset('datasets/uwnd.mon.mean.nc').sel(level=1000,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
+#wv=xr.open_dataset('datasets/vwnd.mon.mean.nc').sel(level=1000,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
+wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
+wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
+dco2['time']=dco2.time.astype('datetime64[M]')
+
+ws=np.sqrt((wu**2)+(wv**2))
 #monthlyPCO2=integratedpCO2.diff('time',1)/30
 
 # %% Prepare Figure 
+
+
+lanina=pd.read_csv('processed/indexes/la_nina_events.csv')
+cp_nino=pd.read_csv('processed/indexes/cp_events.csv')
+ep_nino=pd.read_csv('processed/indexes/ep_events.csv')
+
+fp='processed/combined_dataset/month_data_exports.nc'
+info=xr.open_mfdataset(fp).sel(Mooring=195).to_dataframe()
+
+
+#Process EP, CP and Nino events.
+nina=pd.DataFrame()
+ep=pd.DataFrame()
+cp=pd.DataFrame()
+for i in lanina.iterrows(): nina=nina.append(info[slice(i[1].start,i[1].end)])
+for i in ep_nino.iterrows(): ep=ep.append(info[slice(i[1].start,i[1].end)])
+for i in cp_nino.iterrows(): cp=cp.append(info[slice(i[1].start,i[1].end)])
+nina_dates=nina.index
+ep_dates=ep.index[4:]
+cp_dates=cp.index
+all_dates=chl.time
+
+
+#So we can select which time range. Select nina/ep.cp/ep dates 
+ensodates=all_dates
+etype=''
+
 
 fig=plt.figure(figsize=(19*2/2.54,23*2/2.54))#(figsize=(30,15))
 sb1=7
 sb2=2
 
+
 plot_basemap_row(fig,axn=1,
-                 hovmol=avg_npp.sel(lat=slice(-15,15)),
-                 units='gC m$^{-2}$ day$^{-1}$',
-                 title='New production',
-                 units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
-                 levs=np.arange(0,0.26,0.025),
-                 levs_trend=np.arange(-2,2.1,0.25),
-                 trend_conversion=1000,
-                 cmap='viridis')
-
-plot_basemap_row(fig,axn=3,
-                 hovmol=land,
-                 units='gC m$_{-2}$ day$^{-1}$',
-                 title='Air-sea CO$_{2}$ flux',
-                 units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
-                 levs=np.arange(-0.12,0.13,0.02),
-                 levs_trend=np.arange(-2,2.1,0.5),
-                 trend_conversion=1000,
-                 cmap='RdBu_r')
-
-
-plot_basemap_row(fig,axn=5,
-                 hovmol=diff1,
-                 units='gC m$^{-2}$ day$^{-1}$',
-                 title='CO$_{2}$ flux - new production',
-                 units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',                 
-                 levs=np.arange(-0.12,0.13,0.02),
-                 
-                 levs_trend=np.arange(-2,2.1,0.5),
-                 trend_conversion=1000,
-                 cmap='RdBu_r')
-
-
-plot_basemap_row(fig,axn=7,
-                 hovmol=sst,
+                 hovmol=sst.sel(time=ensodates),
                  units='Degrees C',
                  title='SST',
                  units_tr='Degrees C year$^{-1}$',
@@ -292,8 +304,23 @@ plot_basemap_row(fig,axn=7,
                  cmap='viridis')
 
 
-plot_basemap_row(fig,axn=9,
-                 hovmol=chl,
+#wind
+plot_basemap_row(fig,axn=3,
+                 hovmol=ws.sel(time=ensodates),
+                 units='m s$^{-1}$',
+                 title='Wind speed',
+                 units_tr='m s$^{-1}$ year$^{-1}$',                 
+                 levs=np.arange(0,11,1),
+                 
+                 levs_trend=np.arange(-0.15,0.175,0.025),
+                 #trend_conversion=1000,
+                 cmap='RdBu_r',
+                 wu=wu,wv=wv)
+
+
+
+plot_basemap_row(fig,axn=5,
+                 hovmol=chl.sel(time=ensodates[:-7]),
                  units='mg chl m$^{-3}$ day$^{-1}$',
                  title='TPCA chlorophyll',
                  units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
@@ -304,23 +331,60 @@ plot_basemap_row(fig,axn=9,
                  cmap='viridis')
 
 
+plot_basemap_row(fig,axn=7,
+                 hovmol=avg_npp.sel(lat=slice(-15,15),time=ensodates),
+                 units='gC m$^{-2}$ day$^{-1}$',
+                 title='New production',
+                 units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,0.26,0.025),
+                 levs_trend=np.arange(-2,2.1,0.25),
+                 trend_conversion=1000,
+                 cmap='viridis')
+
+
+
+precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
+
+plot_basemap_row(fig,axn=9,
+                 hovmol=precip.sel(time=ensodates),
+                 units='mm day$^{-1}$',
+                 title='Precipitation',
+                 units_tr='mm day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,12,1),
+                 levs_trend=np.arange(-0.09,0.08,0.005),
+                 #trend_conversion=1000,
+                 cmap='viridis')
+
+
 
 
 #Delta pCO2
 h=plot_basemap_row(fig,axn=11,
-                  hovmol=dco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+                  hovmol=dco2.sel(time=ensodates),#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
                   units='μatm',
                   title='\u0394pCO$_{2}$',#'pCO21',
                   units_tr='μatm year$^{-1}$',
-                  levs=np.arange(-10,121,10),#(200,1200,10),#(5.5,9.5,0.5),
+                  levs=np.arange(-15,121,10),#(200,1200,10),#(5.5,9.5,0.5),
                   levs_trend=np.arange(-2.5,2.6,0.1),
                   trend_conversion=1,#1000,
                   cmap='viridis',
                   cmaptr='RdBu_r')#'Reds')
 
 
+plot_basemap_row(fig,axn=13,
+                  hovmol=land.sel(time=ensodates),
+                  units='gC m$_{-2}$ day$^{-1}$',
+                  title='Air-sea CO$_{2}$ flux',
+                  units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
+                  levs=np.arange(-0.14,0.15,0.02),
+                  levs_trend=np.arange(-2,2.1,0.5),
+                  trend_conversion=1000,
+                  cmap='RdBu_r')
+
+
+
 # #Ocean pCO2
-# plot_basemap_row(fig,axn=11,
+# plot_basemap_row(fig,axn=13,
 #                   hovmol=pco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
 #                   units='ppm',
 #                   title='ocean pco2',#'pCO21',
@@ -397,9 +461,9 @@ h=plot_basemap_row(fig,axn=11,
 
 
 plt.tight_layout()
-plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.png',dpi=100)
-plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.eps')
-plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.pdf')
+plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+etype+'.png',dpi=100)
+plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+etype+'.eps')
+plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+etype+'.pdf')
 
 try:
     plt.savefig('figs/Figure4_Spatial_map_update_'+ratio.name+'.jpeg',dpi=300)

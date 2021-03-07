@@ -1,0 +1,397 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar  5 11:52:00 2020
+@author: Nic Pittman
+
+This script reproduces Pittman et al., 2021 Figure 3.
+It also produces the same for just new production and just air-sea flux.
+
+
+Requires:
+    processed/flux/landsch_mooring_co2_flux.nc
+    processed/flux/npp.nc
+    processed/combined_dataset/month_data_exports.nc
+    
+produces:
+    figs/Figure3_decomp_megaplot'+div_factor.name+typ+'.png',dpi=200) (Three different figures)
+    All trends are inside the figure.
+"""
+
+
+import numpy as np
+import pandas as pd
+import xarray as xr
+import matplotlib.pyplot as plt
+from carbon_math import *
+import matplotlib.patches as patches
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.seasonal import STL
+from scipy.stats import linregress
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter, AutoMinorLocator
+
+#Not recommended but allows us to retrieve the numbers we want.
+
+import warnings
+warnings.filterwarnings("ignore")
+
+moorings=['110W','125W','140W','155W','170W','165E'][::-1]
+
+
+fs=16
+lw=2.5
+ms=0
+a=0.8
+
+
+def trends(ax,x,y):  
+
+    #x_n=np.arange(0,len(x))
+    # x1=np.arange(np.datetime64(x[0],'M'),np.datetime64(x[-1],'M')+np.timedelta64(1,'M'))
+    #x1=trd.index.values.astype('datetime64[D]')
+    x1=x.values.astype('datetime64[D]')
+    x_n=pd.to_numeric(x1)
+    slope, intercept, r_value, p_value, std_err = linregress(x_n,y)
+    mn=min(x_n)
+    mx=max(x_n)
+    x1=np.linspace(mn,mx,len(x))
+    y1=slope*x1+intercept
+    
+    ax.plot(pd.to_datetime(x),y1,':r',linewidth=2.5)  
+    #ax.text(x1[-1]-(x1[-1]*0.1),y1[-1]-(y1[-1]*0.1),'R2='+str(np.round(r_value**2,3)))
+    return slope, intercept, r_value,p_value,std_err
+    
+
+t='magnitude'
+#t='percent'
+sday='1999-01-01'
+sday='1997-09-01'
+seasonaltrend=[]
+
+tsd = '2000-01-01' #Trend start at
+
+
+check_lag_corr_np=[]
+
+
+tyyp=['np','asf']#,'both'] #So we can do all three plot types. Onl one in the paper is 'both'
+#tyyp=['both']
+#tyyp=['both']
+fig=plt.figure(figsize=((19/2.54)*2,(10/2.54)*2))#,constrained_layout=True)
+s=fig.add_gridspec(3,2,hspace=0.15,wspace=0.25)
+
+
+check_lag_corr_asf=[]
+#190 mm x 230 mm
+
+   
+
+for i, mooring_name in enumerate(moorings):
+    xi=0
+    yi=0
+    if (i+1)%2!=0:
+        xi=0
+    else:
+        xi=1
+    row_number=int(np.floor(i/2))    
+    yi=row_number
+    ax = s[yi,xi].subgridspec(4,1)#.add_gridspec(spec[yi,xi])
+    
+    ax2=fig.add_subplot(ax[0:3])
+    #ax2=fig.add_subplot(ax[3:6])
+    #ax3=fig.add_subplot(ax[2])
+    #ax4=fig.add_subplot(ax[3])
+    
+    print(mooring_name)
+    #JMAco2flux_data=xr.open_mfdataset('processed/flux/JMA_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
+    LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
+    npp=xr.open_mfdataset('processed/flux/npp.nc').sel(Mooring=mooring_name).sel(Date=slice(sday,'2019-12-01'))
+    
+    ty='month' #Actually month though need to fix this.
+    fp='processed/combined_dataset/'+ty+'_data_exports.nc'
+    try:
+        dat=xr.open_mfdataset(fp).sel(Mooring=int(mooring_name[:-1]))
+    except:
+        dat=xr.open_mfdataset(fp).sel(Mooring=195)
+    dat['Date']=dat.Date.astype('datetime64[M]')
+    #dat=dat.sel(Date=slice('1997-09-01','2017-12-15'))
+    dat=dat.sel(Date=slice(sday,'2020-01-01'))
+
+    div_factor=dat.laws2011a#dat.laws2011b#f_ratio#laws2011b_vgpm
+
+    title=str(mooring_name[0:3]+'\xb0'+mooring_name[3:4])
+    epp=pd.DataFrame([npp.mod_eppley.values,npp.sw_eppley.values]).mean()/1000*div_factor
+    cbpm=pd.DataFrame([npp.mod_cbpm.values,npp.sw_cbpm.values,npp.viirs_cbpm.values]).mean()/1000*div_factor
+    vgpm=pd.DataFrame([npp.sw_vgpm.values,npp.mod_vgpm.values,npp.viirs_vgpm.values]).mean()/1000*div_factor
+    cafe=pd.Series([npp.mod_cafe.values,npp.sw_cafe.values]).mean()/1000*div_factor
+    
+    #avg_npp=npp[['viirs_eppley','viirs_cbpm','viirs_vgpm','sw_eppley','sw_cbpm','sw_vgpm','mod_cafe','mod_eppley','mod_cbpm','mod_vgpm']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
+    #avg_npp=npp[['viirs_cbpm','sw_cbpm','mod_cbpm']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
+    avg_npp=npp[['sw_cafe','mod_cafe']].to_dataframe().drop(columns='Mooring').mean(axis=1).to_xarray()
+    
+    
+    npa=avg_npp/1000*div_factor
+    
+    LandSch_co2flux_data['Date']=LandSch_co2flux_data.Date.astype('datetime64[M]')
+
+    land_flux=((moles_to_carbon(LandSch_co2flux_data.sel(Date=slice(sday,'2020-01-01'))).fgco2_smoothed.values)/365)
+    
+    #JMA= moles_to_carbon(JMAco2flux_data.flux/365)
+    
+  
+    newprod_ds=pd.DataFrame({'nppavg':(npa)})
+    co2_ds=pd.DataFrame({'nppavg':(land_flux)})
+        
+    
+    datset=newprod_ds
+    datset=datset.set_index(LandSch_co2flux_data.sel(Date=slice(sday,'2020-01-01')).Date.values)
+    npdecomp=seasonal_decompose(datset, model='addative', extrapolate_trend='freq')
+    npdecomp=STL(datset,seasonal=13).fit()
+    npdates=npdecomp.resid.index.values.astype('datetime64')
+ 
+    
+    datset=co2_ds
+    datset=datset.set_index(LandSch_co2flux_data.sel(Date=slice(sday,'2020-01-01')).Date.values)
+    co2decomp=seasonal_decompose(datset, model='addative', extrapolate_trend='freq')
+    co2decomp=STL(datset,seasonal=13).fit()
+    co2dates=co2decomp.resid.index.values.astype('datetime64')
+ 
+ 
+    
+ 
+    units='\n gC m$^{-2}$ day$^{-1}$'
+    
+    ax2.axhline(0,c='gray')#,linestyle=':')
+    ax2.plot(npdecomp.observed,c='r',alpha=0.5)#linestyle=':')
+    ax2.plot(co2decomp.observed,c='k',alpha=0.5)#linestyle=':')
+    
+   #  ax1.xaxis.set_minor_locator(AutoMinorLocator(4))
+   #  #if xi==0: #So we don't get labels on the right
+   #  ax1.set_ylabel('Observations'+units,fontsize=10)
+   #  ax1.grid(axis='y',which='major')
+   #  ax1.grid(axis='x',which='both')
+   #  ax1.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
+   #  #ax1.set_ylim([-0.12,0.12])
+
+   #  trd=npdecomp.observed[npdecomp.observed.index>=tsd]
+   #  diff110=trd
+   # # tren=trends(ax2,trd.index,trd.values)
+   #  tren=trends(ax1,trd.index,trd.values.squeeze())
+    
+   #  #annual_rate_of_change1=((tren[0]*pd.to_numeric(trd.index)[-1]+tren[1])-(tren[0]*pd.to_numeric(trd.index)[0]+tren[1]))/len(trd.index)*12*365
+   #  annual_rate_of_change1=((tren[0]*pd.to_numeric(trd.index)[-1]+tren[1])-(tren[0]*pd.to_numeric(trd.index)[0]+tren[1]))/(len(trd.index)/12)*365
+   #  annual_rate_of_change2=((trd.iloc[-1].values[0]-trd.iloc[0].values[0])*365)/((trd.index[-1]-trd.index[0]).days/365)
+   #  #print(annual_rate_of_change1,annual_rate_of_change2)
+   #  annual_rate_of_change=tren[0]*365*1000
+   #  print('tr: '+str(annual_rate_of_change))
+   #  print('stderr '+str(tren[4]*365*1000))
+   #  print('r2 '+str(tren[2]))
+   #  print('pval  '+str(tren[3]))
+   #  print('mean '+str(trd.values.mean()))
+   #  print('std '+str(trd.values.std()))
+    
+   #  #print((trd.iloc[-1].values[0],trd.iloc[0].values[0]))
+   
+   #  tex=str(np.round(annual_rate_of_change,2))+'mgC m$^{-2}$ day$^{-1}$ yr$^{-1}$'
+   #  if tren[3]<=0.05:
+   #      tex='*'+tex
+
+    ax2.set_title(title,fontsize=fs)
+
+    lp=3
+    #if xi==0:
+    ax2.set_ylabel('Seasonal \ndecomposition'+units,labelpad=lp,fontsize=10)
+    ax2.axhline(0,c='gray')#,linestyle=':')
+    ax2.plot(npdecomp.trend,c='r')
+    ax2.plot(co2decomp.trend,c='k')
+    
+    #ax2.plot(decomp.seasonal,c='k',linestyle=':')
+    trd=npdecomp.trend[npdecomp.trend.index>=tsd]
+    
+    check_lag_corr_asf.append(npdecomp.trend.values)
+    #check_lag_corr_y.append(CO2.sel(time=slice('1998-01-01','2019-12-01')).values)
+
+    #tren=trends(ax2,trd.index,trd.values)
+    ax2.xaxis.set_minor_locator(AutoMinorLocator(4))
+    ax2.grid(axis='y',which='major')
+    ax2.grid(axis='x',which='both')
+    #ax2.set_ylim([-0.08,0.07])
+
+    #annual_rate_of_change3=(((tren[0]*pd.to_numeric(trd.index)[-1]+tren[1])-(tren[0]*pd.to_numeric(trd.index)[0]+tren[1]))/len(trd.index))*12*365
+    #annual_rate_of_change4=((trd[-1]-trd[0])*365)/((trd.index[-1]-trd.index[0]).days/365)
+    #annual_rate_of_change=tren[0]*365*1000
+    #print(annual_rate_of_change3,annual_rate_of_change4)
+    #print(trd[-1],trd[0])
+
+    #    ax2.text(np.datetime64('1998-08-01'),-0.05,'Larger Biology',fontsize=11)
+        
+    # if t=='magnitude':
+    #     tex=str(np.round(annual_rate_of_change,2))+'mgC m$^{-2}$ day$^{-1}$ yr$^{-1}$'
+    #     #if i>=2:
+    #     if typ=='both':
+    #         ax2.text(np.datetime64('2010-06-01'),-0.14,tex,fontsize=10)
+    #     else:
+    #         ax2.text(np.datetime64('2010-06-01'),0.01,tex,fontsize=10)
+    #    #else:
+    #     #    ax2.text(np.datetime64('2013-01-01'),0.02,tex,fontsize=10)
+    # else:
+    #     tex=str(np.round(annual_rate_of_change,3))+'%/yr'
+    #     ax2.text(np.datetime64('2013-01-01'),-0.03,tex,fontsize=11)
+    
+          
+    ax2.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
+    
+   
+    # ax3.axhline(0,c='gray')#,linestyle=':')
+    # ax3.plot(decomp.seasonal,c=col)
+    # ax3.set_ylabel('Seasonality',labelpad=lp,fontsize=10)
+    # ax3.xaxis.set_minor_locator(AutoMinorLocator(4))
+    # ax3.grid(axis='y',which='major')
+    # ax3.grid(axis='x',which='both')
+    # ax3.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
+    # if typ=='both':
+    #     ax3.set_ylim([-0.06,0.06])
+    
+    
+    # ax4.axhline(0,c='gray')
+    # if np.isnan(np.nanmean(dat.mei.values)) == False: #Make sure no MEI bug doesn't destroy our plots
+    #     ax4.scatter(dates,decomp.resid,c=dat.mei,cmap='bwr')
+    # else:
+    #     ax4.scatter(dates,decomp.resid,c='k',alpha=0.6)
+        
+    # ax4.set_ylabel('Residuals',labelpad=lp,fontsize=10)
+    
+    # ax4.grid()
+    
+    ax2.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
+    # ax4.set_ylim([-0.05,0.05])
+    # seasonaltrend.append(decomp.seasonal)
+    
+    #ax1.set_xticklabels([])
+    #ax2.set_xticklabels([])        
+    # ax3.set_xticklabels([])
+
+    ensofps=['processed/indexes/ep_events.csv','processed/indexes/la_nina_events.csv','processed/indexes/cp_events.csv']
+    for whichenso,fp in enumerate(ensofps):
+        events=pd.read_csv(fp)
+        for ev in events.iterrows():
+            endm=np.datetime64(ev[1].end).astype('datetime64[M]')
+            endm1=endm-np.timedelta64(1,'M')
+            endm2=endm+np.timedelta64(1,'M')
+            start=np.datetime64(ev[1].start).astype('datetime64[M]')
+          
+            if start==endm1: #We don't want to plot events that last for only a month
+                pass    
+            #elif start==endm2-np.timedelta64(1,'M'): #There was some weirdness with the 2015 event not being continuous, and this fixes it..,
+            #    pass
+            else:
+                if whichenso==0:
+                    #if el nino
+                    patchcol='darkred'#'firebrick'
+                elif whichenso==1:
+                    #if la nina
+                    patchcol='deepskyblue'
+                elif whichenso==2:
+                    patchcol='darkorange'
+                rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
+                #ax1.add_patch(rect)
+                rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
+                #ax1.add_patch(rect)
+                rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
+                ax2.add_patch(rect)
+                rect=patches.Rectangle((start,-0.5),endm-start,2,linewidth=0,alpha=0.3,color=patchcol)
+                ax2.add_patch(rect)
+        
+            
+plt.tight_layout()     
+#plt.savefig('figs/Figure3_small'+typ+'.png',dpi=200)
+#try:
+#    plt.savefig('figs/Figure_small'+typ+'.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+#except:
+#    pass
+#plt.savefig('figs/Figure3_small'+typ+'.eps',dpi=300)
+plt.show()
+
+
+
+
+
+    
+    
+#     check_lag_corr_asf1=check_lag_corr_asf[::-1]
+#     #check_lag_corr_np1=check_lag_corr_np[::-1]
+#     moorings1=moorings[::-1]
+#     #Just so it starts with the west
+    
+#     if typ=='both':
+#         both=check_lag_corr_asf1
+#     elif typ=='np':
+#         newprod=check_lag_corr_asf1
+#     elif typ=='asf':
+#         airseaflux=check_lag_corr_asf1
+    
+#     fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+#     for i in range(len(check_lag_corr_asf)):
+#         ax=plt.subplot(3,2,i+1)
+#         hh=ax.xcorr(check_lag_corr_asf1[0],check_lag_corr_asf1[i],maxlags=12,normed=True)
+#         plt.ylim([0.5,1])
+#         plt.title(typ+': Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+#         #plt.show()
+#         coefs=hh[1]
+#         index_max = max(range(len(coefs)), key=coefs.__getitem__)
+#         plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+#         print('largest')
+#         print(hh[0][index_max],hh[1][index_max])
+#         print('0 lag')
+#         print(hh[1][3])
+#         print('Difference')
+#         print(hh[1][index_max]-hh[1][3])
+#         print('\n')
+#     #print(gs)
+#     plt.show()
+    
+    
+    
+    
+    
+# fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+# for i in range(len(newprod)):
+#     ax=plt.subplot(3,2,i+1)
+#     hh=ax.xcorr(newprod[i],airseaflux[i],maxlags=12,normed=True)
+#     plt.ylim([0.5,1])
+#     plt.title(typ+'new prod and asf at: '+moorings1[i])
+#     #plt.show()
+#     coefs=hh[1]
+#     index_max = max(range(len(coefs)), key=coefs.__getitem__)
+#     plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+#     print('largest')
+#     print(hh[0][index_max],hh[1][index_max])
+#     print('0 lag')
+#     print(hh[1][3])
+#     print('Difference')
+#     print(hh[1][index_max]-hh[1][3])
+#     print('\n')
+# #print(gs)
+# plt.show()
+
+# #fig=plt.figure(figsize=(12,10))#,constrained_layout=True)
+# for i in range(len(check_lag_corr_asf)):
+#     ax=plt.subplot(7,2,8+i+1)
+#     hh=ax.xcorr(check_lag_corr_np1[0],check_lag_corr_np1[i],maxlags=12,normed=True)
+#     plt.ylim([0.75,1])
+#     plt.title('NP: Mooring '+moorings1[0]+' verse: mooring '+moorings1[i])
+#     #plt.show()
+#     coefs=hh[1]
+#     index_max = max(range(len(coefs)), key=coefs.__getitem__)
+#     plt.plot([hh[0][index_max],hh[0][index_max]],[0,hh[1][index_max]],c='r')
+#     print('largest')
+#     print(hh[0][index_max],hh[1][index_max])
+#     print('0 lag')
+#     print(hh[1][3])
+#     print('Difference')
+#     print(hh[1][index_max]-hh[1][3])
+#     print('\n')
+# print(gs)
+# plt.tight_layout()
+# plt.show()
+
