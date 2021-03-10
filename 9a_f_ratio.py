@@ -133,6 +133,11 @@ hovmol=hov.where((hov>hov.quantile(0.0003))&(hov<hov.quantile(0.9999)))
 
 #hov=ax.contourf(f_ratio.lon,f_ratio.time.astype('datetime64[M]').values,f_ratio.sel(lat=slice(5,-5)).mean(dim='lat'))
 hov=ax.contourf(hov.lon,laws2011a.time.astype('datetime64[M]').values,hovmol,levels=np.arange(0.06,0.22,0.01))
+
+#Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
+for c in hov.collections:
+    c.set_edgecolor("face")
+
 print('\nMin f-ratio = '+str(hovmol.min().values))
 print('Max f-ratio = '+str(hovmol.max().values))
 print('Mean f-ratio = '+str(hovmol.mean().values))
@@ -188,10 +193,11 @@ ax2.set_title('d) New production estimates',loc='left')  #Comparison of Export F
 
 
 plt.tight_layout()
-plt.savefig('figs/Figure1.eps',dpi=300)
+plt.savefig('figs/vector/Figure1.eps',dpi=300)
+plt.savefig('figs/vector/Figure1.pdf',dpi=300)
 plt.savefig('figs/Figure1.png',dpi=100)
 try:
-    plt.savefig('figs/Figure1.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+    plt.savefig('figs/Figure1.jpeg',dpi=300) #Conda install pillow needed to save to jpeg.
 except:
     pass
 plt.show()

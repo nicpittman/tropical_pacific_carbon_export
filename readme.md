@@ -12,6 +12,10 @@ This repository is organised so that all figures can be produced immediately aft
 
 
 
+Due to the manuscript and analysis changing shape over time, the mooring compilation step is time consuming and is almost, but not entirely redundant. Thus it is still an essential step but the value of it now is low, and is only used for Figure 2 and 4 and 5, and only a little bit. My recommendation is just use the supplied processed files.
+
+
+
 ##### 2. Getting Conda working
 
 Firstly, I assume you have a Unix environment. Clone the repository to where you want.
@@ -20,7 +24,7 @@ Firstly, I assume you have a Unix environment. Clone the repository to where you
 
 You will  need to ensure you have all of the dependencies outlined in *requirements.txt*
 
-You can create an Anaconda environment (with conda-forge) using *requirements.txt*:
+You can create an Anaconda environment (with conda-forge) using *requirements.txt* (There may be xESMF compatability issues):
 
 ```
 conda config --append channels conda-forge
@@ -70,6 +74,14 @@ ncrename -v date,t datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
 
 TAO data is included here in `datasets/tao/tao_physics/*`. You can update it yourself here (but not essential, and a little time consuming): https://www.pmel.noaa.gov/tao/drupal/disdel/ using all variables at equatorial Moorings 110W,125W, 140W,155W,170E,165E
 
+
+
+(Monthly 2.5degree) Enhanced precipitation: https://psl.noaa.gov/data/gridded/data.cmap.html at the time of writing, direct download link is:	`ftp://ftp.cdc.noaa.gov/Datasets/cmap/enh/precip.mon.mean.nc`
+
+(Monthly 2.5degree) u and v wind speeds:  https://psl.noaa.gov/data/gridded/data.ncep.reanalysis2.gaussian.html at time of writing, direct download links are:
+
+`ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2.derived/gaussian_grid/uwnd.10m.mon.mean.nc` and  `ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2.derived/gaussian_grid/vwnd.10m.mon.mean.nc`
+
 ##### 3.2 Data included
 
 The following data files are included here for the reproduction of figures (All files are created during the 8. Cleanup script):
@@ -109,7 +121,7 @@ The following data files are included here for the reproduction of figures (All 
 
 ##### 3.3 Producing the figures
 
-After you have installed the dependencies, downloaded SST and Landschutzer CO<sub>2</sub>, in terminal, you should be able to run (or preferably in Spyder for correct figure size formatting):
+After you have installed the dependencies, downloaded SST, Landschutzer CO<sub>2</sub> and Precipitation+wind speed data, in terminal, you should be able to run (or preferably in Spyder for correct figure size formatting):
 
 ```
 python 9a ... (tab)
@@ -125,7 +137,7 @@ Note*, Figure 4 (9d) uses basemap, a depreciated package. However, it should wor
 
 ### 	4. Reprocess entire pipeline:
 
-As described above, figures can be reproduced from the provided processed data. However, the entire the pipeline is provided for reproducible research, but is provided as is. I have tried to make the flow as streamlined as possible but it is likely that there will be unique problems on different systems.
+As described above, figures can be reproduced from the provided processed data. However, the entire the pipeline is provided for reproducible research, but is provided as is. I have tried to make the flow as streamlined as possible but it is likely that there will be unique problems on different systems. Since the analysis has changed, the time:reward ratio here is low, but worth including for reproducability. 
 
 ###### Notes: 
 
