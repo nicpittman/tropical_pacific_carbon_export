@@ -110,8 +110,10 @@ sst=sst.where(seamask.seamask==1)
 wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
 wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
 
-ws=np.sqrt((wu**2)+(wv**2))
+ws_ncep2=np.sqrt((wu**2)+(wv**2))
 
+#CHeck line 164 depending if using NCEP2 or windspeed
+ws=xr.open_dataarray('datasets/CCMP_windspeed.nc')
 
 #wind=uw.sel(lat=)
 precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
@@ -159,11 +161,16 @@ sst_cp=sst_eq.sel(time=cp_dates).mean(dim='time')
 sst_nina=sst_eq.sel(time=nina_dates).mean(dim='time')
 sst_neutral=sst_eq.drop_sel(time=ep_dates.append(cp_dates).append(nina_dates)).mean(dim='time')
 
-ws_eq=ws.sel(lat=slice(latbnd,-latbnd)).mean(dim='lat')
+
+#Remove the cp[:-7] and change -latbnd,latbnd to latbnd,-latbnd for NCEP2 rather than CCMP
+ws_eq=ws.sel(lat=slice(-latbnd,latbnd)).mean(dim='lat')
+ws_eq_NCEP2=ws_ncep2.sel(lat=slice(latbnd,-latbnd)).mean(dim='lat')
+
+
 ws_ep=ws_eq.sel(time=ep_dates).mean(dim='time')
-ws_cp=ws_eq.sel(time=cp_dates).mean(dim='time')
+ws_cp=ws_eq.sel(time=cp_dates[:-7]).mean(dim='time')
 ws_nina=ws_eq.sel(time=nina_dates).mean(dim='time')
-ws_neutral=ws_eq.drop_sel(time=ep_dates.append(cp_dates).append(nina_dates)).mean(dim='time')
+ws_neutral=ws_eq.drop_sel(time=ep_dates.append(cp_dates[:-7]).append(nina_dates)).mean(dim='time')
 
 chl_eq=chl.sel(lat=slice(-latbnd,latbnd)).mean(dim='lat')
 chl_ep=chl_eq.sel(time=ep_dates).mean(dim='time')
@@ -281,7 +288,7 @@ ty='month' #Actually month though need to fix this.
 fp='processed/combined_dataset/month_data_exports.nc'
 moorings=['110W','125W','140W','155W','170W','165E'][::-1]
 
-lns=[165,190,205,220,235,250]
+lns=[165,190,205,220,235,250][::-1]
 moors=[110, 125, 140, 155, 170, 195]
 for i, mooring_name in enumerate(lns):
     fp='processed/combined_dataset/month_data_exports.nc'
@@ -320,6 +327,16 @@ for i, mooring_name in enumerate(lns):
     neutral1=neutral1.mean()
     nino1=nino1.mean()
     
+    #Calculate Windspeed biases vs insitu?
+    # # plt.show()    
+    # # plt.plot(info.windspeed.index,info.windspeed)
+    # # ws_eq.sel(lon=mooring_name,method='nearest').plot()
+    # # ws_eq_NCEP2.sel(lon=mooring_name,method='nearest').plot()
+    # wws_ccmp=ws_eq.sel(lon=mooring_name,method='nearest')-info.windspeed[:-8]
+    # wws_ncep2=ws_eq_NCEP2.sel(lon=mooring_name,method='nearest').sel(time=slice('1997-01-01','2019-12-01'))-info.windspeed[6:]
+    # wws_ccmp.plot(),wws_ncep2.plot()
+    # plt.show()
+   
     #pd.Serie
     wsdf ={#'El Nino':nino1.windspeed,
         'La Nina':nina1.windspeed,
@@ -339,14 +356,15 @@ for x in final_mooring_enso.T.iterrows():
     print(x[0])
     print(x[0]=='CP El Nino')
     ls='-'
-    markr='x'
-    markers=4
+    markr='o'
+    markers=5
     if 'Neutral' in x[0]:
         c='black'
     #elif 'Nino' in x[0]:
     #    c='darkred'
     elif 'Nina' in x[0]:
         c='blue'
+        markers=7
     elif 'Cold Modoki' in x[0]:
         c='royalblue'
         ls='--'
@@ -355,11 +373,11 @@ for x in final_mooring_enso.T.iterrows():
     elif 'CP' in x[0]:
         c='red'
         ls='--'
-        markers=5
-        markr='o'
+        markers=8
+        markr='x'
             
 
-    plt.plot(lns,x[1],c=c,marker=markr,label=x[0],linewidth=0,alpha=0.8,markersize=markers)
+    plt.plot(lns,x[1],c=c,marker=markr,label=x[0],linewidth=0,alpha=0.9,markersize=markers)
 
 
 
@@ -384,7 +402,7 @@ final_mooring_enso_avgs=pd.DataFrame()
 
 ty='month' #Actually month though need to fix this.
 fp='processed/combined_dataset/month_data_exports.nc'
-moorings=['110W','125W','140W','155W','170W','165E'][::-1]
+moorings=['110W','125W','140W','155W','170W','165E']#[::-1]
 
 lns=[165,190,205,220,235,250][::-1]
 moors=[110, 125, 140, 155, 170, 195]
@@ -444,14 +462,15 @@ for x in final_mooring_enso.T.iterrows():
     print(x[0])
     print(x[0]=='CP El Nino')
     ls='-'
-    markr='x'
-    markers=4
+    markr='o'
+    markers=5
     if 'Neutral' in x[0]:
         c='black'
     #elif 'Nino' in x[0]:
     #    c='darkred'
     elif 'Nina' in x[0]:
         c='blue'
+        markers=7
     elif 'Cold Modoki' in x[0]:
         c='royalblue'
         ls='--'
@@ -460,11 +479,12 @@ for x in final_mooring_enso.T.iterrows():
     elif 'CP' in x[0]:
         c='red'
         ls='--'
-        markers=5
-        markr='o'
+        markers=8
+        markr='x'
+            
             
 
-    plt.plot(lns,x[1]*24,c=c,marker=markr,label=x[0],linewidth=0,alpha=0.8,markersize=markers)
+    plt.plot(lns,x[1]*24,c=c,marker=markr,label=x[0],linewidth=0,alpha=0.9,markersize=markers)
 
 
 ax = plt.subplot(4,2,7)

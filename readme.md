@@ -193,6 +193,9 @@ Scripts are to be run in numerical order.
 
 6. Is a shell file with a list of other datasets that need to be manually downloaded (or you can just run the shell commands outlined here).
 
+   - datasets/zeu/download_eu_monthly.sh Needs to be run. Need to set the ~.netrc file as described on https://oceancolor.gsfc.nasa.gov/data/download_methods/
+           
+     
    - SIMPLE-TRIM export production model from  https://tdevries.eri.ucsb.edu/models-and-data-products/ to datasets/exports
 
      - To download, you can use this, or run shell script 6-Data_shell_download_SIMPLETRIM_and_indicies.sh:

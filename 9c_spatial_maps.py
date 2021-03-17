@@ -44,7 +44,7 @@ from scipy.stats import linregress
 
     
 def plot_basemap():
-    m = Basemap(llcrnrlon=120.,llcrnrlat=-14.5,urcrnrlon=290,urcrnrlat=14.51,
+    m = Basemap(llcrnrlon=120.,llcrnrlat=-15,urcrnrlon=290,urcrnrlat=15.01,
                 resolution='l',projection='merc',fix_aspect=False)
     m.drawcoastlines()
     m.fillcontinents()
@@ -110,20 +110,18 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         
         lev=28.5#29.2 #rather than 28.5
         early_sst=hovmol.sel(time=slice('1997-01-01','2002-01-01')).mean(dim='time')#.where(co2.seamask==1)
-        m.contour(lo1,la1,early_sst,levels=[lev],linestyles='dotted',colors='k',linewidth=0)
-       
         late_sst=hovmol.sel(time=slice('2015-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
-        cnt=m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k',linewidth=0)
-        #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
-        for c in cnt.collections:
-            c.set_edgecolor("face")
-        #late_sst=hovmol.sel(time=slice('2015-01-01','2020-01-01')).mean(dim='time')#.where(co2.seamask==1)
-        #m.contour(lo1,la1,late_sst,levels=[27],linestyles='dashed',colors='k')
-
+       
+        m.contour(lo1,la1,early_sst,levels=[lev],linestyles='dotted',colors='k')
+        
+        m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k')
+        
+    
     #wu['lon'],wu['lat']=m(lo,la,wu.lon.values,wu.lat.values)
-    if title=='Wind speed':
-          skip=(slice(None,None,2),slice(None,None,2))
-          m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip]/2,wv.mean(dim='time')[skip]/2,scale=90,headwidth=4.5)#,minshaft=2)
+    #No windspeed vectors now
+    #if title=='Wind speed':
+    #      skip=(slice(None,None,4),slice(None,None,4)) #2 for NCEP 2
+    #      m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip]/2,wv.mean(dim='time')[skip]/2,scale=90,headwidth=4.5)#,minshaft=2)
 
 
     cb=plt.colorbar(f,ax=ax1,fraction=fr)
@@ -176,12 +174,12 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     m1=plot_basemap()
     
     if type(levs_trend)==type(None):
-        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both',linewidth=0)
+        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both')
         #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
         for c in f.collections:
             c.set_edgecolor("face")
     else:
-        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both',levels=levs_trend,linewidth=0) #11 colors 
+        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both',levels=levs_trend) #11 colors 
         #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
         for c in f.collections:
             c.set_edgecolor("face")
@@ -275,7 +273,32 @@ wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-2
 dco2['time']=dco2.time.astype('datetime64[M]')
 
 ws=np.sqrt((wu**2)+(wv**2))
-#monthlyPCO2=integratedpCO2.diff('time',1)/30
+
+
+# # THIS NEEDS TO BE RUN ONCE BUT CAN be memory intensive
+
+# w_ccmp_a=xr.open_mfdataset('datasets/ws_ccmp/*.nc') #Downloaded manually
+# w_ccmp_a['time']=w_ccmp_a.time.astype('datetime64[M]')
+# w_ccmp_a=w_ccmp_a.sel(latitude=slice(-20,20))
+
+# w_ccmp_b=xr.open_mfdataset('datasets/CCMP_winds.nc') #Bulk ErDap download
+# dt=w_ccmp_b.indexes['time'].to_datetimeindex()
+# w_ccmp_b['time']=dt
+
+# w_ccmp=xr.merge([w_ccmp_b,w_ccmp_a])
+
+
+# w_ccmp=w_ccmp.sel(longitude=slice(120,290),latitude=slice(-20,20))
+# ws_ccmp=np.sqrt((w_ccmp.uwnd**2)+(w_ccmp.vwnd**2))
+# ws_ccmp=ws_ccmp.rename({'latitude':'lat','longitude':'lon'})
+# try:
+#     ws_ccmp.to_netcdf('datasets/CCMP_windspeed.nc')
+#     print('saved')
+# except:
+#     pass
+
+ws_ccmp=xr.open_dataarray('datasets/CCMP_windspeed.nc')
+ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
 
 # %% Prepare Figure 
 
@@ -298,8 +321,8 @@ for i in cp_nino.iterrows(): cp=cp.append(info[slice(i[1].start,i[1].end)])
 nina_dates=nina.index
 ep_dates=ep.index[4:]
 cp_dates=cp.index
-all_dates=chl.time
-
+#all_dates=chl.time
+all_dates=info.index[36:] #2000 - 2020
 
 #So we can select which time range. Select nina/ep.cp/ep dates 
 ensodates=all_dates
@@ -323,23 +346,26 @@ plot_basemap_row(fig,axn=1,
                  cmap='viridis')
 
 
-#wind
+#wind #_ccmp
+if etype=='':
+    ws_ccmp_d=ensodates[:-8]
 plot_basemap_row(fig,axn=3,
-                 hovmol=ws.sel(time=ensodates),
+                 hovmol=ws_ccmp.sel(time=ws_ccmp_d),
                  units='m s$^{-1}$',
                  title='Wind speed',
                  units_tr='m s$^{-1}$ year$^{-1}$',                 
                  levs=np.arange(0,11,1),
+                 levs_trend=np.arange(-0.1,0.125,0.025),
                  
-                 levs_trend=np.arange(-0.15,0.175,0.025),
+                 #levs_trend=np.arange(-0.15,0.175,0.025),
                  #trend_conversion=1000,
-                 cmap='RdBu_r',
+                 cmap='viridis',
                  wu=wu,wv=wv)
 
-
-
+if etype=='':
+    chl_d=chl.time#ensodates[:-5] #Ok so this is actually from 1997 but doesn't change anything except fills in missing trend due to strange start years
 plot_basemap_row(fig,axn=5,
-                 hovmol=chl.sel(time=ensodates[:-7]),
+                 hovmol=chl.sel(time=chl_d),
                  units='mg chl m$^{-3}$ day$^{-1}$',
                  title='TPCA chlorophyll',
                  units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
@@ -369,8 +395,8 @@ plot_basemap_row(fig,axn=9,
                  units='mm day$^{-1}$',
                  title='Precipitation',
                  units_tr='mm day$^{-1}$ year$^{-1}$',
-                 levs=np.arange(0,12,1),
-                 levs_trend=np.arange(-0.09,0.08,0.005),
+                 levs=np.arange(0,13,1),
+                 levs_trend=np.arange(-0.08,0.085,0.005),
                  #trend_conversion=1000,
                  cmap='viridis')
 
@@ -480,12 +506,12 @@ plot_basemap_row(fig,axn=13,
 
 
 plt.tight_layout()
-plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+etype+'.png',dpi=100)
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.eps')
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.pdf')
+plt.savefig('figs/Figure3_Spatial_map1_'+ratio.name+etype+'.png',dpi=100)
+plt.savefig('figs/vector/Figure3_Spatial_map1_'+ratio.name+etype+'.eps')
+plt.savefig('figs/vector/Figure3_Spatial_map1_'+ratio.name+etype+'.pdf')
 
 try:
-    plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+'.jpeg',dpi=300)
+    plt.savefig('figs/Figure3_Spatial_map1_'+ratio.name+'.jpeg',dpi=300)
 except:
     pass
 plt.show()

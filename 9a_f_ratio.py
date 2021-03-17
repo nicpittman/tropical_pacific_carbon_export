@@ -128,7 +128,7 @@ print('SimpleTRIM std '+str(trim_std_loc.values))
 
 # %%Part three (c) here, plots a hovmoller of f-ratio across the pacific and time.
 ax=plt.subplot(413)
-hov=laws2011a.sel(lat=slice(-5,5),lon=slice(150,280.5)).mean(dim='lat').load()
+hov=laws2011a.sel(lat=slice(-15,15),lon=slice(150,280.5)).mean(dim='lat').load()
 hovmol=hov.where((hov>hov.quantile(0.0003))&(hov<hov.quantile(0.9999)))
 
 #hov=ax.contourf(f_ratio.lon,f_ratio.time.astype('datetime64[M]').values,f_ratio.sel(lat=slice(5,-5)).mean(dim='lat'))
@@ -166,7 +166,7 @@ ax.set_xticklabels(labels)
 #ax2.plot((land_site-l11a*modd).time,land_site=l11a*modd,label='Laws2011a',linewidth=lw)
 #ax2.plot((land_site-l11b*modd).time,land_site-l11b*modd,label='Laws2011b',linewidth=lw)
 ax2=plt.subplot(414)
-ax2.plot(l11b.time,dunne*modd,label='Dunne 2005')
+ax2.plot(l11b.time,dunne*modd,label='Dunne 2005',linewidth=2)
 ax2.plot(th.time,th*modd,label='Henson 2011')#,linestyle='--')
 ax2.plot(f.time,f*modd,label='Laws 2000')
 #ax2.plot(l11a.time,l11a*modd,label='Laws2011a',linewidth=lw)

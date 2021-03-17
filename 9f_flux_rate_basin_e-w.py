@@ -98,7 +98,7 @@ limits=[['West',165,180],
       #['Wyrtiki',180,270]]
 #Borgne is lims=1
 #Wyrtiki is both lims=5 and 10
-lims=10
+lims=15
 
 
 mass_table=pd.DataFrame({})
@@ -145,7 +145,9 @@ for i,ty in enumerate(limits):
     laws2011a=(npp*f_ratios.laws2011a*grid).sel(lat=slice(-lims,lims)).sel(lon=slice(startl,endl)).sum(dim=['lat','lon'])
     laws2011b=(npp*f_ratios.laws2011b*grid).sel(lat=slice(-lims,lims)).sel(lon=slice(startl,endl)).sum(dim=['lat','lon'])
     
+    #dunne=(npp*f_ratios.dunne2005_tpca*grid).sel(lat=slice(-lims,lims)).sel(lon=slice(startl,endl)).sum(dim=['lat','lon'])#.plot(label='Dunne 2005')
     dunne=(npp*f_ratios.dunne2005*grid).sel(lat=slice(-lims,lims)).sel(lon=slice(startl,endl)).sum(dim=['lat','lon'])#.plot(label='Dunne 2005')
+ 
     trim=(npp*f_ratios.trim*grid).sel(lat=slice(-lims,lims)).sel(lon=slice(startl,endl)).sum(dim=['lat','lon'])#.plot(label='Dunne 2005')
     
     #JMC.plot(label='Iida flux',ax=ax)
@@ -188,7 +190,7 @@ for i,ty in enumerate(limits):
     if i <=2:
         #ax.set_ylim([0,0.27*1e15])131
         
-        ax.set_ylim([-0.005*1e15,0.2*1e15])
+        ax.set_ylim([-0.005*1e15,0.25*1e15])
         ax.set_title(chr(97+i)+') '+ty[0]+' Pacific',pad=16)
         ax.set_ylabel('New production and CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.yaxis.set_major_formatter(FixedOrderFormatter(15))
@@ -199,7 +201,7 @@ for i,ty in enumerate(limits):
         ax.legend(loc='lower center',ncol=5)
         ax.set_title(chr(97+i)+') Entire Basin')
         ax.set_ylabel('New Production and CO$_{2}$ flux (PgC yr$^{-1}$)')
-        ax.set_ylim([0,1.25*1e15])
+        ax.set_ylim([0,1.6*1e15])
     import matplotlib.patches as patches
       
 

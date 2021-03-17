@@ -40,4 +40,5 @@ echo 'Uncomment these if you need to download them, but note you must fix their 
 #EMI
 #And process dates. A file of this is included albeit not used.
 
-
+echo '!!!Need to download datasets/zeu/download_eu_monthly.sh - Set the ~.netrc file as described on https://oceancolor.gsfc.nasa.gov/data/download_methods/'
+        

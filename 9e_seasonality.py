@@ -196,7 +196,10 @@ moors=[110, 125, 140, 155, 170, 195]
 
 
 plt.subplot(4,2,2)
-ws1d=xr.open_dataset('processed/ws_1deg.nc').windspeed
+#ws1d=xr.open_dataset('processed/ws_1deg.nc').windspeed
+#CHeck line 164 depending if using NCEP2 or windspeed
+ws1d=xr.open_dataarray('datasets/CCMP_windspeed.nc')
+
 fp='processed/combined_dataset/month_data_exports.nc'
 dat=xr.open_mfdataset(fp)
 for i, mooring in enumerate(moors):

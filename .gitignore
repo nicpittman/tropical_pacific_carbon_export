@@ -1,3 +1,8 @@
 datasets/chl/chlor_a/
 datasets/chl/*nc
 datasets/chl/*bz2
+datasets/zeu/*nc
+bilinear*nc
+conservative*nc
+
+

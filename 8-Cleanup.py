@@ -21,6 +21,7 @@ import os
 from carbon_math import *
 
 
+
     
 def find_enso_events_redundent(threshold=0.5):
     '''
@@ -697,7 +698,7 @@ def carbon_uatm_to_grams_tempcorrected(plotter=0):
 	    volumes=np.append(volumes,co)
 	answer=xr.DataArray(volumes.reshape((pco2monthvals.shape[0],pco2monthvals.shape[1],pco2monthvals.shape[2])),coords=deltapCO2bio.coords)
 	#answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',mode='w')
-    answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
+	answer.to_netcdf('processed/flux/pco2grams_tempcorrected.nc',engine='h5netcdf',mode='w')
 	return True
 
 
@@ -893,6 +894,65 @@ def calc_euc():
     zeu=xr.concat([zeu_sw.chl_tpca,zeu_mod.chl_tpca],dim=['mod','sw']).mean(dim='concat_dim')
     zeu.to_netcdf('processed/flux/zeu.nc')
 
+def process_lee_nasa_zeu():
+    #Need to download this data yourself from datasets/zeu/download_eu_monthly.sh - Need the ~.netrc file as described on https://oceancolor.gsfc.nasa.gov/data/download_methods/
+        
+        
+    #Preprocess mfdataset files. Set the Julian Days
+    def add_date(ds):
+        jday=int(ds.attrs['id'][5:8])
+        yr=int(ds.attrs['id'][1:5])
+        
+        #ds.coords['JulDay'] = jday
+        date=JulianDate_to_MMDDYYY(yr,jday)
+        ds.coords['time'] =  np.datetime64(date)
+        return ds
+    
+    def JulianDate_to_MMDDYYY(y,jd):
+        """Given a year and julian date, returns an np.datetime64 of the day"""
+        month = 1
+        while jd - calendar.monthrange(y,month)[1] > 0 and month <= 12:
+            jd = jd - calendar.monthrange(y,month)[1]
+            month = month + 1
+           
+        jd=str(jd).zfill(2) #turn into the form 01 02 03 10 etc
+        month=str(month).zfill(2)    
+        
+        return str(y)+'-'+month+'-'+jd
+
+    
+    #load_process_save_tropics('datasets/zeu/A*nc','All','ZEU_LEE','MO',)
+    filepath='datasets/zeu/*nc'
+    chl_dataset=xr.open_mfdataset(filepath,preprocess=add_date,concat_dim='time',combine='nested').sortby('time')
+    chl_dataset= chl_dataset.assign_coords(lon=(chl_dataset.lon % 360)).roll(lon=(chl_dataset.dims['lon'] // 2),roll_coords=True)		#EPIC 1 line fix for the dateline problem.
+    chl_trop=chl_dataset.sel(lat=slice(-20,20)).sortby('lon')
+    chl_trop=chl_trop.sel(lon=slice(120.041665,290))
+    chl_trop=chl_trop.drop('palette')
+    print('Dataset Size: ',chl_dataset.nbytes / 1e9, 'GB')
+    print('Subset Size: ',chl_trop.nbytes / 1e9, 'GB')
+    chl_trop.to_netcdf('datasets/zeu.nc','w')
+    
+    zeu=xr.open_dataset('datasets/zeu.nc')
+    #zeu.mean(dim='time').Zeu_lee.plot()
+    
+    ## REGRID
+    
+    zeu=xr.open_dataset('datasets/zeu.nc')
+    landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc'
+    landschutzer=xr.open_dataset(landsch_fp)
+    landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
+    land_pac=landschutzer.sel(lon=slice(120,290),lat=slice(-20,20))
+    #land_pac.to_netcdf('processed/fluxmaps/landshutzer.nc')
+    land_pac=land_pac.fgco2_smoothed
+    
+    regridder = xe.Regridder(zeu, land_pac, 'bilinear',reuse_weights=True)
+    zeu1d=regridder(zeu)
+    
+    # #Make a new variable of the average NPP. 
+    # zeu1=zeu1d.resample(time='M').mean(dim='time') 
+    # zeu1['time']=zeu1.time.astype('datetime64[M]')#_rg #First day of month
+    # zeu1=zeu1.interpolate_na(dim='time')
+    zeu1d.to_netcdf('datasets/zeu_1d.nc')
 
 def make_fratio_nc():
     def convert_trim_fratios():
@@ -956,8 +1016,8 @@ def make_fratio_nc():
     land_pac=moles_to_carbon(land_pac.fgco2_smoothed)/365
     
     npp=xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc') #MAKE SURE THIS IS CORRECT MODEL
-    zeu=xr.open_dataset('processed/flux/zeu.nc').chl_tpca
-    
+    zeu_tpca=xr.open_dataset('processed/flux/zeu.nc').chl_tpca #Basically the same and only to 10N/S
+    zeu=xr.open_dataset('datasets/zeu_1d.nc').Zeu_lee
 
     sst = xr.open_dataset('datasets/sst/sst.mnmean.nc')
     sst= sst.assign_coords(lon=(sst.lon % 360)).roll(lon=(sst.dims['lon']),roll_coords=False).sortby('lon')		#EPIC 1 line fix for the dateline problem.
@@ -972,7 +1032,10 @@ def make_fratio_nc():
     laws2000=(0.62-(0.02*sst.sst))
     henson2011=(0.23*np.exp(-0.08*sst.sst))
     pe_dunne=-0.0101*sst.sst+0.0582*np.log((npp.avg_npp/12)/zeu)+0.419
+    pe_dunne_tpca=-0.0101*sst.sst+0.0582*np.log((npp.avg_npp/12)/zeu_tpca)+0.419
+    
     pe_dunne.name='dunne2005'
+    pe_dunne_tpca.name='dunne2005_tpca'
     laws2011a.name='laws2011a'
     laws2011b.name='laws2011b'
     laws2000.name='laws2000'
@@ -983,7 +1046,7 @@ def make_fratio_nc():
     trim_av.name='trim'
     trim_std.name='trim_std'
     
-    ratios=xr.merge([laws2011a,laws2011b,laws2000,henson2011,pe_dunne,trim_av,trim_std])
+    ratios=xr.merge([laws2011a,laws2011b,laws2000,henson2011,pe_dunne,pe_dunne_tpca,trim_av,trim_std])
     ratios=ratios.where((ratios>0)&(ratios<100))
     ratios.to_netcdf('processed/flux/fratios.nc',mode='w',engine='h5netcdf')
     
@@ -1016,6 +1079,11 @@ make_earth_grid_m2()
 print('Convert uatm carbon to grams of carbon. This one crashes on login node for me. Might need to qsub it or run it somewhere else.')
 carbon_uatm_to_grams() #Updated version of the one below. No Temperature correction.
 # #carbon_uatm_to_grams_tempcorrected(plotter=0) #This one uses lots of memory and time. might need to qsub it.
+
+#Preparing the euphotic depth files
+print('Preparing euphotic depth files')
+process_lee_nasa_zeu()
+
 print('Calculate f-ratio maps')
 make_fratio_nc()
 print('Adding Cafe and SST')
@@ -1028,4 +1096,4 @@ print('Save landschutzer 2018 seamask')
 save_landschutzer_2018_seamask() #Just to make sure that it stays in the folder as the 2020 version doesnt have this.
 
 #print('Calculating euphotic depth from chl - lee 2007')
-#calc_euc() # This one isn't actually used in any of the analysis. Uses too much memory anyway. File is processed and stored in processed/flux/zeu.nc if desired.
+#calc_euc() # This one isn't actually used in any of the analysis. Been updated to process_lee_nasa_zeu() now anyway. Old version uses too much memory anyway. File is processed and stored in processed/flux/zeu.nc if desired.
