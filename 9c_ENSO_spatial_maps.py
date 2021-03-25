@@ -55,7 +55,7 @@ def plot_basemap():
 
 
 
-def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=None,trend_conversion=None,sb1=7,sb2=2,cmap='viridis',cmaptr='RdBu_r',wu=None,wv=None):
+def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=None,trend_conversion=None,sb1=7,sb2=3,cmap='viridis',cmaptr='RdBu_r',wu=None,wv=None):
     '''
     Create a plotting function to make it repeatable and nicer
     colormaps should either be viridis or RdBu_r
@@ -142,68 +142,6 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
 
     
  
-    #This will calculate the per pixel trends and pvalues
-
-    time=hm.time.values
-    xx=np.concatenate(hm.T)
-    #print(xx.shape)
-    tr=[]
-    pv=[]
-    for i in range(xx.shape[0]):
-        #print(xx[i,:])
-        stat=linregress(time,xx[i,:])
-        #print(stat)
-        tr.append(stat.slope*365)
-        pv.append(stat.pvalue)
-        
-    tr=np.array(tr).reshape(len(hm.lon),len(hm.lat)).T
-    pv=np.array(pv).reshape(len(hm.lon),len(hm.lat)).T
-    
-    hh=hm.copy()
-    hh=hh.drop('time')
-    hh['trend']=(['lat','lon'],tr)
-    hh['pval']=(['lat','lon'],pv)
-    ##hh now contains a flat xarray with trend and pvalue, could save this for each variable. 
-    
-    if type(trend_conversion)!=type(None):
-        hh['trend']=hh['trend']*trend_conversion
-   
-    
-    #print(hh.sel(lat=0,lon=165,method='nearest').mean(dim='time'))    
-    ax2=plt.subplot(sb1,sb2,axn+1)
-    
-    m1=plot_basemap()
-    
-    if type(levs_trend)==type(None):
-        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both')
-        #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
-        for c in f.collections:
-            c.set_edgecolor("face")
-    else:
-        f=m1.contourf(lo1,la1,hh.trend,cmap=cmaptr,extend='both',levels=levs_trend) #11 colors 
-        #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
-        for c in f.collections:
-            c.set_edgecolor("face")
-    cb=plt.colorbar(f,ax=ax2,extend='both',fraction=fr)
-        
-    cnt=m1.contourf(lo1,la1,hh.pval,colors='none',hatches=['.'],levels=[0,0.05])
-    #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
-    for c in cnt.collections:
-        c.set_edgecolor("face")
-    #m1.contour(lo1,la1,hh.pval,colors='k',levels=[0.05])
-    
-    cb.set_label(units_tr,fontsize=fs)
-    cb.ax.tick_params(labelsize=fs)
-    ax2.axhline(0,c='k',linestyle=':')
-
-    ax2.set_title(chr(ord('`')+axn+1)+') Trends: '+title,fontsize=fs)
-    for x in moorings:
-        x1,y1=m(x,0)
-        ax2.plot(x1,y1,marker='x',c='k',markersize=ms)
-        
-        ax2.tick_params(labelsize=fs)
-
-    return hh
 
 
 #Functions above make plotting easy.
@@ -276,6 +214,9 @@ dco2['time']=dco2.time.astype('datetime64[M]')
 ws=np.sqrt((wu**2)+(wv**2))
 
 
+
+precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
+
 # # THIS NEEDS TO BE RUN ONCE BUT CAN be memory intensive
 
 # w_ccmp_a=xr.open_mfdataset('datasets/ws_ccmp/*.nc') #Downloaded manually
@@ -325,33 +266,27 @@ cp_dates=cp.index
 #all_dates=chl.time
 all_dates=info.index[36:] #2000 - 2020
 
-#So we can select which time range. Select nina/ep.cp/ep dates 
-ensodates=all_dates
-etype=''
-
 
 fig=plt.figure(figsize=(19*2/2.54,23*2/2.54))#(figsize=(30,15))
 sb1=7
-sb2=2
+sb2=3
 
+
+#%% EP
 
 plot_basemap_row(fig,axn=1,
-                 hovmol=sst.sel(time=ensodates),
+                 hovmol=sst.sel(time=ep_dates),
                  units='Degrees C',
                  title='SST',
                  units_tr='Degrees C year$^{-1}$',
                  levs=np.arange(20,32,1),
-                 
                  levs_trend=np.arange(-0.06,0.07,0.01),
                  #trend_conversion=1000,
                  cmap='viridis')
 
 
-#wind #_ccmp
-if etype=='':
-    ws_ccmp_d=ensodates[:-8]
-plot_basemap_row(fig,axn=3,
-                 hovmol=ws_ccmp.sel(time=ws_ccmp_d),
+plot_basemap_row(fig,axn=4,
+                 hovmol=ws_ccmp.sel(time=ep_dates),
                  units='m s$^{-1}$',
                  title='Wind speed',
                  units_tr='m s$^{-1}$ year$^{-1}$',                 
@@ -363,10 +298,8 @@ plot_basemap_row(fig,axn=3,
                  cmap='viridis',
                  wu=wu,wv=wv)
 
-if etype=='':
-    chl_d=chl.time#ensodates[:-5] #Ok so this is actually from 1997 but doesn't change anything except fills in missing trend due to strange start years
-plot_basemap_row(fig,axn=5,
-                 hovmol=chl.sel(time=chl_d),
+plot_basemap_row(fig,axn=7,
+                 hovmol=chl.sel(time=ep_dates),
                  units='mg chl m$^{-3}$ day$^{-1}$',
                  title='TPCA chlorophyll',
                  units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
@@ -377,8 +310,8 @@ plot_basemap_row(fig,axn=5,
                  cmap='viridis')
 
 
-plot_basemap_row(fig,axn=7,
-                 hovmol=avg_npp.sel(lat=slice(-15,15),time=ensodates),
+plot_basemap_row(fig,axn=10,
+                 hovmol=avg_npp.sel(lat=slice(-15,15),time=ep_dates),
                  units='gC m$^{-2}$ day$^{-1}$',
                  title='New production',
                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
@@ -387,12 +320,8 @@ plot_basemap_row(fig,axn=7,
                  trend_conversion=1000,
                  cmap='viridis')
 
-
-
-precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
-
-plot_basemap_row(fig,axn=9,
-                 hovmol=precip.sel(time=ensodates),
+plot_basemap_row(fig,axn=13,
+                 hovmol=precip.sel(time=ep_dates),
                  units='mm day$^{-1}$',
                  title='Precipitation',
                  units_tr='mm day$^{-1}$ year$^{-1}$',
@@ -402,11 +331,9 @@ plot_basemap_row(fig,axn=9,
                  cmap='viridis')
 
 
-
-
 #Delta pCO2
-h=plot_basemap_row(fig,axn=11,
-                  hovmol=dco2.sel(time=ensodates),#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+h=plot_basemap_row(fig,axn=16,
+                  hovmol=dco2.sel(time=ep_dates),#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
                   units='μatm',
                   title='\u0394pCO$_{2}$',#'pCO21',
                   units_tr='μatm year$^{-1}$',
@@ -416,9 +343,173 @@ h=plot_basemap_row(fig,axn=11,
                   cmap='viridis',
                   cmaptr='RdBu_r')#'Reds')
 
+plot_basemap_row(fig,axn=19,
+                  hovmol=land.sel(time=ep_dates),
+                  units='gC m$_{-2}$ day$^{-1}$',
+                  title='Air-sea CO$_{2}$ flux',
+                  units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
+                  levs=np.arange(-0.14,0.15,0.02),
+                  levs_trend=np.arange(-2,2.1,0.5),
+                  trend_conversion=1000,
+                  cmap='RdBu_r')
 
-plot_basemap_row(fig,axn=13,
-                  hovmol=land.sel(time=ensodates),
+
+# %% CP
+
+plot_basemap_row(fig,axn=2,
+                 hovmol=sst.sel(time=cp_dates),
+                 units='Degrees C',
+                 title='SST',
+                 units_tr='Degrees C year$^{-1}$',
+                 levs=np.arange(20,32,1),
+                 levs_trend=np.arange(-0.06,0.07,0.01),
+                 #trend_conversion=1000,
+                 cmap='viridis')
+
+
+plot_basemap_row(fig,axn=5,
+                 hovmol=ws_ccmp.sel(time=cp_dates[:-7]),
+                 units='m s$^{-1}$',
+                 title='Wind speed',
+                 units_tr='m s$^{-1}$ year$^{-1}$',                 
+                 levs=np.arange(0,11,1),
+                 levs_trend=np.arange(-0.1,0.125,0.025),
+                 
+                 #levs_trend=np.arange(-0.15,0.175,0.025),
+                 #trend_conversion=1000,
+                 cmap='viridis',
+                 wu=wu,wv=wv)
+
+plot_basemap_row(fig,axn=8,
+                 hovmol=chl.sel(time=cp_dates[:-5]),
+                 units='mg chl m$^{-3}$ day$^{-1}$',
+                 title='TPCA chlorophyll',
+                 units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,0.65,0.05),
+                 
+                 levs_trend=np.arange(-4,4.1,1),
+                 trend_conversion=1000,
+                 cmap='viridis')
+
+
+plot_basemap_row(fig,axn=11,
+                 hovmol=avg_npp.sel(lat=slice(-15,15),time=cp_dates),
+                 units='gC m$^{-2}$ day$^{-1}$',
+                 title='New production',
+                 units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,0.26,0.025),
+                 levs_trend=np.arange(-2,2.1,0.25),
+                 trend_conversion=1000,
+                 cmap='viridis')
+
+plot_basemap_row(fig,axn=14,
+                 hovmol=precip.sel(time=cp_dates),
+                 units='mm day$^{-1}$',
+                 title='Precipitation',
+                 units_tr='mm day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,13,1),
+                 levs_trend=np.arange(-0.08,0.085,0.005),
+                 #trend_conversion=1000,
+                 cmap='viridis')
+
+
+#Delta pCO2
+h=plot_basemap_row(fig,axn=17,
+                  hovmol=dco2.sel(time=cp_dates),#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+                  units='μatm',
+                  title='\u0394pCO$_{2}$',#'pCO21',
+                  units_tr='μatm year$^{-1}$',
+                  levs=np.arange(-15,121,10),#(200,1200,10),#(5.5,9.5,0.5),
+                  levs_trend=np.arange(-2.5,2.6,0.1),
+                  trend_conversion=1,#1000,
+                  cmap='viridis',
+                  cmaptr='RdBu_r')#'Reds')
+
+plot_basemap_row(fig,axn=20,
+                  hovmol=land.sel(time=cp_dates),
+                  units='gC m$_{-2}$ day$^{-1}$',
+                  title='Air-sea CO$_{2}$ flux',
+                  units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
+                  levs=np.arange(-0.14,0.15,0.02),
+                  levs_trend=np.arange(-2,2.1,0.5),
+                  trend_conversion=1000,
+                  cmap='RdBu_r')
+
+
+#%% NINA
+
+
+plot_basemap_row(fig,axn=3,
+                 hovmol=sst.sel(time=nina_dates),
+                 units='Degrees C',
+                 title='SST',
+                 units_tr='Degrees C year$^{-1}$',
+                 levs=np.arange(20,32,1),
+                 levs_trend=np.arange(-0.06,0.07,0.01),
+                 #trend_conversion=1000,
+                 cmap='viridis')
+
+
+plot_basemap_row(fig,axn=6,
+                 hovmol=ws_ccmp.sel(time=nina_dates),
+                 units='m s$^{-1}$',
+                 title='Wind speed',
+                 units_tr='m s$^{-1}$ year$^{-1}$',                 
+                 levs=np.arange(0,11,1),
+                 levs_trend=np.arange(-0.1,0.125,0.025),
+                 
+                 #levs_trend=np.arange(-0.15,0.175,0.025),
+                 #trend_conversion=1000,
+                 cmap='viridis',
+                 wu=wu,wv=wv)
+
+plot_basemap_row(fig,axn=9,
+                 hovmol=chl.sel(time=nina_dates),
+                 units='mg chl m$^{-3}$ day$^{-1}$',
+                 title='TPCA chlorophyll',
+                 units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,0.65,0.05),
+                 
+                 levs_trend=np.arange(-4,4.1,1),
+                 trend_conversion=1000,
+                 cmap='viridis')
+
+
+plot_basemap_row(fig,axn=12,
+                 hovmol=avg_npp.sel(lat=slice(-15,15),time=nina_dates),
+                 units='gC m$^{-2}$ day$^{-1}$',
+                 title='New production',
+                 units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,0.26,0.025),
+                 levs_trend=np.arange(-2,2.1,0.25),
+                 trend_conversion=1000,
+                 cmap='viridis')
+
+plot_basemap_row(fig,axn=15,
+                 hovmol=precip.sel(time=nina_dates),
+                 units='mm day$^{-1}$',
+                 title='Precipitation',
+                 units_tr='mm day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,13,1),
+                 levs_trend=np.arange(-0.08,0.085,0.005),
+                 #trend_conversion=1000,
+                 cmap='viridis')
+
+
+#Delta pCO2
+h=plot_basemap_row(fig,axn=18,
+                  hovmol=dco2.sel(time=nina_dates),#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
+                  units='μatm',
+                  title='\u0394pCO$_{2}$',#'pCO21',
+                  units_tr='μatm year$^{-1}$',
+                  levs=np.arange(-15,121,10),#(200,1200,10),#(5.5,9.5,0.5),
+                  levs_trend=np.arange(-2.5,2.6,0.1),
+                  trend_conversion=1,#1000,
+                  cmap='viridis',
+                  cmaptr='RdBu_r')#'Reds')
+
+plot_basemap_row(fig,axn=21,
+                  hovmol=land.sel(time=nina_dates),
                   units='gC m$_{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
                   units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
@@ -429,90 +520,16 @@ plot_basemap_row(fig,axn=13,
 
 
 
-# #Ocean pCO2
-# plot_basemap_row(fig,axn=13,
-#                   hovmol=pco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
-#                   units='ppm',
-#                   title='ocean pco2',#'pCO21',
-#                   units_tr='ppm year$^{-1}$',
-#                   levs=np.arange(300,550,10),#(200,1200,10),#(5.5,9.5,0.5),
-#                   levs_trend=np.arange(-4,4,0.01),
-#                   trend_conversion=1,#1000,
-#                   cmap='viridis',
-#                   cmaptr='RdBu_r')#'Reds')
-
-
-
-# #Gas transfer velocity
-# plot_basemap_row(fig,axn=11,
-#                   hovmol=kw,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
-#                   units='ppm',
-#                   title='\u0394pCO$_{2}$',#'pCO21',
-#                   units_tr='ppm year$^{-1}$',
-#                   levs=np.arange(500,3000,10),#(200,1200,10),#(5.5,9.5,0.5),
-#                   levs_trend=np.arange(-30,30,1),
-#                   trend_conversion=1,#1000,
-#                   cmap='viridis',
-#                   cmaptr='RdBu_r')#'Reds')
-
-# #Atmospheric pCO2
-# plot_basemap_row(fig,axn=11,
-#                   hovmol=atm pco2,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
-#                   units='ppm',
-#                   title='atm co2',#'pCO21',
-#                   units_tr='ppm year$^{-1}$',
-#                   levs=np.arange(300,500,10),#(200,1200,10),#(5.5,9.5,0.5),
-#                   levs_trend=np.arange(4,6,0.01),
-#                   trend_conversion=1,#1000,
-#                   cmap='viridis',
-#                   cmaptr='RdBu_r')#'Reds')
-
-
-# plot_basemap_row(fig,axn=11,
-#                   hovmol=integratedpCO2,#monthlyPCO2*1000,
-#                   units='gC m$^{-2}$',
-#                   title='pCO2t',
-#                   units_tr='mgC m$^{-2}$ year$^{-1}$',
-#                   levs=np.arange(5.5,9.5,0.5),
-#                   levs_trend=np.arange(0,100,10),
-#                   trend_conversion=1000,
-#                   cmap='viridis',
-#                   cmaptr='Reds')
-
-
-# #F-ratio - Need to comment out integratedpCO2 above.
-# plot_basemap_row(fig,axn=11,
-#                   hovmol=ratio,#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
-#                   units='gC m$^{-2}$',
-#                   title='fratio',#'pCO21',
-#                   units_tr='ppm year$^{-1}$',
-#                   levs=np.arange(0.05,0.35,0.01),#(200,1200,10),#(5.5,9.5,0.5),
-#                   levs_trend=np.arange(-0.1,0.1,0.001),
-#                   trend_conversion=100,#1000,
-#                   cmap='viridis',
-#                   cmaptr='RdBu_r')
-
-# #CAFE NPP mean
-# hh=plot_basemap_row(fig,axn=11,
-#                   hovmol=npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
-#                   units='gC m$^{-2}$',
-#                   title='NPP Average',
-#                   units_tr='ppm year$^{-1}$',
-#                   levs=np.arange(200,1200,10),#(5.5,9.5,0.5),
-#                   levs_trend=np.arange(-15,15,1),
-#                   trend_conversion=1,#1000,
-#                   cmap='viridis',
-#                   cmaptr='RdBu_r')
 
 
 
 plt.tight_layout()
-plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+etype+'.png',dpi=100)
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.eps')
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.pdf')
+# plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+etype+'.png',dpi=100)
+# plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.eps')
+# plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.pdf')
 
-try:
-    plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+'.jpeg',dpi=300)
-except:
-    pass
-plt.show()
+# try:
+#     plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+'.jpeg',dpi=300)
+# except:
+#     pass
+# plt.show()
