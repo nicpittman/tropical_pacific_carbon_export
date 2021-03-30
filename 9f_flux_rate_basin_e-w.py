@@ -24,10 +24,9 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 from carbon_math import *
-from matplotlib.ticker import ScalarFormatter
 import matplotlib
-from matplotlib.ticker import ScalarFormatter, FormatStrFormatter
-
+from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
+                               AutoMinorLocator, ScalarFormatter)
 class FixedOrderFormatter(ScalarFormatter):
     """Formats axis ticks using scientific notation with a constant order of 
     magnitude
@@ -184,7 +183,10 @@ for i,ty in enumerate(limits):
     
     
     ax.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
+    #ax.xaxis.grid(True, which='both')
     
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
+    #plt.grid()
     ax.set_xlabel('Year')
     
     if i <=2:
@@ -212,6 +214,8 @@ for i,ty in enumerate(limits):
     
     dat['laws2000']=laws2000.to_dataframe(name='laws2000').laws2000
     dat['dunne']=dunne.to_dataframe(name='dunne2005').dunne2005
+    dat['strim']=trim.to_dataframe(name='simpletrim').simpletrim
+    
    # dat['JMC']=JMC.to_dataframe(name='jmc').jmc
     
     #gs=grid.sel(lat=slice(-lims,lims)).sel(lon=slice(startl,endl)).sum()
@@ -344,7 +348,7 @@ for i,ty in enumerate(limits):
     print('Nino change% NP: '+str(p1))
     print('Nina change% CO: '+str(p2))
     print('Nino change% CO: '+str(p3))
-          
+    print('NP P VAL: '+ str(trenNP[3]))
     mass_table=mass_table.append(pd.DataFrame({
     'Region':ty[0],
     'Area':str((gs.values/1e12).round(3))+' (10^12m)',
@@ -357,7 +361,7 @@ for i,ty in enumerate(limits):
     'NP CP El Nino Diff':str(p1a[0])+'% ,'+str(p1a[1]),
     'NP La Nina Diff':str(p0[0])+'% ,'+str(p0[1]),
     'NP Trends (TgC yr-2)':str((annual_rate_of_changeNP/1e12).round(3))+' ' +u"\u00B1 "+str(((trenNP[4]*365)/1e12).round(3)),
-    'NP Pval':trenNP[3].round(10),
+    'NP Pval':trenNP[3].round(15),
     
     'CO2 Mean (PgC yr-1)':str(nd.CO2.round(3).values[0]),
     'CO2 Neutral (PgC yr-1)':str(nc.CO2.round(3).values[0]),
@@ -389,7 +393,11 @@ except:
 
         
 plt.show()
+print(means[['name','laws2011a','dunne','strim']].iloc[6])
 
+m=means[['name','laws2011a','dunne','strim']].iloc[6].values[1:].mean()
+st=means[['name','laws2011a','dunne','strim']].iloc[6].values[1:].std()
+print('basin Mean of L2011a, Dunne and strim: '+str(m)+'+-'+str(st))
 #Check Lag coefficient.
 
 for i in range(len(check_lag_corr_x)):

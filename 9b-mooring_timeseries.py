@@ -119,6 +119,13 @@ for i, mooring_name in enumerate(moorings):
     if plot_mooring_CO2==1:
         ax1.plot(dat.Date.astype('datetime64[M]'),dat.co2flux_gmyr/365,linewidth=5,label='in situ CO$_{2}$ flux',c='k')#'mediumblue')
    
+    
+    #Calculate bias between insitu and product
+    landCO2=moles_to_carbon(LandSch_co2flux_data.fgco2_smoothed)/365
+    landCO2['Date']=LandSch_co2flux_data.Date.astype('datetime64[M]')
+    in_situCO2=dat.co2flux_gmyr/365
+    bias=(landCO2-in_situCO2).mean().values
+    print('LANDSCHUTZER BIAS: '+str(bias))
     ax1.plot(avg_npp.index,avg_npp.values/1000*ratio.sel({'Date':avg_npp.index}),linewidth=5,label='New Production',c='orangered')
     ax1.axhline(0,linestyle='--',c='k',linewidth=3,alpha=0.8)
 

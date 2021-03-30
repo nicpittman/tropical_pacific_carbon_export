@@ -41,7 +41,8 @@ import matplotlib.pyplot as plt
 from carbon_math import *
 from mpl_toolkits.basemap import Basemap
 from scipy.stats import linregress
-
+import matplotlib.patches as patches
+from matplotlib.patches import Polygon
     
 def plot_basemap():
     m = Basemap(llcrnrlon=120.,llcrnrlat=-15,urcrnrlon=290,urcrnrlat=15.01,
@@ -117,7 +118,29 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k')
         m.contour(lo1,la1,hovmol.mean(dim='time'),levels=[25],linestyles='dashed',colors='k')
         
+    if title=='Air-sea CO$_{2}$ flux':
+        lo_rect,la_rect=m(165,-15)
     
+        def draw_screen_poly( lats, lons, m):
+            #https://stackoverflow.com/questions/12251189/how-to-draw-rectangles-on-a-basemap
+            x, y = m( lons, lats )
+            xy = zip(x,y)
+            poly = Polygon(list(xy), facecolor='none',edgecolor='k', linewidth=2)
+            plt.gca().add_patch(poly)
+        
+        lats = [ -14.5, 14.5, 14.5, -14.5 ]
+        lons = [ 165, 165, 180, 180 ]
+        draw_screen_poly( lats, lons, m )
+        
+        lats = [ -14.5, 14.5, 14.5, -14.5 ]
+        lons = [ 205, 205, 220, 220 ]
+        draw_screen_poly( lats, lons, m )
+        
+        lats = [ -14.5, 14.5, 14.5, -14.5 ]
+        lons = [ 235, 235, 250, 250 ]
+        draw_screen_poly( lats, lons, m )
+        
+        
     #wu['lon'],wu['lat']=m(lo,la,wu.lon.values,wu.lat.values)
     #No windspeed vectors now
     #if title=='Wind speed':
