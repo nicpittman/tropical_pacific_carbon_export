@@ -64,11 +64,11 @@ TAO data is included here in `datasets/tao/tao_physics/*`. You can update it you
 This download link was used:
 http://apdrc.soest.hawaii.edu/erddap/griddap/hawaii_soest_3387_f2e3_e359.nc?uwnd[(1997-01-01):1:(2017-12-01T00:00:00Z)][(-20):1:(20)][(0.125):1:(359.875)],vwnd[(1997-01-01):1:(2017-12-01T00:00:00Z)][(-20):1:(20)][(0.125):1:(359.875)],nobs[(1997-01-01):1:(2017-12-01T00:00:00Z)][(-20):1:(20)][(0.125):1:(359.875)]
 
-Which came from a chain of links: http://apdrc.soest.hawaii.edu/erddap/griddap/hawaii_soest_3387_f2e3_e359.html From http://apdrc.soest.hawaii.edu/datadoc/ccmp_month_v2.php From: http://www.remss.com/measurements/ccmp/ (Hard to download from here).
+Which came from a chain of links: http://apdrc.soest.hawaii.edu/erddap/griddap/hawaii_soest_3387_f2e3_e359.html From http://apdrc.soest.hawaii.edu/datadoc/ccmp_month_v2.php From: http://www.remss.com/measurements/ccmp/ 
 
 But the first link might not work. So use the first in the chain of links and download 1997-01-01 to 2017-12-01, -20 to 20 and just take the whole globe. Select 'nc' filetype and submit to download. Might take a while. 
 
-You will need to then download 2017 to 2020 data manually from http://data.remss.com/ccmp/v02.0/. Its possible to write a script to do this. But the above links worked faster, and then I manually downloaded the data from 2017 to 2020. 
+You will need to then download 2017 to 2020 monthly data manually from http://data.remss.com/ccmp/v02.0/ (ie http://data.remss.com/ccmp/v02.0/Y2018/M01/CCMP_Wind_Analysis_201801_V02.0_L3.5_RSS.nc) . Its possible to write a curl or even python script to do this. But the above links worked faster.
 
 Once this is done you will need to run `python 8-CCMP_windspeed_process.py`
 
