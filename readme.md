@@ -4,15 +4,13 @@
 
 #### 	1. Overview
 
-This set of python scripts provides all data and figures for this paper. Some things are rough, apologies for the mess. This readme is as detailed as possible. If you have any problems with implementation, please email me at nic.pittman [at] utas[dot]edu[dot]au
+This set of python scripts provides all data and figures for this paper. I originally intended for this to be structured and highly reproducible. However, the manuscript changed focus significantly, so there is a lot of redundant and vestigial code. I have cleaned where possible but some things are rough, apologies for the mess. This readme is as detailed as possible. If you have any problems with implementation, please email me.
 
-This repository is organised so that all figures can be produced immediately after download (Except the Landschutzer CO<sub>2</sub> product, which you will need to download yourself. A curl script is provided below). The figures are scripts 9a-f. 
+This repository is organised so that all figures can be produced immediately after download (except you will need to download the Landschutzer CO<sub>2</sub> , windspeed and precipitation products, which you will need to download yourself. A curl script is provided below). The figure scripts are named 9a-f. 
 
 `carbon_math.py` is a useful Python function which can be used to calculate CO<sub>2</sub> fluxes through Scmidt Number and Solubility as described in Wanninkhof, R. (2014).
 
-
-
-Due to the manuscript and analysis changing shape over time, the mooring compilation step is time consuming and is almost, but not entirely redundant. Thus it is still an essential step but the value of it now is low, and is only used for Figure 2 and 4 and 5, and only a little bit. My recommendation is just use the supplied processed files.
+Due to the manuscript changing focus over time, the mooring compilation step is time consuming and is almost, but not entirely redundant. Thus it is still an essential step but the value of it now is low, and is only used for Figure 2. My recommendation is to just use the supplied processed files.
 
 
 
@@ -22,7 +20,7 @@ Firstly, I assume you have a Unix environment. Clone the repository to where you
 
 `git clone https://github.com/nicpittman/tropical_pacific_carbon_export.git`
 
-You will  need to ensure you have all of the dependencies outlined in *requirements.txt*
+You will  need to ensure you have all of the pangeo dependencies outlined in *requirements.txt*
 
 You can create an Anaconda environment (with conda-forge) using *requirements.txt* (There may be xESMF compatability issues):
 
@@ -43,7 +41,7 @@ You should then activate the environment like so:
 ```
 conda activate pacific_carbon
 ```
-I have tried my best to make this a reproducible repository, with a balance between versions and reproducability. For example, throughout processing, a beautiful soup or lxml updated (which I had not versioned), broke script 4. Scripts are provided as is. 
+
 
 ### 	3. Reproduce figures 1-6:
 
@@ -53,34 +51,28 @@ Figures are embedded at the bottom of this document for reference.
 
 ##### 3.1 Data to download
 
-Most of the processed data is provided in order for the plotting functions (scripts 9[a-f]) to work. However, two sets of data will need to be downloaded manually. SST and the Landschutzer CO<sub>2</sub> flux product (and NCO to convert to a usable format). You can perform this either running `sh datasets/to_download.sh`, or by pasting the following code into console:
+Most of the processed data is provided in order for the plotting functions (scripts 9[a-f]) to work. However, three sets of data will need to be downloaded manually. SST and the Landschutzer CO<sub>2</sub> flux product (and NCO to convert to a usable format) and CMAP precipitation data. You can perform this by running `sh datasets/to_download.sh`:
 
-SST:
-
-```To download manually:
-mkdir -p datasets/sst | curl ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2/sst.mnmean.nc --output datasets/sst/sst.mnmean.nc
-```
-
-Landschutzer CO<sub>2</sub>  (https://www.nodc.noaa.gov/ocads/oceans/SPCO2_1982_present_ETH_SOM_FFN.html)
-
-````
-mkdir -p datasets/co2/landschutzer_co2 | curl https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc --output datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc
-````
-
-You will need to use NCO to convert the time variable name (t to date) so they can be opened by xarray. NCO is included in the conda environment.
-```
-ncrename -v date,t datasets/co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc 
-```
+**Note** You will need NCO installed for the script to run as it needs to convert the Landschutzer dataset time variable name (t to date) so they can be opened by xarray. NCO is included in the conda environment.
 
 TAO data is included here in `datasets/tao/tao_physics/*`. You can update it yourself here (but not essential, and a little time consuming): https://www.pmel.noaa.gov/tao/drupal/disdel/ using all variables at equatorial Moorings 110W,125W, 140W,155W,170E,165E
 
 
 
-(Monthly 2.5degree) Enhanced precipitation: https://psl.noaa.gov/data/gridded/data.cmap.html at the time of writing, direct download link is:	`ftp://ftp.cdc.noaa.gov/Datasets/cmap/enh/precip.mon.mean.nc`
+**Important** CCMP wind speeds is a little more challenging to download. Main web page is located at: http://www.remss.com/measurements/ccmp/
 
-(Monthly 2.5degree) u and v wind speeds:  https://psl.noaa.gov/data/gridded/data.ncep.reanalysis2.gaussian.html at time of writing, direct download links are:
+This download link was used:
+http://apdrc.soest.hawaii.edu/erddap/griddap/hawaii_soest_3387_f2e3_e359.nc?uwnd[(1997-01-01):1:(2017-12-01T00:00:00Z)][(-20):1:(20)][(0.125):1:(359.875)],vwnd[(1997-01-01):1:(2017-12-01T00:00:00Z)][(-20):1:(20)][(0.125):1:(359.875)],nobs[(1997-01-01):1:(2017-12-01T00:00:00Z)][(-20):1:(20)][(0.125):1:(359.875)]
 
-`ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2.derived/gaussian_grid/uwnd.10m.mon.mean.nc` and  `ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2.derived/gaussian_grid/vwnd.10m.mon.mean.nc`
+Which came from a chain of links: http://apdrc.soest.hawaii.edu/erddap/griddap/hawaii_soest_3387_f2e3_e359.html From http://apdrc.soest.hawaii.edu/datadoc/ccmp_month_v2.php From: http://www.remss.com/measurements/ccmp/ (Hard to download from here).
+
+But the first link might not work. So use the first in the chain of links and download 1997-01-01 to 2017-12-01, -20 to 20 and just take the whole globe. Select 'nc' filetype and submit to download. Might take a while. 
+
+You will need to then download 2017 to 2020 data manually from http://data.remss.com/ccmp/v02.0/. Its possible to write a script to do this. But the above links worked faster, and then I manually downloaded the data from 2017 to 2020. 
+
+Once this is done you will need to run `python 8-CCMP_windspeed_process.py`
+
+
 
 ##### 3.2 Data included
 
@@ -128,16 +120,13 @@ python 9a ... (tab)
 python 9b ...
 python 9c ...
 python 9e ...
-python 9f ...
 ```
-
-Note*, Figure 4 (9d) uses basemap, a depreciated package. However, it should work in the provided Anaconda environment. 
 
 
 
 ### 	4. Reprocess entire pipeline:
 
-As described above, figures can be reproduced from the provided processed data. However, the entire the pipeline is provided for reproducible research, but is provided as is. I have tried to make the flow as streamlined as possible but it is likely that there will be unique problems on different systems. Since the analysis has changed, the time:reward ratio here is low, but worth including for reproducability. 
+As described above, figures can be reproduced from the provided processed data. However, the entire the pipeline is provided for reproducible research, but is provided as is. I have tried to make the flow as streamlined as possible but it is likely that there will be unique problems on different systems. Since the analysis has changed, the time:reward ratio here is low, but worth including for full reproducability. 
 
 ###### Notes: 
 
@@ -242,46 +231,13 @@ Scripts are to be run in numerical order.
 ##### 4.2 Other scripts:
 
 - *carbon_math.py* is a series of functions that make it easy to convert between carbon units.
-
 - 10-windspeed is a quick correlation assessment of the windspeed vs new production and air-sea flux, with r<sup>2</sup> used in the paper.
+- 9z's are old figures that use the mooring data, and there is also a correlation plot. These were not included in final analysis but could be useful for you?
 
 #### 5. Notes
 
 - Things have changed around a lot, with some redundant code still in the repo. I have tried to refactor where possible, but there is still some messiness and possible system dependent issues.  I have tried to fix this the best I can with Anaconda (see Conda, Section 2). I have tried my best to provide at least the minimum standard of code for reproducible science. 
 - All data for the figures is provided. However, all scripts to process the data yourself are also provided for complete reproducibility of this paper 
-
-#### 6. Figures
-
-Figure 1. 
-
-<img src="figs/Figure1.png" width="35%">
-
-
-
-
-
-Figure 2. 
-
-<img src="figs/Figure2.png" width="50%">
-
-
-
-Figure 3
-
-<img src="figs/Figure3_smallboth.png" width="80%">
-
-Figure 4
-
-<img src="figs/Figure4_Spatial_map_update_laws2011a.png" width="50%">
-
-Figure 5
-
-<img src="figs/Figure5a_ENSO_seasonality.png" width="50%">
-
-Figure 6
-
-
-<img src="figs/Figure6_basinavg_pG.png" width="60%">
 
 
 

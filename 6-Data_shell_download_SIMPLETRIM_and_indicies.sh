@@ -22,6 +22,8 @@ ncrename -v date,t datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
 #SOI: https://www.esrl.noaa.gov/psd/gcos_wgsp/Timeseries/SOI/
 #MEI: https://www.esrl.noaa.gov/psd/enso/mei/
 #PDO: http://research.jisao.washington.edu/pdo/PDO.latest
+echo 'Downloading CMAP precipitation'
+curl ftp://ftp.cdc.noaa.gov/Datasets/cmap/enh/precip.mon.mean.nc --output datasets/precip.mon.mean.nc
 
 echo 'CLIMATE INDICIES'
 echo 'Uncomment these if you need to download them, but note you must fix their formating in excel before being opened by pandas. Instructions are provided at the bottom of this shell script. These files are already provided in this repository, so I would recommend to leave this as is.'

@@ -382,12 +382,12 @@ means.to_csv('processed/results/enso_basin_means.csv',index=False)
 mass_table=mass_table.T
 mass_table.to_csv('processed/results/carbon_mass.csv',header=False)
 plt.tight_layout()
-plt.savefig('figs/Figure6.png',dpi=200)
-plt.savefig('figs/vector/Figure6.eps',dpi=300)
-plt.savefig('figs/vector/Figure6.pdf',dpi=300)
+plt.savefig('figs/Figure5.png',dpi=200)
+plt.savefig('figs/vector/Figure5.eps',dpi=300)
+plt.savefig('figs/vector/Figure5.pdf',dpi=300)
 
 try:
-    plt.savefig('figs/Figure6.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
+    plt.savefig('figs/Figure5.jpeg',dpi=300) #Conda install pilliow needed to save to jpeg.
 except:
     pass
 

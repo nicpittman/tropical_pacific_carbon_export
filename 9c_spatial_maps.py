@@ -299,6 +299,15 @@ dco2['time']=dco2.time.astype('datetime64[M]')
 ws=np.sqrt((wu**2)+(wv**2))
 
 
+precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
+
+
+# import seaborn as sns
+# precip1= xr.open_dataset('processed/prec_1deg.nc').sel(lat=slice(-20,20),lon=slice(120,290),time=slice('1997-07-01','2019-12-31')).precip
+# dco21=dco2.sel(time=slice('1997-07-01','2020-01-01'))
+# prec=precip1.values.reshape(270*40*170)
+# dc=dco21.values.reshape(270*40*170)
+
 # # THIS NEEDS TO BE RUN ONCE BUT CAN be memory intensive
 
 # w_ccmp_a=xr.open_mfdataset('datasets/ws_ccmp/*.nc') #Downloaded manually
@@ -411,8 +420,6 @@ plot_basemap_row(fig,axn=7,
                  cmap='viridis')
 
 
-
-precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
 
 plot_basemap_row(fig,axn=9,
                  hovmol=precip.sel(time=ensodates),

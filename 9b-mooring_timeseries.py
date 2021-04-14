@@ -342,10 +342,10 @@ if startyear==str(1997):
         pass
     plt.savefig('figs/vector/Figure2.eps',dpi=300)
     plt.savefig('figs/vector/Figure2.pdf',dpi=300)
-    plt.savefig('figs/Figure2.png',dpi=100)
+    plt.savefig('figs/Figure2.png',dpi=300)
     
 else:
-    plt.savefig('figs/fig2_Co2fluxevents_alltime.png',format='png',dpi=100)
+    plt.savefig('figs/Figure2_Co2fluxevents_alltime.png',format='png',dpi=100)
 plt.show()
 
 #Can calculate correlations like:
