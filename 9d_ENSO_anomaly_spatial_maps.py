@@ -245,13 +245,13 @@ sst=sst.where(seamask.seamask==1)
 pCO2 = xr.open_dataarray('processed/flux/pco2grams.nc') #_norm
 integratedpCO2 = (pCO2*12*50)
 
-#wu=xr.open_dataset('datasets/uwnd.mon.mean.nc').sel(level=1000,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
-#wv=xr.open_dataset('datasets/vwnd.mon.mean.nc').sel(level=1000,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
-wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
-wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
+#NCEP2 winds
+#wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
+#wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
+#ws=np.sqrt((wu**2)+(wv**2))
+
 dco2['time']=dco2.time.astype('datetime64[M]')
 
-ws=np.sqrt((wu**2)+(wv**2))
 
 
 
@@ -280,7 +280,7 @@ precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20
 #     pass
 
 ws_ccmp=xr.open_dataarray('datasets/CCMP_windspeed.nc')
-ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
+#ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
 
 # %% Prepare Figure 
 
@@ -423,8 +423,7 @@ plot_basemap_row(fig,axn=5,
                  title='Wind speed',             
                  levs=ws_range,#p.arange(0,11,1),
                
-                 cmap='RdBu_r',
-                 wu=wu,wv=wv)
+                 cmap='RdBu_r')
 
 plot_basemap_row(fig,axn=8,
                  hovmol=chl.sel(time=cp_dates,method='nearest'),
@@ -551,8 +550,10 @@ plot_basemap_row(fig,axn=21,
 
 plt.tight_layout()
 plt.savefig('figs/Figure4_ENSO_Anomaly_spatial_map_.png',dpi=200)
-# plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.eps')
-# plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.pdf')
+plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+'.eps')
+plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+'.pdf')
+plt.show()
+
 
 # try:
 #     plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+'.jpeg',dpi=300)

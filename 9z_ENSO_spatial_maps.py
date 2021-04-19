@@ -240,7 +240,7 @@ precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20
 #     pass
 
 ws_ccmp=xr.open_dataarray('datasets/CCMP_windspeed.nc')
-ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
+#ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
 
 # %% Prepare Figure 
 
