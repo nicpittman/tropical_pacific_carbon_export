@@ -12,7 +12,7 @@ mkdir co2 | mkdir co2/landschutzer_co2 | curl https://www.ncei.noaa.gov/data/oce
 #Old link https://data.nodc.noaa.gov/ncei/ocads/data/0160558/MPI_SOM-FFN_v2020/spco2_MPI-SOM_FFN_v2020.nc
 
 cd co2/landschutzer_co2
-ncrename -v t,date co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc 
+ncrename -v date,d co2/landschutzer_co2/spco2_MPI-SOM_FFN_v2020.nc 
 
 
 echo 'You might also want the 2018 version for full pipeline, uncomment if needed.'
