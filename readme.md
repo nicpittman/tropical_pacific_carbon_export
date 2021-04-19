@@ -4,9 +4,9 @@
 
 #### 	1. Overview
 
-This set of python scripts provides all data and figures for this paper. I originally intended for this to be structured and highly reproducible. However, the manuscript changed focus significantly, so there is a lot of redundant and vestigial code. I have cleaned where possible but some things are rough, apologies for the mess. This readme is as detailed as possible. If you have any problems with implementation, please email me.
+This set of python scripts provides all data and figures for this paper. I originally intended for this to be structured and highly reproducible. However, the manuscript changed focus significantly, so there is a lot of redundant and vestigial code. I have cleaned where possible but some things are rough, apologies for the mess. This readme is as detailed as possible. If you have any problems with implementation, please email me.  Total repository size is around 660Mb.
 
-This repository is organised so that all figures can be produced immediately after download (except you will need to download the Landschutzer CO<sub>2</sub> , windspeed and precipitation products, which you will need to download yourself. A curl script is provided below). The figure scripts are named 9a-f. 
+This repository is organised so that all figures can be produced immediately after download (except you will need to download the Landschutzer CO<sub>2</sub> , wind speed and precipitation products, which you will need to download yourself. A curl script is provided below). The figure scripts are named 9a-f. 
 
 `carbon_math.py` is a useful Python function which can be used to calculate CO<sub>2</sub> fluxes through Scmidt Number and Solubility as described in Wanninkhof, R. (2014).
 
