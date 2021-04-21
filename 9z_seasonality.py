@@ -300,14 +300,14 @@ plt.grid()
 plt.tight_layout()
 plt.legend(ncol=3,fontsize=12,bbox_to_anchor=(1.19,0.5), loc="center left")#, borderaxespad=0)
 
-plt.savefig('figs/Figure5.png',dpi=200)
+#plt.savefig('figs/Figure5.png',dpi=200)
 
-try:
-    plt.savefig('figs/Figure5.jpeg',dpi=300)
-except:
-    pass
-plt.savefig('figs/vector/Figure5.eps')
-plt.savefig('figs/vector/Figure5.pdf')
+#try:
+#    plt.savefig('figs/Figure5.jpeg',dpi=300)
+#except:
+#    pass
+#plt.savefig('figs/vector/Figure5.eps')
+#plt.savefig('figs/vector/Figure5.pdf')
 plt.show()
 
 

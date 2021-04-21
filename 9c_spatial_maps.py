@@ -292,11 +292,13 @@ integratedpCO2 = (pCO2*12*50)
 
 #wu=xr.open_dataset('datasets/uwnd.mon.mean.nc').sel(level=1000,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
 #wv=xr.open_dataset('datasets/vwnd.mon.mean.nc').sel(level=1000,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
-wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
-wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
+
+#Old NCEP2 winds
+#wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).uwnd
+#wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10,lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).vwnd
 dco2['time']=dco2.time.astype('datetime64[M]')
 
-ws=np.sqrt((wu**2)+(wv**2))
+#ws=np.sqrt((wu**2)+(wv**2))
 
 
 precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01')).precip
@@ -331,7 +333,7 @@ precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20
 #     pass
 
 ws_ccmp=xr.open_dataarray('datasets/CCMP_windspeed.nc')
-ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
+#ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
 
 # %% Prepare Figure 
 
@@ -392,8 +394,7 @@ plot_basemap_row(fig,axn=3,
                  
                  #levs_trend=np.arange(-0.15,0.175,0.025),
                  #trend_conversion=1000,
-                 cmap='viridis',
-                 wu=wu,wv=wv)
+                 cmap='viridis')
 
 if etype=='':
     chl_d=chl.time#ensodates[:-5] #Ok so this is actually from 1997 but doesn't change anything except fills in missing trend due to strange start years
