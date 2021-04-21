@@ -450,7 +450,7 @@ h=plot_basemap_row(fig,axn=11,
 
 plot_basemap_row(fig,axn=13,
                   hovmol=land.sel(time=ensodates),
-                  units='gC m$_{-2}$ day$^{-1}$',
+                  units='gC m$^{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
                   units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
                   levs=np.arange(-0.14,0.15,0.02),
