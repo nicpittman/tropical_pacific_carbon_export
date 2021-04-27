@@ -400,9 +400,9 @@ if etype=='':
     chl_d=chl.time#ensodates[:-5] #Ok so this is actually from 1997 but doesn't change anything except fills in missing trend due to strange start years
 plot_basemap_row(fig,axn=5,
                  hovmol=chl.sel(time=chl_d),
-                 units='mg chl m$^{-3}$ day$^{-1}$',
+                 units='mg chl m$^{-3}$',
                  title='TPCA chlorophyll',
-                 units_tr='ug chl m$^{-3}$ day$^{-1}$ year$^{-1}$',
+                 units_tr='ug chl m$^{-3}$ year$^{-1}$',
                  levs=np.arange(0,0.65,0.05),
                  
                  levs_trend=np.arange(-4,4.1,1),
