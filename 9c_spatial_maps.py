@@ -448,17 +448,18 @@ h=plot_basemap_row(fig,axn=11,
                   cmaptr='RdBu_r')#'Reds')
 
 
-plot_basemap_row(fig,axn=13,
+CO2_tr=plot_basemap_row(fig,axn=13,
                   hovmol=land.sel(time=ensodates),
                   units='gC m$^{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
-                  units_tr='mgC m$^{2}$ day$^{-1}$ year$^{-1}$',
+                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
                   levs=np.arange(-0.14,0.15,0.02),
                   levs_trend=np.arange(-2,2.1,0.5),
                   trend_conversion=1000,
                   cmap='RdBu_r')
 
-
+#Save the CO2 trends so we can superimpose onto plot later.
+CO2_tr.to_netcdf('processed/results/CO2f_trend_pval_alltime.nc')
 
 # #Ocean pCO2
 # plot_basemap_row(fig,axn=13,
@@ -538,12 +539,12 @@ plot_basemap_row(fig,axn=13,
 
 
 plt.tight_layout()
-plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+etype+'.png',dpi=100)
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.eps')
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+etype+'.pdf')
+plt.savefig('figs/Figure3'+etype+'.png',dpi=300)
+plt.savefig('figs/vector/Figure3'+etype+'.eps')
+plt.savefig('figs/vector/Figure3'+etype+'.pdf')
 
 try:
-    plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+'.jpeg',dpi=300)
+    plt.savefig('figs/Figure3.jpeg',dpi=300)
 except:
     pass
 plt.show()

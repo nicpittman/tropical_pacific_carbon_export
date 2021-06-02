@@ -59,6 +59,25 @@ def trends(ax,x,y,c='r'):
     ax.plot(pd.to_datetime(x),y1,':'+c,linewidth=2.5)  
     #ax.text(x1[-1]-(x1[-1]*0.1),y1[-1]-(y1[-1]*0.1),'R2='+str(np.round(r_value**2,3)))
     return slope, intercept, r_value,p_value,std_err
+
+def justtrends(x,y,c='r'):  
+    from scipy.stats import linregress
+    mean=np.nanmean(y)
+    std=np.nanstd(y)*1
+
+    #x_n=np.arange(0,len(x))
+    # x1=np.arange(np.datetime64(x[0],'M'),np.datetime64(x[-1],'M')+np.timedelta64(1,'M'))
+    #x1=trd.index.values.astype('datetime64[D]')
+    x1=x.astype('datetime64[D]')
+    x_n=pd.to_numeric(x1)
+    slope, intercept, r_value, p_value, std_err = linregress(x_n,y)
+    mn=min(x_n)
+    mx=max(x_n)
+    x1=np.linspace(mn,mx,len(x))
+    y1=slope*x1+intercept
+    #ax.text(x1[-1]-(x1[-1]*0.1),y1[-1]-(y1[-1]*0.1),'R2='+str(np.round(r_value**2,3)))
+    return slope, intercept, r_value,p_value,std_err
+    
     
 
 seamask=xr.open_dataset('processed/seamask.nc') #Because 2020 version doesn't have it.
@@ -175,12 +194,26 @@ for i,ty in enumerate(limits):
         laws2000.plot(label='Laws 2000',ax=ax,c='green',linestyle='--')
         laws2011a.plot(label='Laws 2011a',ax=ax,c='r',linewidth=2.5)
         CO2.plot(label='CO$_{2}$ outgassing',ax=ax,c='k',linewidth=2.5)
+        
+        
+        
+        #Calc trends for the other models #Not actually used just a test.
+        trim1=trim.sel(time=slice('2000-01-01','2019-12-01'))
+        dunne1=dunne.sel(time=slice('2000-01-01','2019-12-01'))
+        laws20001=laws2000.sel(time=slice('2000-01-01','2019-12-01'))
+        laws2011a1=laws2011a.sel(time=slice('2000-01-01','2019-12-01'))
+        
+        trenNP1_trim=justtrends(trim1.time.values,trim1.values)[0]*365/1e15
+        trenNP1_dunne=justtrends(dunne1.time.values,dunne1.values)[0]*365/1e15
+        trenNP1_laws2000=justtrends(laws20001.time.values,laws20001.values)[0]*365/1e15
+        trenNP1_laws2011=justtrends(laws2011a1.time.values,laws2011a1.values)[0]*365/1e15
+        
     else:
         laws2011a.plot(label='Laws 2011a',ax=ax,c='r')
         CO2.plot(label='CO$_{2}$ outgassing',ax=ax,c='k')
         #henson.plot(label='Henson',ax=ax,c='deeppink')
-    
-    
+        
+
     
     ax.set_xlim([np.datetime64('1997-06-01'),np.datetime64('2020-01-01')])
     #ax.xaxis.grid(True, which='both')
@@ -192,7 +225,7 @@ for i,ty in enumerate(limits):
     if i <=2:
         #ax.set_ylim([0,0.27*1e15])131
         
-        ax.set_ylim([-0.005*1e15,0.25*1e15])
+        ax.set_ylim([-0.015*1e15,0.25*1e15])
         ax.set_title(chr(97+i)+') '+ty[0]+' Pacific',pad=16)
         ax.set_ylabel('New production and CO$_{2}$ flux (PgC yr$^{-1}$)')
         ax.yaxis.set_major_formatter(FixedOrderFormatter(15))
@@ -382,7 +415,7 @@ means.to_csv('processed/results/enso_basin_means.csv',index=False)
 mass_table=mass_table.T
 mass_table.to_csv('processed/results/carbon_mass.csv',header=False)
 plt.tight_layout()
-plt.savefig('figs/Figure5.png',dpi=200)
+plt.savefig('figs/Figure5.png',dpi=300)
 plt.savefig('figs/vector/Figure5.eps',dpi=300)
 plt.savefig('figs/vector/Figure5.pdf',dpi=300)
 
@@ -391,7 +424,7 @@ try:
 except:
     pass
 
-        
+
 plt.show()
 print(means[['name','laws2011a','dunne','strim']].iloc[6])
 

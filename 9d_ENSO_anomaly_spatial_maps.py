@@ -396,7 +396,7 @@ h=plot_basemap_row(fig,axn=16,
 plot_basemap_row(fig,axn=19,
                   hovmol=land.sel(time=ep_dates,method='nearest'),
                   mean=land.sel(time=all_dates,method='nearest'),
-                  units='gC m$_{-2}$ day$^{-1}$',
+                  units='gC m$^{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
                   
                   levs=co2_range,
@@ -467,7 +467,7 @@ h=plot_basemap_row(fig,axn=17,
 plot_basemap_row(fig,axn=20,
                   hovmol=land.sel(time=cp_dates,method='nearest'),
                   mean=land.sel(time=all_dates,method='nearest'),
-                  units='gC m$_{-2}$ day$^{-1}$',
+                  units='gC m$^{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
                   levs=co2_range,
                   
@@ -537,7 +537,7 @@ h=plot_basemap_row(fig,axn=18,
 plot_basemap_row(fig,axn=21,
                   hovmol=land.sel(time=nina_dates,method='nearest'),
                   mean=land.sel(time=all_dates,method='nearest'),
-                  units='gC m$_{-2}$ day$^{-1}$',
+                  units='gC m$^{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
                   levs=co2_range,
 
@@ -547,16 +547,14 @@ plot_basemap_row(fig,axn=21,
 
 
 
-
 plt.tight_layout()
-plt.savefig('figs/Figure4_ENSO_Anomaly_spatial_map_.png',dpi=200)
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+'.eps')
-plt.savefig('figs/vector/Figure3_Spatial_map_'+ratio.name+'.pdf')
+plt.savefig('figs/Figure4.png',dpi=300)
+plt.savefig('figs/vector/Figure4.eps')
+plt.savefig('figs/vector/Figure4.pdf')
 plt.show()
 
-
-# try:
-#     plt.savefig('figs/Figure3_Spatial_map_'+ratio.name+'.jpeg',dpi=300)
-# except:
-#     pass
-# plt.show()
+try:
+    plt.savefig('figs/Figure4.jpeg',dpi=300)
+except:
+    pass
+plt.show()

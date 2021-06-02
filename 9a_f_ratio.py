@@ -24,6 +24,27 @@ import xarray as xr
 import matplotlib.pyplot as plt
 from carbon_math import *
 
+
+def justtrends(x,y,c='r'):  
+    from scipy.stats import linregress
+    mean=np.nanmean(y)
+    std=np.nanstd(y)*1
+
+    #x_n=np.arange(0,len(x))
+    # x1=np.arange(np.datetime64(x[0],'M'),np.datetime64(x[-1],'M')+np.timedelta64(1,'M'))
+    #x1=trd.index.values.astype('datetime64[D]')
+    x1=x.astype('datetime64[D]')
+    x_n=pd.to_numeric(x1)
+    slope, intercept, r_value, p_value, std_err = linregress(x_n,y)
+    mn=min(x_n)
+    mx=max(x_n)
+    x1=np.linspace(mn,mx,len(x))
+    y1=slope*x1+intercept
+    #ax.text(x1[-1]-(x1[-1]*0.1),y1[-1]-(y1[-1]*0.1),'R2='+str(np.round(r_value**2,3)))
+    return slope, intercept, r_value,p_value,std_err
+    
+    
+
 # %% From NPP ratio compare site.py
 
 lw=2
@@ -53,6 +74,18 @@ ax.plot(vg.time,vg.values,label='VGPM')#,linestyle='--')
 ax.plot(ep.time,ep.values,label='Eppley')#,linestyle='--'
 ax.plot(cb.time,cb.values,label='CbPM')
 ax.plot(cf.time,cf.values,linewidth=2,c='k',label='CAFE')
+
+
+vg1=vg.sel(time=slice('2000-01-01','2019-12-01'))
+ep1=ep.sel(time=slice('2000-01-01','2019-12-01'))
+cb1=cb.sel(time=slice('2000-01-01','2019-12-01'))
+cf1=cf.sel(time=slice('2000-01-01','2019-12-01'))
+#CALC PP TRENDS
+vg_tr=justtrends(vg1.time.values,vg1.values)[0]*365
+ep_tr=justtrends(ep1.time.values,ep1.values)[0]*365
+cb_tr=justtrends(cb1.time.values,cb1.values)[0]*365
+cf_tr=justtrends(cf1.time.values,cf1.values)[0]*365
+
 #ax.plot(dat.modis_tpca.Date,np.sqrt(dat.modis_tpca),label='sqrt chl')
 print('Panel a Averages')
 print('vgpm: '+str(np.round(vg.values.mean(),3)))
@@ -201,3 +234,20 @@ try:
 except:
     pass
 plt.show()
+
+
+
+
+
+
+def calc_lin_trend(x,y):#,title,xlab,ylab,diagonal_line=1,printer=1,plot=1,logspace=0,color=np.ndarray(0),zx=np.ndarray(0),zy=np.ndarray(0),trendline=1):
+
+    x=np.ravel(x)
+    y=np.ravel(y)
+    mask=~np.isnan(x)
+    x=x[mask]
+    y=y[mask]
+    
+    slope, intercept, r_value, p_value, std_err = linregress(x,y)
+
+    return slope
