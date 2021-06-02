@@ -32,7 +32,7 @@ conda create --name pacific_carbon --file requirements.txt
 If it breaks for some reason, something like below can also work, however the above method is preferred (Spyder not essential):
 
 ```
-conda create -n pacific_carbon python=3.7 ESMPy=7.1.0 xesmf==0.3 spyder=4.0 xarray=0.15 h5py ipython Markdown numpy pandas scipy matplotlib dask nco netcdf4 statsmodels h5netcdf bs4c joblib pillow lxml basemap cartopy curl cbsyst
+conda create -n pacific_carbon python=3.7 ESMPy=7.1.0 xesmf==0.3 spyder=4.0 xarray=0.15 h5py ipython Markdown numpy pandas scipy matplotlib dask nco netcdf4 statsmodels h5netcdf bs4 joblib pillow lxml basemap cartopy curl cbsyst
 ```
 
 Otherwise, you can try removing the library versions, but this setup has worked on my system. Things might break if you use different versions than those prescribed. 
