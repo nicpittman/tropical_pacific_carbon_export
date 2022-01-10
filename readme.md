@@ -1,5 +1,5 @@
 ## Tropical Pacific CO<sub>2</sub> flux and new production rates
-###### Pittman et al., 2021; Physical drivers of air-sea CO<sub>2</sub> flux and biological draw-down in the equatorial Pacific
+###### Pittman et al., 2022; Physical drivers of air-sea CO<sub>2</sub> flux and biological draw-down in the equatorial Pacific
 [![DOI](https://zenodo.org/badge/287166890.svg)](https://zenodo.org/badge/latestdoi/287166890)
 
 #### 	1. Overview
