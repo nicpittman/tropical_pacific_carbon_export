@@ -14,6 +14,10 @@ import os
 import sys
 import xesmf as xe
 
+
+glob=True
+download=False
+
 #http://data.remss.com/ccmp/v02.0/Y2000/M02/CCMP_Wind_Analysis_200002_V02.0_L3.5_RSS.nc
 
 years=np.arange(1987,2020)
@@ -30,36 +34,38 @@ for y in years:
         links.append(raw_link[0]+y+raw_link[1]+m+raw_link[2]+y+m+raw_link[3])
 
 # %%
-print('Downloading global CCMP windspeed data from www.data.remss.com/ccmp/v02.0 ')
-#print(links)
-if not os.path.isdir('datasets/ws_ccmp'):
-     print('Creating directory: ','datasets/ws_ccmp')
-     os.makedirs('datasets')  
 
-def check_exists(fp):
-    try:
-        d=xr.open_dataset(fp)
-        return True
-    except:
-        return False
+if download==True:
+    print('Downloading global CCMP windspeed data from www.data.remss.com/ccmp/v02.0 ')
+    #print(links)
+    if not os.path.isdir('datasets/ws_ccmp'):
+         print('Creating directory: ','datasets/ws_ccmp')
+         os.makedirs('datasets')  
     
-for l in links:
-    fileloc='datasets/ws_ccmp/'+l.split('/')[-1]
-    if check_exists(fileloc)==False:
-      
-        try: 
-            print('Downloading: '+l)
-            r = requests.get(l,timeout=20)
-            if r.status_code!=404:
-                with open(fileloc, 'wb') as f:
-                    f.write(r.content)
-                    print('Saved to: '+fileloc)
-            else: 
-                print(str(r.status_code))
-        except KeyboardInterrupt:
-            sys.exit()
+    def check_exists(fp):
+        try:
+            d=xr.open_dataset(fp)
+            return True
         except:
-            print(fileloc+' is unavailable')
+            return False
+        
+    for l in links:
+        fileloc='datasets/ws_ccmp/'+l.split('/')[-1]
+        if check_exists(fileloc)==False:
+          
+            try: 
+                print('Downloading: '+l)
+                r = requests.get(l,timeout=20)
+                if r.status_code!=404:
+                    with open(fileloc, 'wb') as f:
+                        f.write(r.content)
+                        print('Saved to: '+fileloc)
+                else: 
+                    print(str(r.status_code))
+            except KeyboardInterrupt:
+                sys.exit()
+            except:
+                print(fileloc+' is unavailable')
 
     
 # %%
@@ -75,34 +81,35 @@ land_pac.to_netcdf('processed/flux/landshutzer.nc',engine='h5netcdf',mode='w')
 
 # # THIS NEEDS TO BE RUN ONCE BUT CAN be memory intensive
 
-w_ccmp_a=xr.open_mfdataset('datasets/ws_ccmp/*.nc') #Downloaded manually
-w_ccmp_a['time']=w_ccmp_a.time.astype('datetime64[M]')
-w_ccmp=w_ccmp_a.sel(latitude=slice(-20,20))
+w_ccmp=xr.open_mfdataset('datasets/ws_ccmp/*.nc') #Downloaded manually
+w_ccmp['time']=w_ccmp.time.astype('datetime64[M]')
 
-# w_ccmp_b=xr.open_mfdataset('datasets/CCMP_winds.nc') #Bulk ErDap download
-# dt=w_ccmp_b.indexes['time'].to_datetimeindex()
-# w_ccmp_b['time']=dt
+suffix=''
+if glob==True:
+    suffix='_global'
+else:
+    w_ccmp=w_ccmp.sel(longitude=slice(120,290),latitude=slice(-20,20))
+    
+w_ccmp=w_ccmp.rename({'latitude':'lat','longitude':'lon'})
 
-# w_ccmp=xr.merge([w_ccmp_b,w_ccmp_a])
-
-w_ccmp=w_ccmp.sel(longitude=slice(120,290),latitude=slice(-20,20))
-ws_ccmp=np.sqrt((w_ccmp.uwnd**2)+(w_ccmp.vwnd**2))
-ws_ccmp=ws_ccmp.rename({'latitude':'lat','longitude':'lon'})
+#w_ccmp['windspeed']=np.sqrt((w_ccmp.uwnd**2)+(w_ccmp.vwnd**2))
 try:
-    ws_ccmp.to_netcdf('datasets/CCMP_windspeed.nc')
+    print('saving..')
+    w_ccmp.to_netcdf(f'datasets/CCMP_windspeed{suffix}.nc')
+    
     print('saved')
 except:
     pass
 
 # %% Regrid the windspeed
 
-ws=xr.open_dataarray('datasets/CCMP_windspeed.nc')
-
-ws=ws.to_dataset(name='ws')
-   
-landschutzer=xr.open_dataset('processed/flux/landshutzer.nc')
+ws=xr.open_dataset(f'datasets/CCMP_windspeed{suffix}.nc')
+#ws_ccmp=np.sqrt((w_ccmp.uwnd**2)+(w_ccmp.vwnd**2))   
+landsch_fp='datasets/co2/landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc'
+landschutzer=xr.open_dataset(landsch_fp)
+landschutzer= landschutzer.assign_coords(lon=(landschutzer.lon % 360)).roll(lon=(landschutzer.dims['lon']),roll_coords=False).sortby('lon')
 land_pac=landschutzer.fgco2_smoothed.to_dataset(name='co2')
-land_pac=land_pac.sel(lat=slice(-20,20))
+#land_pac=land_pac.sel(lat=slice(-20,20))
 
 lat_rad=land_pac.lat.diff(dim='lat').mean().values/2
 lon_rad=land_pac.lon.diff(dim='lon').mean().values/2
@@ -126,6 +133,6 @@ land_pac['lon_b']=landlons##(['lonb','latb'],x[0])
 print('Regridding WS')
 regridder = xe.Regridder(ws, land_pac, 'conservative')
 wsreg=regridder(ws)
-wsreg.to_netcdf('processed/CCMP_ws_1deg.nc',mode='w') #engine='h5netcdf'
+wsreg.to_netcdf(f'processed/CCMP_ws_1deg{suffix}.nc',mode='w') #engine='h5netcdf'
     
     

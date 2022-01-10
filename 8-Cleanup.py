@@ -546,6 +546,11 @@ def regrid_tpca():
     mod=xr.open_dataset('datasets/chl/tpca/mod_month.nc')
     
     tpca=sw
+    
+    #mean = ds.to_array(dim='new').mean('new')
+    #ds.assign(e=mean)
+    
+    
     tpca=tpca.merge(mod)
     tpca = tpca.to_array(dim='tpca').mean('tpca')
     #tpca.to_netcdf('datasets/tpca/tpca.nc')

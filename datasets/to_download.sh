@@ -20,4 +20,5 @@ echo 'You might also want the 2018 version for full pipeline, uncomment if neede
 # curl https://www.nodc.noaa.gov/archive/arc0105/0160558/4.4/data/0-data/MPI_SOM-FFN_v2018/spco2_MPI_SOM-FFN_v2018.nc --output  landschutzer_co2/spco2_MPI_SOM-FFN_v2018.nc
 # ncrename -v date,t spco2_MPI_SOM-FFN_v2018.nc 
 
-
+echo 'Running python script to process the windspeeds'
+python ../8-CCMP_windspeed_process.py

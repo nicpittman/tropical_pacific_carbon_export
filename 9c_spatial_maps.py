@@ -34,6 +34,28 @@ Requires:
         processed/flux/pco2grams.nc
 """
 
+# New way of calculating trends
+#test linregress
+# from scipy.stats import linregress
+
+# def new_linregress(x, y):
+#     # Wrapper around scipy linregress to use in apply_ufunc
+#     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+#     print(x)
+#     print(y)
+#     return np.array([slope, intercept, r_value, p_value, std_err])
+# # return a new DataArray
+# stats = xr.apply_ufunc(new_linregress, data['time'], data['data2'],
+#                        input_core_dims=[['time'], ['time']],
+#                        output_core_dims=[["parameter"]],
+#                        vectorize=True,
+#                        dask="parallelized",
+#                        output_dtypes=['float64'],
+#                        dask_gufunc_kwargs={'output_sizes':{"parameter": 5}})
+# #data['parameter']=stats
+# data
+
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -43,7 +65,10 @@ from mpl_toolkits.basemap import Basemap
 from scipy.stats import linregress
 import matplotlib.patches as patches
 from matplotlib.patches import Polygon
-    
+from windspharm.xarray import VectorWind
+import matplotlib.ticker
+
+
 def plot_basemap():
     m = Basemap(llcrnrlon=120.,llcrnrlat=-15,urcrnrlon=290,urcrnrlat=15.01,
                 resolution='l',projection='merc',fix_aspect=False)
@@ -56,7 +81,15 @@ def plot_basemap():
 
 
 
-def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=None,trend_conversion=None,sb1=7,sb2=2,cmap='viridis',cmaptr='RdBu_r',wu=None,wv=None):
+def plot_basemap_row(fig,
+                     axn,
+                     hovmol,
+                     units,
+                     title,
+                     units_tr,
+                     levs=None,
+                     levs_trend=None,
+                     trend_conversion=None,sb1=6,sb2=2,cmap='viridis',cmaptr='RdBu_r',wu=None,wv=None):
     '''
     Create a plotting function to make it repeatable and nicer
     colormaps should either be viridis or RdBu_r
@@ -68,16 +101,19 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
     fr=0.03
     fs=12
     ms=10
+   
     startday=np.datetime64('2000-01-01')
     
     if title.endswith('pCO2t'):
         endday=np.datetime64('2016-12-01') 
         print(title)
     elif title.endswith('chlorophyll'):
-        endday=np.datetime64('2017-12-01')
+        endday=np.datetime64('2017-12-01')#'2017-12-01')
+        startday=np.datetime64('2002-01-01')
     else:
         endday=np.datetime64('2020-01-01') 
         
+    hovmol=hovmol.sel(time=slice(startday,endday))
     ax1=fig.add_subplot(sb1,sb2,axn)
     m=plot_basemap()
 
@@ -118,6 +154,9 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         m.contour(lo1,la1,late_sst,levels=[lev],linestyles='solid',colors='k')
         m.contour(lo1,la1,hovmol.mean(dim='time'),levels=[25],linestyles='dashed',colors='k')
         
+        ax1.annotate('CT',xy=(0.83,0.22), xycoords='axes fraction',fontsize=15)
+        ax1.annotate('WP',xy=(0.2,0.63), xycoords='axes fraction',fontsize=15)
+        
     if title=='Air-sea CO$_{2}$ flux':
         lo_rect,la_rect=m(165,-15)
     
@@ -143,12 +182,36 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         
     #wu['lon'],wu['lat']=m(lo,la,wu.lon.values,wu.lat.values)
     #No windspeed vectors now
-    #if title=='Wind speed':
-    #      skip=(slice(None,None,4),slice(None,None,4)) #2 for NCEP 2
-    #      m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip]/2,wv.mean(dim='time')[skip]/2,scale=90,headwidth=4.5)#,minshaft=2)
+    if title=='Wind speed and direction':
+        
+          #   if title=='Wind speed and direction':
+          #   if wu is not None:
+          #  #2 for NCEP 2
+          # #m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip]/2,wv.mean(dim='time')[skip]/2,scale=90,headwidth=4.5)#,minshaft=2)
+          #   skip=(slice(None,None,3),slice(None,None,3))
+          #   q1=m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip],wv.mean(dim='time')[skip],scale=70)#,minshaft=2)
+          #   plt.quiverkey(q1,0.6,1.006,U=5,label='Windspeed 5m/s')
+            
+            
+           #2 for NCEP 2
+          #m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip]/2,wv.mean(dim='time')[skip]/2,scale=90,headwidth=4.5)#,minshaft=2)
+        skip=(slice(None,None,4),slice(None,None,4))
+        #normalise
+        #wu1 = wu / np.sqrt(wu**2 +wv**2);
+        #wv1 = wv / np.sqrt(wu**2 + wv**2);
 
+        q1=m.quiver(lo1[skip],la1[skip],wu.mean(dim='time')[skip],wv.mean(dim='time')[skip],scale=100)#,minshaft=2)
+        plt.quiverkey(q1,0.97,1.02,U=5,label='Windspeed 5m/s')
 
-    cb=plt.colorbar(f,ax=ax1,fraction=fr)
+    #if title=='Wind divergence':  
+    #    windFmt = matplotlib.ticker.ScalarFormatter(useMathText=True)
+    #    windFmt.set_powerlimits((0, 0))
+    #if title=='Wind divergence and direction':
+            
+    #else:
+    #    windFmt=None
+        
+    cb=plt.colorbar(f,ax=ax1,fraction=fr)#,format=windFmt)
     cb.set_label(units,fontsize=fs)
     cb.ax.tick_params(labelsize=fs-1)
     ax1.set_title(chr(ord('`')+axn)+') Average: '+title,fontsize=fs)
@@ -156,13 +219,12 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
 
     #Trends
     hovmol=hovmol.where(hovmol!=-0.9999,np.nan)
-    hm=hovmol.interpolate_na(dim='time').sel(time=slice(startday,endday))
+    hm=hovmol.interpolate_na(dim='time')
     months=hm.time
-    
     dt_dates=pd.to_numeric(months.values.astype('datetime64[D]'))
     num_dates=dt_dates
     hm['time']=num_dates
-
+    
     
  
     #This will calculate the per pixel trends and pvalues
@@ -207,13 +269,36 @@ def plot_basemap_row(fig,axn,hovmol,units,title,units_tr,levs=None,levs_trend=No
         #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
         for c in f.collections:
             c.set_edgecolor("face")
-    cb=plt.colorbar(f,ax=ax2,extend='both',fraction=fr)
+    #cb=plt.colorbar(f,ax=ax2,extend='both',fraction=fr)
         
+    if title=='Wind speed and direction':
+         #skip=(slice(None,None,4),slice(None,None,4)) #2 for NCEP 2
+         #Normalise Data
+         #wu1 = wu / np.sqrt(wu**2 +wv**2);
+         #wv1 = wv / np.sqrt(wu**2 + wv**2);
+
+         hh1_u=wu.polyfit(dim='time',deg=1)
+         hh1_v=wv.polyfit(dim='time',deg=1)
+         
+
+         print(hh1_u)
+         skip=(slice(None,None,4),slice(None,None,4))
+         q2=m1.quiver(lo1[skip],
+                   la1[skip],
+                   (hh1_u.polyfit_coefficients*1e9*60*60*24*30).sel(degree=1)[skip],
+                   (hh1_v.polyfit_coefficients*1e9*60*60*24*30).sel(degree=1)[skip],scale=0.1)
+         plt.quiverkey(q2,0.97,1.02,U=0.002,label='Windspeed direction 0.02m/s/yr')
+               
     cnt=m1.contourf(lo1,la1,hh.pval,colors='none',hatches=['.'],levels=[0,0.05])
-    #Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
+#Quick anti-aliasing fix as per: https://stackoverflow.com/questions/15822159/aliasing-when-saving-matplotlib-filled-contour-plot-to-pdf-or-eps
     for c in cnt.collections:
         c.set_edgecolor("face")
     #m1.contour(lo1,la1,hh.pval,colors='k',levels=[0.05])
+    
+    
+    cb=plt.colorbar(f,ax=ax2,extend='both',fraction=fr)#,format=windFmt)
+
+        
     
     cb.set_label(units_tr,fontsize=fs)
     cb.ax.tick_params(labelsize=fs)
@@ -262,9 +347,9 @@ f_ratios=xr.open_mfdataset('processed/flux/fratios.nc')
 ratio=f_ratios.laws2011a#laws2000#laws2000,laws2011a,laws2011b,henson2011
 
 npp1=xr.open_dataset('processed/flux/avg_npp_rg_cafe.nc')
-avg_npp=(npp1.avg_npp/1000)*ratio
+avg_npp=((npp1.avg_npp)*ratio)/12
 
-land=moles_to_carbon(land_pac)/365  #LANDSCHUTZ
+land=(land_pac*1000)/365  #LANDSCHUTZ
 
 
 diff=land-avg_npp
@@ -331,10 +416,23 @@ precip= xr.open_dataset('datasets/precip.mon.mean.enhanced.nc').sel(lat=slice(20
 #     print('saved')
 # except:
 #     pass
+# %%
+#ws_ccmp1=xr.open_dataset('datasets/CCMP_windspeed.nc')
+#wu=xr.open_dataset('datasets/uwnd.10m.mon.mean.nc').sel(level=10).uwnd
+#wv=xr.open_dataset('datasets/vwnd.10m.mon.mean.nc').sel(level=10).vwnd
 
-ws_ccmp=xr.open_dataarray('datasets/CCMP_windspeed.nc')
-#ws_ccmp=xr.open_dataarray('processed/CCMP_ws_1deg.nc')
+ws_ccmp=xr.open_dataset('processed/CCMP_ws_1deg_global.nc')
+wu=ws_ccmp.uwnd
+wv=ws_ccmp.vwnd
 
+# %% Test Horizontal Divergence
+w = VectorWind(wu, wv)
+#spd = w.magnitude()
+divergence = w.divergence().sel(lat=slice(20,-20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01'))
+#div.mean(dim='time').plot()
+
+wu=wu.sel(lat=slice(-20,20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01'))
+wv=wv.sel(lat=slice(-20,20),lon=slice(120,290),time=slice('1997-07-01','2020-01-01'))
 # %% Prepare Figure 
 
 
@@ -357,7 +455,7 @@ nina_dates=nina.index
 ep_dates=ep.index[4:]
 cp_dates=cp.index
 #all_dates=chl.time
-all_dates=info.index[36:] #2000 - 2020
+all_dates=info.index[12:] #2000 - 2020 #[36:]
 
 #So we can select which time range. Select nina/ep.cp/ep dates 
 ensodates=all_dates
@@ -385,21 +483,38 @@ plot_basemap_row(fig,axn=1,
 if etype=='':
     ws_ccmp_d=ensodates[:-8]
 plot_basemap_row(fig,axn=3,
-                 hovmol=ws_ccmp.sel(time=ws_ccmp_d),
+                 hovmol=ws_ccmp.wspd.sel(time=ws_ccmp_d),
                  units='m s$^{-1}$',
-                 title='Wind speed',
+                 title='Wind speed and direction',
                  units_tr='m s$^{-1}$ year$^{-1}$',                 
                  levs=np.arange(0,11,1),
-                 levs_trend=np.arange(-0.1,0.125,0.025),
-                 
+                 levs_trend=np.arange(-0.06,0.07,0.01),
+                 wu=wu.sel(time=ws_ccmp_d),
+                 wv=wv.sel(time=ws_ccmp_d),
                  #levs_trend=np.arange(-0.15,0.175,0.025),
                  #trend_conversion=1000,
                  cmap='viridis')
 
-if etype=='':
+# if etype=='':
+#     ws_ccmp_d=ensodates[:-8]
+# plot_basemap_row(fig,axn=5,
+#                   hovmol=divergence,
+#                   units='m s$^{-1}$',
+#                   title='Wind divergence',
+#                   units_tr='m s$^{-1}$ year$^{-1}$',                 
+#                   levs=np.arange(-1.5*10**-5,1.75*10**-5,0.25*10**-5),
+#                   levs_trend=np.arange(-1*10**-6,1.1*10**-6,0.1*10**-6),
+#                   wu=wu,
+#                   wv=wv,
+#                   #levs_trend=np.arange(-0.15,0.175,0.025),
+#                   #trend_conversion=1000,
+#                   cmap='RdBu_r')
+
+# %%
+if etype=='': # Old was #chl.time
     chl_d=chl.time#ensodates[:-5] #Ok so this is actually from 1997 but doesn't change anything except fills in missing trend due to strange start years
 plot_basemap_row(fig,axn=5,
-                 hovmol=chl.sel(time=chl_d),
+                 hovmol=chl.interpolate_na(dim='time'),
                  units='mg chl m$^{-3}$',
                  title='TPCA chlorophyll',
                  units_tr='ug chl m$^{-3}$ year$^{-1}$',
@@ -408,56 +523,57 @@ plot_basemap_row(fig,axn=5,
                  levs_trend=np.arange(-4,4.1,1),
                  trend_conversion=1000,
                  cmap='viridis')
-
+# %%
 
 plot_basemap_row(fig,axn=7,
                  hovmol=avg_npp.sel(lat=slice(-15,15),time=ensodates),
-                 units='gC m$^{-2}$ day$^{-1}$',
+                 units='mmol C m$^{-2}$ day$^{-1}$',
                  title='New production',
-                 units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
-                 levs=np.arange(0,0.26,0.025),
-                 levs_trend=np.arange(-2,2.1,0.25),
-                 trend_conversion=1000,
-                 cmap='viridis')
-
-
-
-plot_basemap_row(fig,axn=9,
-                 hovmol=precip.sel(time=ensodates),
-                 units='mm day$^{-1}$',
-                 title='Precipitation',
-                 units_tr='mm day$^{-1}$ year$^{-1}$',
-                 levs=np.arange(0,13,1),
-                 levs_trend=np.arange(-0.08,0.085,0.005),
+                 units_tr='mmolC m$^{-2}$ day$^{-1}$ year$^{-1}$',
+                 levs=np.arange(0,22.5,2.5),
+                 levs_trend=np.arange(-0.2,0.25,0.05),
                  #trend_conversion=1000,
                  cmap='viridis')
 
 
 
+# plot_basemap_row(fig,axn=9,
+#                  hovmol=precip.sel(time=ensodates),
+#                  units='mm day$^{-1}$',
+#                  title='Precipitation',
+#                  units_tr='mm day$^{-1}$ year$^{-1}$',
+#                  levs=np.arange(0,13,1),
+#                  levs_trend=np.arange(-0.08,0.085,0.005),
+#                  #trend_conversion=1000,
+#                  cmap='viridis')
+
+
+
 
 #Delta pCO2
-h=plot_basemap_row(fig,axn=11,
+h=plot_basemap_row(fig,axn=9,
                   hovmol=dco2.sel(time=ensodates),#npp1.avg_npp,#dco2,#integratedpCO2,#monthlyPCO2*1000,
                   units='μatm',
                   title='\u0394pCO$_{2}$',#'pCO21',
                   units_tr='μatm year$^{-1}$',
                   levs=np.arange(-15,121,10),#(200,1200,10),#(5.5,9.5,0.5),
-                  levs_trend=np.arange(-2.5,2.6,0.1),
+                  levs_trend=np.arange(-2,2.1,0.1),
                   trend_conversion=1,#1000,
                   cmap='viridis',
                   cmaptr='RdBu_r')#'Reds')
+print(h.sel(lat=0,lon=250,method='nearest').mean())
 
-
-CO2_tr=plot_basemap_row(fig,axn=13,
+CO2_tr=plot_basemap_row(fig,axn=11,
                   hovmol=land.sel(time=ensodates),
-                  units='gC m$^{-2}$ day$^{-1}$',
+                  units='mmol C m$^{-2}$ day$^{-1}$',
                   title='Air-sea CO$_{2}$ flux',
-                  units_tr='mgC m$^{-2}$ day$^{-1}$ year$^{-1}$',
-                  levs=np.arange(-0.14,0.15,0.02),
-                  levs_trend=np.arange(-2,2.1,0.5),
-                  trend_conversion=1000,
+                  units_tr='mmol C m$^{-2}$ day$^{-1}$ year$^{-1}$',
+                  levs=np.arange(-12,13,1),
+                  levs_trend=np.arange(-0.2,0.25,0.05),
+                  #trend_conversion=1000,
                   cmap='RdBu_r')
 
+print(CO2_tr.sel(lat=-5,lon=180+70,method='nearest').mean())
 #Save the CO2 trends so we can superimpose onto plot later.
 CO2_tr.to_netcdf('processed/results/CO2f_trend_pval_alltime.nc')
 

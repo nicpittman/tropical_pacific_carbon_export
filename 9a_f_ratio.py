@@ -70,10 +70,10 @@ cf=cafe.sel(lat=0,method='nearest').sel(lon=ll,method='nearest')/1000
 
 
 # %% Part One, compare NPP estimates
-ax.plot(vg.time,vg.values,label='VGPM')#,linestyle='--')
-ax.plot(ep.time,ep.values,label='Eppley')#,linestyle='--'
-ax.plot(cb.time,cb.values,label='CbPM')
-ax.plot(cf.time,cf.values,linewidth=2,c='k',label='CAFE')
+ax.plot(vg.time,vg.values*1000/12,label='VGPM')#,linestyle='--')
+ax.plot(ep.time,ep.values*1000/12,label='Eppley')#,linestyle='--'
+ax.plot(cb.time,cb.values*1000/12,label='CbPM')
+ax.plot(cf.time,cf.values*1000/12,linewidth=2,c='k',label='CAFE')
 
 
 vg1=vg.sel(time=slice('2000-01-01','2019-12-01'))
@@ -102,7 +102,7 @@ avg=np.nanmean(combine.iloc[:,-2:],axis=1)
 
 ax.legend(loc='upper right',ncol=2)
 ax.set_title('a) Primary production estimates',loc='left') #Primary Production estimates at 0$^\circ$N 140$^\circ$W
-ax.set_ylabel('gC m$^{-2}$ day$^{-1}$')
+ax.set_ylabel('mmol m$^{-2}$ day$^{-1}$')
 ax.set_xlabel('Year')
 
 model=cafe
@@ -199,25 +199,25 @@ ax.set_xticklabels(labels)
 #ax2.plot((land_site-l11a*modd).time,land_site=l11a*modd,label='Laws2011a',linewidth=lw)
 #ax2.plot((land_site-l11b*modd).time,land_site-l11b*modd,label='Laws2011b',linewidth=lw)
 ax2=plt.subplot(414)
-ax2.plot(l11b.time,dunne*modd,label='Dunne 2005',linewidth=2)
-ax2.plot(th.time,th*modd,label='Henson 2011')#,linestyle='--')
-ax2.plot(f.time,f*modd,label='Laws 2000')
+ax2.plot(l11b.time,(dunne*modd)*1000/12,label='Dunne 2005',linewidth=2)
+ax2.plot(th.time,(th*modd)*1000/12,label='Henson 2011')#,linestyle='--')
+ax2.plot(f.time,(f*modd)*1000/12,label='Laws 2000')
 #ax2.plot(l11a.time,l11a*modd,label='Laws2011a',linewidth=lw)
-ax2.plot(modd.time,SIMPLETRIM*modd,label='DeVries & Webber 2017',c='m')
+ax2.plot(modd.time,(SIMPLETRIM*modd)*1000/12,label='DeVries & Webber 2017',c='m')
 #ax2.plot(l11b.time,l11b*modd,label='Laws 2011b',linewidth=lw,c='r')
-ax2.plot(l11a.time,l11a*modd,label='Laws 2011a',linewidth=lw,c='k')
+ax2.plot(l11a.time,(l11a*modd)*1000/12,label='Laws 2011a',linewidth=lw,c='k')
 
 #ax2.plot(land_site.time,land_site,c='k',label='CO2 flux',linewidth=lw-1)
 print('\nPanel d: export flux ratios')
 
-print('l11b: '+str((l11b*modd).mean().values))
-print('l11a: '+str((l11a*modd).mean().values))
-print('l2000: '+str((f*modd).mean().values))
-print('hens: '+str((th*modd).mean().values))
-print('dunne: '+str((dunne*modd).mean().values))
+print('l11b: '+str(((l11b*modd)/12).mean().values))
+print('l11a: '+str(((l11a*modd)/12).mean().values))
+print('l2000: '+str(((f*modd)/12).mean().values))
+print('hens: '+str(((th*modd)/12).mean().values))
+print('dunne: '+str(((dunne*modd)/12).mean().values))
 
 
-ax2.set_ylabel('gC m$^{-2}$ day$^{-1}$')
+ax2.set_ylabel('mmol C m$^{-2}$ day$^{-1}$')
 ax2.set_xlabel('Year')
 ax2.legend(ncol=3)
 ax2.set_title('d) New production estimates',loc='left')  #Comparison of Export Flux at 0$^\circ$N 140$^\circ$W

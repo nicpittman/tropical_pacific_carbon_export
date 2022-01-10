@@ -32,15 +32,32 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import matplotlib.patches as patches
 from matplotlib.ticker import MultipleLocator,AutoMinorLocator
 from scipy.stats import linregress
+import seaborn as sns
 
 
+
+def check_single_bias(truth,model):
+    bias=((model-truth)/truth)*100
+    abs_error=abs(bias)
+            
+    logbias=10**(np.nanmean(np.log10(model)-np.log10(truth)))
+
+    medlogbias=10**(np.nanmedian(np.log10(model)-np.log10(truth))) 
+    
+    mae=10**(np.nanmean(abs(np.log10(model)-np.log10(truth))))
+    
+    med_ae=10**(np.nanmedian(abs(np.log10(model)-np.log10(truth))))
+
+    return logbias,medlogbias,mae,med_ae,bias,abs_error
+    
+    
 #Not recommended but helps to get the info that we need out
 import warnings
 warnings.filterwarnings("ignore")
 
 
 ### OPTIONAL CHANGE
-plot_mooring_CO2=0 #CHANGE to 1 to check how the mooring data lines up.
+plot_mooring_CO2=1 #CHANGE to 1 to check how the mooring data lines up.
 
 
 
@@ -53,6 +70,52 @@ check_lag_corr_asf=[]
 check_lag_corr_np=[]
 
 
+fp='processed/combined_dataset/month_data_exports.nc'
+
+
+dat=xr.open_mfdataset(fp)
+d=dat.co2flux_gmyr/365
+d1=dat.co2flux4_land_gmyr/365
+npr=dat.cafe/1000
+
+# %% Show distribution
+plt.figure(figsize=(10,10))
+plt.subplot(211)
+plt.grid()
+sns.violinplot(data=np.array(d).T,orient='h')#x='Mooring',y='co2flux',data=d.to_dataframe().T)
+plt.title('In situ CO2 flux (gC/m2/day)')
+plt.yticks([0,1,2,3,4,5],['110W','125W','140W','155W','170W','165E'])
+plt.xlim([-0.025,0.2])
+plt.subplot(212)
+plt.grid()
+plt.title('Landschutzer CO2 flux')
+sns.violinplot(data=np.array(d1).T,alpa=2,orient='h')
+plt.yticks([0,1,2,3,4,5],['110W','125W','140W','155W','170W','165E'])
+plt.xlim([-0.025,0.2])
+plt.show()
+
+# %%
+# Show distribution to somehow plug into the main figure?
+# One row for each mooring then three violins for the distribution of each var.
+plt.figure(figsize=(3,10))
+for i in np.arange(0,6,1):
+    plt.subplot(6,1,i+1)
+    insitu=np.array(d)[i]
+    land=np.array(d1)[i]
+    newpr=np.array(npr)[i]
+    
+    sns.violinplot(data=np.array([insitu,land,newpr]).T,orient='v')
+    if i==5:
+        plt.xticks([0,1,2],['Insitu CO2','Landchutzer CO2','New Prod'],rotation=90)
+    else: plt.xticks([],[])
+# %%
+
+
+
+
+
+
+
 fs=20
 fig=plt.figure(figsize=(28,30))#,constrained_layout=True)
 gs=fig.add_gridspec(38,1)
@@ -60,13 +123,13 @@ means=pd.DataFrame()
 # npp_insitu=pd.read_csv('processed/flux/shipboard_npp.csv',index_col='id') #Redundant 
 final_mooring_enso=pd.DataFrame()
 
-fp='processed/combined_dataset/month_data_exports.nc'
-dat=xr.open_mfdataset(fp)
+
 print((dat.sel(Mooring=155).co2flux4_land_gmyr/365).min().values) #Min value at 155W (1998)
 for i, mooring_name in enumerate(moorings):
     print(mooring_name)
     #JMAco2flux_data=xr.open_mfdataset('processed/flux/JMA_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
     LandSch_co2flux_data=xr.open_mfdataset('processed/flux/landsch_mooring_co2_flux.nc').rename({'time':'Date'}).sel(Mooring=mooring_name)
+    LandSch_co2flux_data['Date']=LandSch_co2flux_data['Date'].astype("datetime64[M]")
     npp=xr.open_mfdataset('processed/flux/npp.nc').sel(Mooring=mooring_name)
     #mooring_obs_npp=npp_insitu[((npp_insitu.mooring.astype(int)>=int(mooring_name[:-1])-1)&(npp_insitu.mooring.astype(int)<=int(mooring_name[:-1])+1))]
     
@@ -162,6 +225,8 @@ for i, mooring_name in enumerate(moorings):
     print('In Situ avg: '+str((dat.co2flux_gmyr/365).mean().values))
     print('In Situ std: '+str((dat.co2flux_gmyr/365).std().values))
     
+    a=(check_single_bias(dat.co2flux_gmyr/365,moles_to_carbon(LandSch_co2flux_data.fgco2_smoothed)/365))
+    print('CO2 abs error ='+str(a[5].mean().values))
     epp=pd.DataFrame([dat.mod_eppley.values,dat.sw_eppley.values]).mean()
     cbpm=pd.DataFrame([dat.mod_cbpm.values,dat.sw_cbpm.values,dat.viirs_cbpm.values]).mean()
     vgpm=pd.DataFrame([dat.sw_vgpm.values,dat.mod_vgpm.values,dat.viirs_vgpm.values]).mean()
